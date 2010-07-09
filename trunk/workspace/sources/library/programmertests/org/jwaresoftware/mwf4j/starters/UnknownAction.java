@@ -1,0 +1,62 @@
+/**
+ * $Id$
+@JAVA_SOURCE_HEADER@
+ **/
+
+package org.jwaresoftware.mwf4j.starters;
+
+import  java.lang.reflect.Constructor;
+
+import  org.jwaresoftware.gestalt.Validate;
+
+import  org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+
+/**
+ * Test action that unconditionally returns an instance of a user-supplied 
+ * statement class. Assumes there is a public constructur for statement class
+ * that takes an action and control flow statement reference. 
+ *
+ * @since     JWare/MWf4j 1.0.0
+ * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @version   @Module_VERSION@
+ * @.safety   single
+ * @.group    helper,test
+ **/
+
+public final class UnknownAction extends ActionSkeleton
+{
+    public UnknownAction(String id, Class<? extends ControlFlowStatement> statementClass)
+    {
+        super(id);
+        Validate.notNull(statementClass, "statement-class");
+        myStatementClass = statementClass;
+        try {
+            myCtor = statementClass.getConstructor(Action.class,ControlFlowStatement.class);
+        } catch(Exception sigX) {
+            throw new Error("Unable to locate <init>(Action,ControlFlowStatement)",sigX);
+        }
+    }
+
+    public void configure(ControlFlowStatement gen)
+    {
+        Validate.isTrue(myStatementClass.isInstance(gen), "statement kindof "+myStatementClass.getSimpleName());
+    }
+
+    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    {
+        try {
+            ControlFlowStatement unknown = myCtor.newInstance(this,next);
+            unknown.reconfigure();
+            return unknown;
+        } catch(Exception ctorX) {
+            throw new Error("Unable to create new instance of "+myStatementClass.getSimpleName(),ctorX);
+        }
+    }
+
+    private Class<? extends ControlFlowStatement> myStatementClass;
+    private Constructor<? extends ControlFlowStatement> myCtor;
+}
+
+
+/* end-of-UnknownAction.java */
