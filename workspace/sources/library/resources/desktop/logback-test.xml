@@ -1,0 +1,50 @@
+<configuration>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <Pattern>[%d{ISO8601}] [%-5p] %c - %m%n%ex{3}</Pattern>
+    </encoder>
+  </appender>
+
+  <appender name="OJG" class="ch.qos.logback.core.FileAppender">
+    <file>C:\Work\Logs\MWf4J\mwf4j.log</file>
+    <encoder>
+      <Pattern>[%d{ISO8601}] [%-5p] %c - %m%n%ex{3}</Pattern>
+    </encoder>
+  </appender>
+
+  <appender name="OJG-DIAGNOSTICS" class="ch.qos.logback.core.FileAppender">
+    <file>C:\Work\Logs\MWf4J\mwf4j-debug.log</file>
+    <encoder>
+      <Pattern>[%d{ISO8601}] [%-5p] %c - %m%n%ex{3}</Pattern>
+    </encoder>
+  </appender>
+
+  <appender name="MWf-DIAGNOSTICS-FLOW" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>C:\Work\Logs\MWf4J\mwf4j-flowdebug.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>C:\Work\Logs\MWf4J\mwf4j-flowdebug.%d{MM-dd-yyyy}.log</fileNamePattern>
+      <maxHistory>15</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <Pattern>[%d{ISO8601}] [%-5p] %c{25} - %m%n%ex{3}</Pattern>
+    </encoder>
+  </appender>
+
+  <logger name="JWare" level="TRACE">
+    <appender-ref ref="OJG"/>
+  </logger>
+  <logger name="Diagnostics.JWare" level="TRACE" additivity="false">
+    <appender-ref ref="OJG-DIAGNOSTICS"/>
+  </logger>
+  <logger name="Diagnostics.JWare.Services.MWf4J.Flow" level="TRACE" additivity="false">
+    <appender-ref ref="MWf-DIAGNOSTICS-FLOW"/>
+  </logger>
+
+  <root level="DEBUG">
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+</configuration>
+
+<!-- $Id$ -->
