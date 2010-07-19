@@ -23,6 +23,15 @@ import  org.jwaresoftware.mwf4j.assign.StoreType;
 
 public final class BAL
 {
+    public interface ConfigSPI
+    {
+        StoreType getDataStoreType();
+        String getCursorKey(String eid);
+        StoreType getCursorStoreType();
+        boolean getMakeStatementPerLoopFlag();
+        boolean getUseHaltContinuationsFlag();
+    }
+
     public final static StoreType getDataStoreType()
     {
         return StoreType.DATAMAP;//Flat assignment to variables!

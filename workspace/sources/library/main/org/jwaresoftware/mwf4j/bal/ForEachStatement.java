@@ -155,24 +155,15 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
     protected ControlFlowStatement getIterationOfBody(Object data, Harness harness)
     {
         BALHelper.putData(myCursorKey,data,myCursorStoreType,harness);//NB: *before* factory call!
-        ControlFlowStatement bodyContinuation = myBody;
-        if (myBodyFactory!=null) {
-            try {
-                MDC.pshHarness(this,harness);
-                bodyContinuation = myBodyFactory.makeStatement(this);
-            } finally {
-                MDC.popHarness(this,harness);
-            }
-        }
-        return bodyContinuation;
+        return BALHelper.makeIterationOfBody(this, harness, myBody, myBodyFactory);
     }
 
-    protected void verifyReady()
+    public void verifyReady()
     {
         super.verifyReady();
         Validate.stateIsTrue(myBody!=null || myBodyFactory!=null,
                 "body or body-factory has been defined");
-        Validate.fieldNotNull(myCursorKey,What.KEY);
+        Validate.stateNotNull(myCursorKey,What.KEY);
     }
 
  

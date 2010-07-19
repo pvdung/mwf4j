@@ -79,10 +79,10 @@ public class BranchStatement extends BALStatement
         verifyReady();
     }
 
-    protected void verifyReady()
+    public void verifyReady()
     {
         super.verifyReady();
-        Validate.fieldNotNull(myTest, What.CRITERIA);
+        Validate.stateNotNull(myTest, What.CRITERIA);
         Validate.stateIsTrue(myThen!=null && myElse!=null, 
             "both true and false continuations have been defined");
     }

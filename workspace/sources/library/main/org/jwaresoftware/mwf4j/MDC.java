@@ -7,12 +7,16 @@ package org.jwaresoftware.mwf4j;
 
 import  java.lang.ref.SoftReference;
 import  java.util.Collection;
+import  java.util.List;
+import  java.util.Map;
 
 import  org.apache.commons.lang.ObjectUtils;
 
+import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.fixture.FixtureProperties;
 import  org.jwaresoftware.gestalt.helpers.PerThreadStash;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 /**
  * MWf4J specific per-thread mapped diagnostic context (MDC). All MWf4J 
@@ -31,7 +35,7 @@ import  org.jwaresoftware.gestalt.helpers.PerThreadStash;
  * NOT assume their activity has done this work for them (or that they're
  * being called from a single root activity directly).
  *
- * @since     JWare/MWf4j 1.0.0
+ * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
@@ -188,6 +192,107 @@ public final class MDC extends PerThreadStash
         return indentation(level);
     }
 
+
+    // --------------------------------------------------------------------
+    // Managing selective copy of bits between master and slave harnesses
+    // --------------------------------------------------------------------
+
+    /**
+     * Interface for simple utility that moves values between two MDCs 
+     * (typically master-slave or parent-child). The copy must be done 
+     * from the source MDC's thread; the paste from the targets'.
+     *
+     * @since     JWare/MWf4J 1.0.0
+     * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @version   @Module_VERSION@
+     * @.safety   n/a
+     * @.group    impl,infra
+     **/
+    public interface Propagator
+    {
+        Map<String,Object> copy();
+        void paste(Map<String,Object> snapshot);
+        void paste();
+
+        /** Functioning null-proxy. Does compatible no-ops for all methods. **/
+        public final static Propagator nullINSTANCE = new Propagator() 
+        {
+            public Map<String,Object> copy() 
+                { return Empties.newMap(); }
+            public void paste(Map<String,Object> snapshot) 
+                { /*empty*/ }
+            public void paste() 
+                { /*empty*/ }
+        };
+    }
+
+
+    /**
+     * Really simple propagator of values between two MDC contexts. Assumes
+     * the application knows what it's doing and does absolutely <em>NO</em>
+     * checking against what's copied. Useful for test benches and to copy
+     * simple immutable types from one thread to another.
+     * <p/>
+     * Usage note: you must setup all the MDC keys to be copied <em>before</em>
+     * calling copy. Otherwise, the saved snapshot will <em>not</em> contain
+     * your additional keys. Also note that, every call to {@linkplain #copy()}
+     * overwrites the propagator's snapshot.
+     *
+     * @since     JWare/MWf4J 1.0.0
+     * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @version   @Module_VERSION@
+     * @.safety   single
+     * @.group    impl,helper
+     **/
+    public final static class SimplePropagator implements Propagator
+    {
+        private final List<String> myCopyNames;
+        private Map<String,Object> mySnapshot;
+
+        public SimplePropagator(String...names) 
+        {
+            Validate.notEmpty(names,What.CRITERIA);
+            myCopyNames= LocalSystem.newList(Math.max(names.length,10));
+            for (String next:names) {
+                myCopyNames.add(next);
+            }
+        }
+
+        public void addName(String name)
+        {
+            Validate.notBlank(name,What.NAME);
+            myCopyNames.add(name);
+        }
+
+        public Map<String,Object> copy()
+        {
+            Map<String,Object> snapshot = LocalSystem.newMap();
+            Map<String,Object> stash = getOrNull();//NB: in source thread!
+            if (stash!=null) {
+                for (String name:myCopyNames) {
+                    if (stash.containsKey(name)) {
+                        snapshot.put(name,stash.get(name));
+                    }
+                }
+            }
+            mySnapshot = snapshot;
+            return snapshot;
+        }
+
+        public void paste(Map<String,Object> snapshot)
+        {
+            Validate.notNull(snapshot,What.CRITERIA);
+            if (!snapshot.isEmpty()) {
+                Map<String,Object> stash = get();//NB: in target thread!
+                stash.putAll(snapshot);
+            }
+        }
+        
+        public void paste()
+        {
+            paste(mySnapshot);
+        }
+    }
 
 
     private MDC() {

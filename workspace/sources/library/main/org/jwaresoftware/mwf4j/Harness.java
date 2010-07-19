@@ -37,7 +37,7 @@ public interface Harness extends Runnable, Fixture.Implementation
     void addUnwind(Unwindable participant);
     void removeUnwind(Unwindable participant);
     ControlFlowStatement runParticipant(ControlFlowStatement participant);
-    void applyAdjustment(Adjustment action);
+    void applyAdjustment(Adjustment action);    
 }
 
 
