@@ -10,15 +10,11 @@ import  java.util.Map;
 import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
-import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.helpers.False;
-import  org.jwaresoftware.mwf4j.helpers.True;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
-import  org.jwaresoftware.mwf4j.starters.NIterations;
 import  org.jwaresoftware.mwf4j.starters.Once;
-import org.jwaresoftware.mwf4j.starters.OnceAfterStarted;
-import  org.jwaresoftware.mwf4j.starters.StampAction;
+import  org.jwaresoftware.mwf4j.starters.OnceAfterStarted;
 
 /**
  * Test suite for {@linkplain DoWhileAction} and associated statements.

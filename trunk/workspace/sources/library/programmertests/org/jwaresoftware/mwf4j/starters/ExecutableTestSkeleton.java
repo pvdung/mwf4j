@@ -17,7 +17,7 @@ import  org.jwaresoftware.gestalt.bootstrap.Fixture;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Activity;
-import org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
@@ -101,7 +101,7 @@ public abstract class ExecutableTestSkeleton
 
     protected Harness newHARNESS(Harness parent, ControlFlowStatement firstStatement)
     {
-        return new ChildHarness(parent,firstStatement);
+        return new SlaveHarness(parent,firstStatement);
     }
 
     protected Map<String,Object> iniDATAMAP()
@@ -117,9 +117,13 @@ public abstract class ExecutableTestSkeleton
         try {
             h.run();
         } finally {
+            names = TestFixture.getExited();
+            if (names==null) names = Empties.STRING_LIST;
+            System.out.println("PERFORMED-LEAVE: "+Arrays.toString(names.toArray()));
+
             names = TestFixture.getPerformed();
             if (names==null) names = Empties.STRING_LIST;
-            System.out.println("PERFORMED: "+Arrays.toString(names.toArray()));
+            System.out.println("PERFORMED-ENTER: "+Arrays.toString(names.toArray()));
         }
         return names;
     }

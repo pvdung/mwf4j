@@ -9,7 +9,8 @@ import  org.jwaresoftware.gestalt.ServiceProviderException;
 
 /**
  * MWf4j marker runtime exception used when other, more specific, 
- * exception not available.
+ * exception not available. Also can use to wrap checked exception if
+ * subclass implements Throwables&#46;CheckedWrapper.
  *
  * @since     JWare/MWf4j 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>

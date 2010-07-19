@@ -14,32 +14,52 @@ import  org.jwaresoftware.mwf4j.Adjustment;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Feedback;
 import  org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.bal.ThrowStatement;
 import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 /**
- * Specialized harness that a primary harness can use to handle async
- * activity separately. Typically the child harness is run from its own
- * thread-of-execution. Useful for things like forks and automatic 
- * (re)joins or parallel flows.
+ * Specialized harness that a primary activity can use to launch independent
+ * async sub-activities. Typically the slave harness is run from its own
+ * thread-of-execution. Useful for things like implementation-only forks  
+ * or parallel flows. Any failure occuring on a slave harness results in
+ * a failure on the master harness (as if the statement were executing
+ * there). We use a terminal adjustment against the master harness.
+ * <p/>
+ * Usage note: if you setup an MDC initializer for a slave harness, <em>you</em>
+ * need to call the initializer's copy method to setup what MDC items are
+ * to be copied. The harness cannot know when is the correct time to call
+ * the copy. Once the slave harness's run method is triggered (presumably
+ * in it's own thread-of-execution), the initializer's paste method will
+ * be called.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   special (guarded for continuation, unwinds, &amp; adjustments management)
+ * @.safety   special (same as superclass)
  * @.group    impl,helper
  **/
 
-public final class ChildHarness extends HarnessSkeleton
+public final class SlaveHarness extends HarnessSkeleton
 { 
+    /**
+     * The adjustment that we send to the master harness in the event of
+     * an uncaught exception on a slave harness.
+     *
+     * @since     JWare/MWf4J 1.0.0
+     * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @version   @Module_VERSION@
+     * @.safety   special (single while constructed, guarded during run)
+     * @.group    impl,helper
+     **/
     static class CaughtErrorNotification extends ActionSkeleton implements Adjustment
     {
         CaughtErrorNotification(RuntimeException issue) {
             super("rethrow");
             throwStatement = new ThrowStatement(Action.anonINSTANCE,issue,
-                    "Caught issue on child harness "+getId());
+                    "Caught issue on slave harness "+getId());
         }
         public ControlFlowStatement makeStatement(ControlFlowStatement next) {
             return throwStatement;
@@ -52,35 +72,49 @@ public final class ChildHarness extends HarnessSkeleton
         private final ControlFlowStatement throwStatement;
     }
 
-    public ChildHarness(Harness parent, ControlFlowStatement first)
+
+    public SlaveHarness(Harness master, ControlFlowStatement first)
     {
-        this(parent,first,new RetryDef());
+        this(master,first,new RetryDef());
     }
 
-    public ChildHarness(Harness parent, ControlFlowStatement first, RetryDef config)
+    public SlaveHarness(Harness master, ControlFlowStatement first, RetryDef config)
     {
-        super(parent);
+        super(master);
         Validate.neitherNull(config,What.CONFIG,first,What.STATEMENT);
-        myParent = parent;
+        myMaster = master;
         myFirst = first;
         myConfig = config;
     }
 
+    public void setMDCInitializer(MDC.Propagator initializer)
+    {
+        Validate.notNull(initializer,What.CALLBACK);
+        myMDCInitializer = initializer;
+    }
+
+
+    public Executor getExecutorService()
+    {
+        return myMaster.getExecutorService();
+    }
+
     public Activity getOwner()
     {
-        return myParent.getOwner();
+        return myMaster.getOwner();
     }
 
     public Variables getVariables()
     {
-        return myParent.getVariables();
+        return myMaster.getVariables();
     }
 
-    public Executor getExecutorService()
+
+    protected void doEnter()
     {
-        return myParent.getExecutorService();
+        myMDCInitializer.paste();//DO *BEFORE* CALLING INHERITED
+        super.doEnter();
     }
-
 
     protected ControlFlowStatement firstStatement()
     {
@@ -100,12 +134,12 @@ public final class ChildHarness extends HarnessSkeleton
 
         boolean notified=false;
         RuntimeException returned=null;
-        if (myParent.isRunning()) {
+        if (myMaster.isRunning()) {
             int tryCount = 1+myConfig.getRetryCount();
             Adjustment signal = new CaughtErrorNotification(issue);
             do {
                 try {
-                    myParent.applyAdjustment(signal);
+                    myMaster.applyAdjustment(signal);
                     notified=true;
                 } catch(IllegalStateException stoppedOrBlockedX) {
                     if (tryCount>1) 
@@ -121,10 +155,11 @@ public final class ChildHarness extends HarnessSkeleton
     }
 
 
-    private final Harness myParent;
+    private final Harness myMaster;
     private ControlFlowStatement myFirst;
     private final RetryDef myConfig;
+    private MDC.Propagator myMDCInitializer=MDC.Propagator.nullINSTANCE;
 }
 
 
-/* end-of-ChildHarness.java */
+/* end-of-SlaveHarness.java */

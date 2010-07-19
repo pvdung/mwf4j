@@ -118,7 +118,13 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     }
 
 
-    protected void verifyReady()
+    
+    /**
+     * Validate that this statement is ready for execution. Made public to ensure
+     * secondary use of statements (as continuation outside of formal action-&gt;statement)
+     * can also include validation call.
+     **/
+    public void verifyReady()
     {
         //nothing by default
     }
@@ -145,7 +151,7 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     protected abstract ControlFlowStatement runInner(Harness harness);
 
 
-    public ControlFlowStatement run(Harness harness) //NB: we require a breadcrumbs trail...
+    public ControlFlowStatement run(Harness harness) //NB: enforces a breadcrumbs trail...
     {
         breadcrumbs().doEnter(harness);
         doEnter(harness);

@@ -17,8 +17,6 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
-import  org.jwaresoftware.mwf4j.behaviors.Protector;
 
 /**
  * Control flow statement that implements the classic 'try-catch-finally' form to 
@@ -33,14 +31,13 @@ import  org.jwaresoftware.mwf4j.behaviors.Protector;
  * @.group    infra,impl
  **/
 
-public class TryCatchStatement extends BALStatement implements Protector
+public class TryCatchStatement extends BALProtectorStatement
 {
     enum Phase {BODY,ONERROR,ALWAYS,NEXT,ABORT};
  
     public TryCatchStatement(Action owner, ControlFlowStatement next) 
     {
         super(owner,next);
-        myTrySupport = new TrySupport(getOwner());
     }
 
     public void setBody(Action body)
@@ -65,31 +62,6 @@ public class TryCatchStatement extends BALStatement implements Protector
     {
         Validate.notNull(always,What.ACTION);
         myAlways = always;
-    }
-
-    public void setErrorKey(String errorKey, StoreType storeType)
-    {
-        if (errorKey!=null) {
-            Validate.notBlank(errorKey,What.KEY);
-            Validate.notNull(storeType,What.TYPE);
-        }
-        myErrorKey = errorKey;
-        myErrorStoreType = storeType;
-    }
-
-    public final void setHaltIfError(boolean flag)
-    {
-        myTrySupport.setHaltIfError(flag);
-    }
-
-    public final void setQuiet(boolean flag)
-    {
-        myTrySupport.setQuiet(flag);
-    }
-
-    public final void setUseHaltContinuation(boolean flag)
-    {
-        myTrySupport.setUseContinuation(flag);
     }
 
     public void setUnmask(boolean flag)
@@ -158,7 +130,7 @@ public class TryCatchStatement extends BALStatement implements Protector
                 if (always==null) {
                     always = myAlways.makeStatement(this);
                 }
-                continuation = new ProtectedStatement(getOwner(),always).run(harness);
+                continuation = harness.runParticipant(protect(always));
                 if (continuation instanceof ThrowStatement) {
                     saveUnexpectedError(continuation);
                     myPhase = Phase.ABORT;
@@ -188,7 +160,7 @@ public class TryCatchStatement extends BALStatement implements Protector
         return BALHelper.protect(getOwner(),statement);
     }
 
-    private void resetThis()
+    final void resetThis()
     {
         myPhase = Phase.BODY;
         pendingThrow = null;
@@ -196,20 +168,19 @@ public class TryCatchStatement extends BALStatement implements Protector
         alwaysContinued = null;
         bodyContinued = null;
         errorContinued = null;
+        super.resetThis();
     }
 
     public void reconfigure() 
     {
-        resetThis();
         super.reconfigure();
-        verifyReady();
         bodyContinued = myBody;
     }
 
-    protected void verifyReady()
+    public void verifyReady()
     {
         super.verifyReady();
-        Validate.fieldNotNull(myBody,"try-catch body");
+        Validate.stateNotNull(myBody,"try-catch body");
         Validate.stateIsTrue(myPhase==Phase.BODY, "phase=BODY");
     }
 
@@ -318,10 +289,7 @@ public class TryCatchStatement extends BALStatement implements Protector
     private Set<Pair<Class<? extends Exception>,Action>> myCatchers;//OPTIONAL
     private Action myAlways;//OPTIONAL
     private Action myOnlyCatcher;//NB:shortcut for common case of just one catch action!
-    private TrySupport myTrySupport;
     private boolean myUnmaskFlag = false;
-    private String myErrorKey;//OPTIONAL
-    private StoreType myErrorStoreType= BAL.getDataStoreType();
 
     //These are updated as we proceed thru the try-catch-finally sequence of actions ---------
     private Phase myPhase=Phase.BODY;

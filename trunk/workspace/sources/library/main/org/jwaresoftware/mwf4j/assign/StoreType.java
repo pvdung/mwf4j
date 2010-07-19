@@ -13,7 +13,7 @@ package org.jwaresoftware.mwf4j.assign;
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    infra,api,helper
  **/
 
 public enum StoreType

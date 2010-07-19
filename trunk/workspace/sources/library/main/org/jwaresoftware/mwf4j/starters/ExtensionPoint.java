@@ -33,7 +33,7 @@ import  org.jwaresoftware.mwf4j.What;
  * 'makeStatement' and internal states can change for 'runInner' you should
  * not use a single extension point instance from multiple threads.
  *
- * @since     JWare/MWf4j 1.0.0
+ * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single

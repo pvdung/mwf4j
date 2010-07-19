@@ -28,25 +28,12 @@ import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Executable;
 
 /**
- * Straightforward implementation of the {@linkplain Harness harness}
- * interface and the default for MWf4J components. Actions, statements,
+ * Common implementation of the {@linkplain Harness harness} interface for
+ * a simple primary and secondary or slave. Actions, statements,
  * conditions and other components must use a harness to access various
- * services like the continuation and unwind queues during execution. We
- * rely on the supplied fixture service provider lookup mechanism to
- * retrieve all application-supplied overrides for our services. For
- * instance, if the application wants to supply its own variables map then
- * it should install a map (or a map provider) under the name
- * {@linkplain MWf4J.ServiceIds#VARIABLES} of a type compatible with a 
- * concurrent map. Unwindables must self-[un]register as part of their
- * execution.
- * <p/>
- * <b>Usage Note:</b> Most of the getter methods (like getVariables) are
- * expected to be <em>available immediately after construction</em>. So 
- * it's important that the harness creator pre-populate the incoming
- * fixture with all service provider overrides and configuration BEFORE
- * creating the harness. Also, any pre-installed continuations and unwinds
- * are <em>CLEARED</em> on entry to {@linkplain #run()}! Only unwinds and
- * continuations added during execution are processed.
+ * services like the continuation and unwind queues during execution. 
+ * Subclasses are expected to implement lookup or retrieval of the harness'
+ * (ultimate) owner, variables, and other runtime services.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -66,9 +53,11 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     public String getName()
     {
         StringBuilder sb = LocalSystem.newSmallStringBuilder();
-        sb.append(What.getNonBlankId(getOwner()))
-          .append(" against ")
-          .append(super.getName());
+        sb.append("'")
+          .append(What.getNonBlankId(getOwner()))
+          .append("' against fixture '")
+          .append(super.getName())
+          .append("'");
         return sb.toString();
     }
 
@@ -119,7 +108,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
     private void queueContinuations(ControlFlowStatement directed)
     {
-        Validate.notNull(directed,What.STATEMENT);
+        Validate.notNull(directed,What.CONTINUATION);
         myQueue.add(directed);
         synchronized(myContinuations) {
             if (!myContinuations.isEmpty()) {
@@ -206,7 +195,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
             unwinds = LocalSystem.newList(myUnwinds.keySet());
             myUnwinds.clear();
         }
-        for (Unwindable next:unwinds) {
+        for (Unwindable next:unwinds) {//? protect this block ?
             next.unwind(this);
         }
     }
@@ -249,7 +238,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
     protected void doError(Throwable cause)
     {
-        Diagnostics.ForCore.warn("Unhandled harness exception",cause);
+        Diagnostics.ForCore.warn("Unhandled harness exception: "+getName(),cause);
         getIssueHandler().problemOccured("Unhandled run error",Effect.ABORT,cause);
     }
 

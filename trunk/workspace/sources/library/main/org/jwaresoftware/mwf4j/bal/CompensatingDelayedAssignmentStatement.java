@@ -63,10 +63,10 @@ public class CompensatingDelayedAssignmentStatement<T> extends DelayedAssignment
         super.reconfigure();
     }
 
-    protected void verifyReady()
+    public void verifyReady()
     {
         super.verifyReady();
-        Validate.fieldNotNull(myTest,What.CRITERIA);
+        Validate.stateNotNull(myTest,What.CRITERIA);
     }
 
 

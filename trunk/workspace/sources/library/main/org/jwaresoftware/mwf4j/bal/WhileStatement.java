@@ -157,10 +157,10 @@ public class WhileStatement extends BALStatement implements Unwindable
         return BALHelper.makeIterationOfBody(this,harness,myBody,myBodyFactory);
     }
 
-    protected void verifyReady()
+    public void verifyReady()
     {
         super.verifyReady();
-        Validate.fieldNotNull(myTest,What.CRITERIA);
+        Validate.stateNotNull(myTest,What.CRITERIA);
         Validate.stateIsTrue(myBody!=null || myBodyFactory!=null,
                 "body or body-factory has been defined");
         if (breadcrumbs().isEnabled()) {

@@ -145,15 +145,31 @@ final class BALHelper
 
 
 
-    static final ControlFlowStatement makeIterationOfBody(ControlFlowStatement parent, Harness harness, ControlFlowStatement body, Action bodyFactory)
+    static final ControlFlowStatement makeIterationOfBody(ControlFlowStatement parent, Harness harness, ControlFlowStatement bodyInstance, Action bodyFactory)
     {
-        ControlFlowStatement bodyContinuation = body;
+        ControlFlowStatement bodyContinuation = bodyInstance;
         if (bodyFactory!=null) {
             try {
                 MDC.pshHarness(parent,harness);
                 bodyContinuation = bodyFactory.makeStatement(parent);
             } finally {
                 MDC.popHarness(parent,harness);
+            }
+        }
+        return bodyContinuation;
+    }
+
+
+
+    static final ControlFlowStatement makeInstanceOfBody(ControlFlowStatement source, Harness harness, ControlFlowStatement next, Action bodyFactory)
+    {
+        ControlFlowStatement bodyContinuation = next;
+        if (bodyFactory!=null) {
+            try {
+                MDC.pshHarness(source,harness);
+                bodyContinuation = bodyFactory.makeStatement(next);
+            } finally {
+                MDC.popHarness(source,harness);
             }
         }
         return bodyContinuation;

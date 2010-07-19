@@ -26,7 +26,7 @@ import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4JException;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.assign.GivebackValue;
-import org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.starters.ClosureSkeleton;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EchoStatement;

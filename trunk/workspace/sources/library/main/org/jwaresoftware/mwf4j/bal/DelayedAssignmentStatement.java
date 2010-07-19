@@ -81,7 +81,7 @@ public class DelayedAssignmentStatement<T> extends AssignmentStatement<T>
     }
 
 
-    protected void verifyReady()
+    public void verifyReady()
     {
         super.verifyReady();
         Validate.stateIsTrue(getGetter() instanceof RunnableFuture<?>, 

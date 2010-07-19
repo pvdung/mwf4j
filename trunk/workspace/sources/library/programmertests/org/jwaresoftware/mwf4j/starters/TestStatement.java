@@ -48,7 +48,13 @@ public class TestStatement extends StatementSkeleton
         addPerformedIfNamed();
     }
 
-    protected final void addPerformedIfNamed()
+    public void doLeave(Harness wrt)
+    {
+        addExitedIfNamed();
+        super.doLeave(wrt);
+    }
+
+    private String getName()
     {
         String name = myId;
         if (name==null) {
@@ -57,8 +63,22 @@ public class TestStatement extends StatementSkeleton
                 name = owner.getId();
             }
         }
+        return name;
+    }
+
+    protected final void addPerformedIfNamed()
+    {
+        String name = getName();
         if (name!=null) {
             TestFixture.addPerformed(name);//Must work for multiple calls to same-named statement!
+        }
+    }
+
+    protected final void addExitedIfNamed()
+    {
+        String name = getName();
+        if (name!=null) {
+            TestFixture.addExited(name);//Must work for multiple calls to same-named statement!
         }
     }
 

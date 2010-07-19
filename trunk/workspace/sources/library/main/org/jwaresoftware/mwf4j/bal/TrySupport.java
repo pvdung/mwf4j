@@ -7,17 +7,21 @@ package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.gestalt.Effect;
 import  org.jwaresoftware.gestalt.Throwables;
+import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
 import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
 
 /**
  * Helper that encapsulates the reusable handling code for protected statements 
  * like the {@linkplain TryEachSequenceStatement} or {@linkplain TryCatchStatement}.
+ * Also useful to propagate a checked exception from a statements run handling
+ * in a single consistent manner.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -91,6 +95,27 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
         myHaltIfErrorFlag = failIfError;
         myQuietFlag = quiet;
         myUseThrowableFlag = !useContinuation;
+    }
+
+    public void reset(boolean failIfError, boolean quiet)
+    {
+        reset(failIfError,quiet,BAL.getUseHaltContinuationsFlag());
+    }
+
+    public void copyFrom(TrySupport from)
+    {
+        Validate.notNull(from,What.CRITERIA);
+        myHaltIfErrorFlag = from.myHaltIfErrorFlag;
+        myQuietFlag = from.myQuietFlag;
+        myUseThrowableFlag = from.myUseThrowableFlag;
+    }
+
+    public void copyFrom(ProtectorFields from)
+    {
+        Validate.notNull(from,What.CRITERIA);
+        myHaltIfErrorFlag = from.haltIfErrorFlag;
+        myQuietFlag = from.quietFlag;
+        myUseThrowableFlag = !from.haltContinuationFlag;
     }
 
     private boolean myHaltIfErrorFlag;

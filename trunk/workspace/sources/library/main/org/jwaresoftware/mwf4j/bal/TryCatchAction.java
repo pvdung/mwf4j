@@ -14,9 +14,6 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
-import  org.jwaresoftware.mwf4j.behaviors.Protector;
-import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
 /**
  * Action that lets you install a set of error handler and cleanup actions
@@ -31,7 +28,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * @.group    infra,impl
  **/
 
-public class TryCatchAction extends ActionSkeleton implements Protector
+public class TryCatchAction extends BALProtectorAction
 {
     public TryCatchAction()
     {
@@ -41,11 +38,6 @@ public class TryCatchAction extends ActionSkeleton implements Protector
     public TryCatchAction(String id)
     {
         super(id);
-    }
-
-    public final void setHaltIfError(boolean flag)
-    {
-        myHaltIfErrorFlag = flag;
     }
 
     public void setBody(Action body)
@@ -77,31 +69,9 @@ public class TryCatchAction extends ActionSkeleton implements Protector
         }
     }
 
-    public final void setQuiet(boolean flag)
-    {
-        myQuietFlag = flag;
-    }
-
     public void setUnmask(boolean flag)
     {
         myUnmaskWrappersFlag = flag;
-    }
-
-    public final void setUseHaltContinuation(boolean flag)
-    {
-        myHaltContinuationFlag = flag;
-    }
-
-    public void setErrorKey(String key)
-    {
-        Validate.notBlank(key,What.KEY);
-        myErrorKey = key;
-    }
-
-    public void setErrorStoreType(StoreType storeType)
-    {
-        Validate.notNull(storeType,What.TYPE);
-        myErrorStoreType = storeType;
     }
 
     public void configure(ControlFlowStatement statement)
@@ -119,14 +89,9 @@ public class TryCatchAction extends ActionSkeleton implements Protector
         if (!myHandlers.isEmpty()) {
             trycatch.addIfError(myHandlers);
         }
-        trycatch.setHaltIfError(myHaltIfErrorFlag);
-        trycatch.setQuiet(myQuietFlag);
-        trycatch.setUseHaltContinuation(myHaltContinuationFlag);
+        trycatch.copyFrom(myProtectSupport);
         if (myUnmaskWrappersFlag!=null) {
             trycatch.setUnmask(myUnmaskWrappersFlag);
-        }
-        if (myErrorKey!=null) {
-            trycatch.setErrorKey(myErrorKey, myErrorStoreType);
         }
     }
 
@@ -134,20 +99,13 @@ public class TryCatchAction extends ActionSkeleton implements Protector
     {
         verifyReady();
         TryCatchStatement trycatch = new TryCatchStatement(this,next);
-        trycatch.setHaltIfError(myHaltIfErrorFlag);
-        trycatch.setQuiet(myQuietFlag);
         return finish(trycatch);
     }
 
-    private boolean myHaltIfErrorFlag = true;
-    private boolean myQuietFlag = false;
     private Action myBody;
     private Action myAlways;
-    private boolean myHaltContinuationFlag = BAL.getUseHaltContinuationsFlag();
     private Set<Pair<Class<? extends Exception>,Action>> myHandlers= LocalSystem.newSet();
     private Boolean myUnmaskWrappersFlag;
-    private String myErrorKey;
-    private StoreType myErrorStoreType= BAL.getDataStoreType();
 }
 
 

@@ -45,7 +45,7 @@ import  org.jwaresoftware.mwf4j.helpers.VariablesHashMap;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   special (guarded for continuation, unwinds, &amp; adjustments management)
+ * @.safety   special (single while constructed, guarded during run)
  * @.group    impl,helper
  **/
 
