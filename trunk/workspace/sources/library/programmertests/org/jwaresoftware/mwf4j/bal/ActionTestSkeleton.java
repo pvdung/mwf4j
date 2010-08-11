@@ -88,43 +88,43 @@ public abstract class ActionTestSkeleton extends ExecutableTestSkeleton
         TestFixture.clrPerformed();
     }
 
-    protected final TouchAction touch(String id)
+    protected final static TouchAction touch(String id)
     {
         return new TouchAction(id);
     }
 
-    protected final ThrowAction error(String id)
+    protected final static ThrowAction error(String id)
     {
         return new ThrowAction(id);
     }
 
-    protected final ThrowAction error(String id, Exception what)
+    protected final static ThrowAction error(String id, Exception what)
     {
         return new ThrowAction(id,what);
     }
 
-    protected final Action never()
+    protected final static Action never()
     {
         return new EpicFail();
     }
 
-    protected final Action sleep(long millis)
+    protected final static Action sleep(long millis)
     {
         return new SleepAction(millis);
     }
 
-    protected final Action sleep(String id, long millis)
+    protected final static Action sleep(String id, long millis)
     {
         return new SleepAction(id,millis);
     }
 
-    protected final Action sleep1(String id)
+    protected final static Action sleep1(String id)
     {
         if (id==null) id= SleepAction.idFrom(_1SEC);
         return new SleepAction(id,_1SEC);
     }
 
-    protected final Action sleepN(String id, int numsecs)
+    protected final static Action sleepN(String id, int numsecs)
     {
         if (id==null) id= SleepAction.idFrom(_1SEC*numsecs);
         return new SleepAction(id,_1SEC*numsecs);

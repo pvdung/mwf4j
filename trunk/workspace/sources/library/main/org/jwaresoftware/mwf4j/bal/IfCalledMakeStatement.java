@@ -19,7 +19,7 @@ import  org.jwaresoftware.mwf4j.What;
  * as part of a branch or compensating activity). Also useful to
  * ensure a <em>NEW</em> target statement is created for every
  * invocation (for example as part of a compensating activity that
- * whose context can change over time).
+ * whose context can change over time or from a slave harness).
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -28,11 +28,11 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    impl,helper
  **/
 
-public final class IfCalledMakeStatement extends BALStatement
+public final class IfCalledMakeStatement extends BALTransientStatement
 {
-    public IfCalledMakeStatement(Action owner, Action target, ControlFlowStatement next)
+    public IfCalledMakeStatement(Action target, ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
         setMade(target);
     }
 
@@ -49,7 +49,7 @@ public final class IfCalledMakeStatement extends BALStatement
 
     protected ControlFlowStatement runInner(Harness harness)
     {
-        Validate.fieldNotNull(myTarget,What.ACTION);//Do here in case anonymous
+        Validate.stateNotNull(myTarget,What.ACTION);//Do here in case anonymous
         return myTarget.makeStatement(next());
     }
 

@@ -23,6 +23,7 @@ import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4JException;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.TestFixture;
+import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.assign.Giveback;
 import  org.jwaresoftware.mwf4j.assign.GivebackVar;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
@@ -62,9 +63,9 @@ public final class TryCatchActionTest extends ActionTestSkeleton
 //  Harness preparation methods
 //  ---------------------------------------------------------------------------------------
 
-    protected Map<String,Object> iniDATAMAP()
+    protected Variables iniDATAMAP()
     {
-        Map<String,Object> vars = super.iniDATAMAP();
+        Variables vars = super.iniDATAMAP();
         vars.put("mydata",LocalSystem.newMap());
         return vars;
     }

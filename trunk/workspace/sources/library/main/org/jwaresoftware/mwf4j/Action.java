@@ -14,11 +14,11 @@ package org.jwaresoftware.mwf4j;
  * triggered multiple times. Whether the action can be reconfigured 
  * with new attribute values (which are then passed through to subsequent 
  * new statements) is implementation defined. Therefore, <em>ALL</em> 
- * per-call dependent state should be transfered or stored within the
- * generated control statement. 
+ * per-call dependent state should be transfered or stored within a
+ * generated control statement before returning from the factory method.
  * <p/>
  * It may also be possible for a single action instance to be shared  
- * by multiple actions <em>at the same time</em>. While this is largely
+ * by multiple other actions <em>at the same time</em>. While this is largely
  * system-dependent, if an action is used as a memory-based store for
  * shared context, it's possible it will participate in distinct actions,
  * possibly concurrently.

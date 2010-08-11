@@ -7,7 +7,6 @@ package org.jwaresoftware.mwf4j.starters;
 
 import  java.util.Arrays;
 import  java.util.List;
-import  java.util.Map;
 
 import  org.testng.annotations.AfterMethod;
 import  org.testng.annotations.BeforeMethod;
@@ -22,6 +21,9 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
 import  org.jwaresoftware.mwf4j.TestFixture;
+import  org.jwaresoftware.mwf4j.Variables;
+import  org.jwaresoftware.mwf4j.harness.SimpleHarness;
+import  org.jwaresoftware.mwf4j.harness.SlaveHarness;
 import  org.jwaresoftware.mwf4j.helpers.VariablesHashMap;
 
 /**
@@ -88,6 +90,13 @@ public abstract class ExecutableTestSkeleton
     {
         return new PlainTask(main);
     }
+    
+    protected Activity newTASK(String id, Action main)
+    {
+        PlainTask task = new PlainTask(id);
+        task.setDefinition(main);
+        return task;
+    }
 
     protected Harness newHARNESS()
     {
@@ -99,14 +108,19 @@ public abstract class ExecutableTestSkeleton
         return new PlainHarness(newTASK(main),SYSTEM);
     }
 
+    protected Harness newHARNESS(String id, Action main)
+    {
+        return new PlainHarness(newTASK(id,main),SYSTEM);
+    }
+
     protected Harness newHARNESS(Harness parent, ControlFlowStatement firstStatement)
     {
         return new SlaveHarness(parent,firstStatement);
     }
 
-    protected Map<String,Object> iniDATAMAP()
+    protected Variables iniDATAMAP()
     {
-        Map<String,Object> shared= new VariablesHashMap();
+        Variables shared= new VariablesHashMap();
         SYSTEM.setServiceInstance(MWf4J.ServiceIds.VARIABLES,shared,null);
         return shared;
     }
@@ -131,6 +145,18 @@ public abstract class ExecutableTestSkeleton
     protected final List<String> runTASK(Action main)
     {
         return runTASK(newHARNESS(main));
+    }
+
+
+//  ---------------------------------------------------------------------------------------
+//  Useful helper functions for test cases
+//  ---------------------------------------------------------------------------------------
+
+    public static final void zzzzz(long millis)
+    {
+        try {
+            Thread.sleep(millis);
+        } catch(InterruptedException iruptedX) {/*burp*/}
     }
 }
 

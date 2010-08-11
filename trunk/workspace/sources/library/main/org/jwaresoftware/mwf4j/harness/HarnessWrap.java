@@ -3,9 +3,9 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j.starters;
+package org.jwaresoftware.mwf4j.harness;
 
-import  java.util.concurrent.Executor;
+import  java.util.concurrent.ExecutorService;
 
 import  org.jwaresoftware.gestalt.bootstrap.FixtureWrap;
 
@@ -49,7 +49,7 @@ public class HarnessWrap extends FixtureWrap implements Harness
         return getTargetH().getVariables();
     }
 
-    public Executor getExecutorService()
+    public ExecutorService getExecutorService()
     {
         return getTargetH().getExecutorService();
     }
@@ -62,6 +62,11 @@ public class HarnessWrap extends FixtureWrap implements Harness
     public boolean isRunning()
     {
         return getTargetH().isRunning();
+    }
+
+    public String typeCN()
+    {
+        return getTargetH().typeCN();
     }
 
     public void addContinuation(ControlFlowStatement participant)

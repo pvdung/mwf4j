@@ -37,6 +37,7 @@ public class What extends org.jwaresoftware.gestalt.What
     public final static String CURSOR       = "cursor";
     public final static String CONFIG       = "configuration";
     public final static String BARRIER      = "barrier";
+    public final static String REFERENCE    = "reference";
 
     public static final String getNonBlankId(final Identified object)
     {

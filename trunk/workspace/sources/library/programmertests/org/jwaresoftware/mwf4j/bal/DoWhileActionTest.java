@@ -5,11 +5,10 @@
 
 package org.jwaresoftware.mwf4j.bal;
 
-import  java.util.Map;
-
 import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
+import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.helpers.False;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
@@ -33,9 +32,9 @@ public final class DoWhileActionTest extends ActionTestSkeleton
 //  Harness preparation methods
 //  ---------------------------------------------------------------------------------------
 
-    protected Map<String,Object> iniDATAMAP()
+    protected Variables iniDATAMAP()
     {
-        Map<String,Object> vars = super.iniDATAMAP();
+        Variables vars = super.iniDATAMAP();
         vars.put("counter",new LoopCounter());
         return vars;
     }

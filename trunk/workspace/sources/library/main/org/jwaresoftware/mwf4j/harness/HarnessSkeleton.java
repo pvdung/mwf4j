@@ -3,7 +3,7 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j.starters;
+package org.jwaresoftware.mwf4j.harness;
 
 import  java.util.IdentityHashMap;
 import  java.util.List;
@@ -29,17 +29,23 @@ import  org.jwaresoftware.mwf4j.behaviors.Executable;
 
 /**
  * Common implementation of the {@linkplain Harness harness} interface for
- * a simple primary and secondary or slave. Actions, statements,
- * conditions and other components must use a harness to access various
- * services like the continuation and unwind queues during execution. 
+ * a simple primary and a couple special-purpose secondary harnesses. Actions,
+ * statements, conditions and other components must use a harness to access 
+ * various services like the continuation and unwind queues during execution. 
  * Subclasses are expected to implement lookup or retrieval of the harness'
  * (ultimate) owner, variables, and other runtime services.
+ * <p/>
+ * Implementation note: if you change the implementation of this class, you
+ * <em>MUST manually verify</em> that change's effect on the various subclasses 
+ * especially the dependent classes like {@linkplain SlaveHarness} and 
+ * {@linkplain ForeverHarness}. Both the BAL and UC test suites must pass
+ * before you commit the change.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   special (guarded for continuation, unwinds, &amp; adjustments management)
- * @.group    impl,helper
+ * @.group    infra,impl,helper
  **/
 
 public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Runnable
@@ -53,9 +59,11 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     public String getName()
     {
         StringBuilder sb = LocalSystem.newSmallStringBuilder();
-        sb.append("'")
+        sb.append("OWNER='")
           .append(What.getNonBlankId(getOwner()))
-          .append("' against fixture '")
+          .append("' [HRNES=")
+          .append(typeCN())
+          .append("] against fixture '")
           .append(super.getName())
           .append("'");
         return sb.toString();
@@ -106,7 +114,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
 
 
-    private void queueContinuations(ControlFlowStatement directed)
+    void queueContinuations(ControlFlowStatement directed)
     {
         Validate.notNull(directed,What.CONTINUATION);
         myQueue.add(directed);
@@ -214,7 +222,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
 
 
-    private void resetThis()
+    void resetThis()
     {
         myContinuations.clear();
         myQueue.clear();
@@ -238,8 +246,8 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
     protected void doError(Throwable cause)
     {
-        Diagnostics.ForCore.warn("Unhandled harness exception: "+getName(),cause);
-        getIssueHandler().problemOccured("Unhandled run error",Effect.ABORT,cause);
+        Diagnostics.ForCore.warn("Unhandled "+typeCN()+" harness exception for "+getName(),cause);
+        getIssueHandler().problemOccured("Unhandled run error ON "+typeCN(),Effect.ABORT,cause);
     }
 
 
@@ -249,7 +257,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
         ControlFlowStatement next=pending;
         synchronized(myAdjustFlagGuard) {
             if (myAdjustFlag!=null)  {
-                myAdjustFlag= null;
+                myAdjustFlag= null;//NB: DO HERE in case of ERROR!
                 next= adjustmentStatement(pending);
             }
         }
@@ -262,6 +270,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     {
         assert myAdjustmentAction!=null : "adjustment defined";
         if (myAdjustmentAction.isTerminal()) {
+            Diagnostics.ForCore.warn("Received terminal adjustment for {}",getName());
             unwindRegistered();
         }
         ControlFlowStatement adjustment = myAdjustmentAction.makeStatement(next);
@@ -272,8 +281,8 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
 
     private AtomicBoolean myRunningFlag= new AtomicBoolean();
-    private List<ControlFlowStatement> myContinuations = LocalSystem.newList();
-    private Queue<ControlFlowStatement> myQueue = LocalSystem.newLinkedList();
+    final List<ControlFlowStatement> myContinuations = LocalSystem.newList();
+    final Queue<ControlFlowStatement> myQueue = LocalSystem.newLinkedList();
     private Map<Unwindable,Boolean> myUnwinds = new IdentityHashMap<Unwindable,Boolean>();
 
     private Boolean myAdjustFlag;//NB:can be null so need guard

@@ -55,12 +55,14 @@ public abstract class ExecutableSkeleton implements Executable
     public void doEnter(Harness h)
     {
         Validate.fieldNotNull(h,What.HARNESS);
-        diagnostics().trace("Enter {} {}",typeCN(),getId());
+        Object[] args = new Object[]{typeCN(),getId(),h.typeCN()};
+        diagnostics().trace("Enter {} {} [H={}]",args);
     }
 
     public void doLeave(Harness h)
     {
-        diagnostics().trace("Leave {} {}",typeCN(),getId());
+        Object[] args = new Object[]{typeCN(),getId(),h.typeCN()};
+        diagnostics().trace("Leave {} {} [H={}]",args);
     }
 
     protected Logger diagnostics()

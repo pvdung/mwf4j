@@ -5,17 +5,17 @@
 
 package org.jwaresoftware.mwf4j;
 
-import  java.util.concurrent.Executor;
+import  java.util.concurrent.ExecutorService;
 
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
 
 /**
  * Per root action invocation wrapper around the incoming fixture that
  * control statements and other actions can use to post dynamic
- * continuations, gain access to their parent activity (which can change
- * per invocation), and other such goodies. While a harness is defined as
- * having a single owning activity, there is nothing to prevent a harness
- * from spawing "child or sub harnesses" with their own controlling 
+ * continuations, post adjustments, gain access to their [grand]parent activity 
+ * (which can change per invocation), and other such goodies. While a harness 
+ * is defined as having a single owning activity, there is nothing to prevent
+ * a harness from spawing "child or sub harnesses" with their own controlling 
  * activities (which might or might not be the same as the original).
  *
  * @since     JWare/MWf4J 1.0.0
@@ -28,9 +28,8 @@ import  org.jwaresoftware.gestalt.bootstrap.Fixture;
 
 public interface Harness extends Runnable, Fixture.Implementation
 {
-    Activity getOwner();
     Variables getVariables();
-    Executor getExecutorService();
+    ExecutorService getExecutorService();
     void run();
     boolean isRunning();
     void addContinuation(ControlFlowStatement participant);
@@ -38,6 +37,8 @@ public interface Harness extends Runnable, Fixture.Implementation
     void removeUnwind(Unwindable participant);
     ControlFlowStatement runParticipant(ControlFlowStatement participant);
     void applyAdjustment(Adjustment action);    
+    Activity getOwner();
+    String typeCN();
 }
 
 
