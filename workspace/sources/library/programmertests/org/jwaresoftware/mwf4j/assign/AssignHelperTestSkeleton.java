@@ -22,9 +22,9 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
+import org.jwaresoftware.mwf4j.harness.SimpleHarness;
 import  org.jwaresoftware.mwf4j.helpers.VariablesHashMap;
 import  org.jwaresoftware.mwf4j.starters.ActivitySkeleton;
-import  org.jwaresoftware.mwf4j.starters.SimpleHarness;
 import  org.jwaresoftware.testng.TestLabel;
 
 /**

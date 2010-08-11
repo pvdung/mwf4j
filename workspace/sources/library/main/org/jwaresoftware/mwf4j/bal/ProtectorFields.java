@@ -38,19 +38,19 @@ public class ProtectorFields implements Protector, Resettable
 
     public ProtectorFields(ProtectorFields from)
     {
-        Validate.notNull(from,What.CRITERIA);
+        Validate.notNull(from,What.SOURCE);
         initThisFrom(from);
     }
 
     public void copyTo(ProtectorFields to)
     {
-        Validate.notNull(to,What.CRITERIA);
+        Validate.notNull(to,What.TARGET);
         to.initThisFrom(this);
     }
 
     public void copyFrom(ProtectorFields from)
     {
-        Validate.notNull(from,What.CRITERIA);
+        Validate.notNull(from,What.SOURCE);
         initThisFrom(from);
     }
 

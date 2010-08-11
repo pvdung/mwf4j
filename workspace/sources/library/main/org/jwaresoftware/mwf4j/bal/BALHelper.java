@@ -17,12 +17,17 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.LongLivedCondition;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.SavebackException;
 import  org.jwaresoftware.mwf4j.assign.SavebackVar;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.harness.NestedIsolatedHarness;
 
 /**
  * Collection of various package-level utilities, reuse snippets, and constants.
+ * Input verification is minimal as we assume that these methods are used by
+ * internal implementation code <em>after</em> public contract verification
+ * has been done.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -40,6 +45,12 @@ final class BALHelper
         }
         return statement;
     }
+
+    static final void runInline(Action action, Harness harness)
+    {
+        new NestedIsolatedHarness(action,harness).run();
+    }
+
 
 
     static final String nameFrom(Object o, String fallbackName)
@@ -65,6 +76,17 @@ final class BALHelper
         MDC.pop(MWf4J.MDCKeys.LATEST_ERROR,Exception.class);
     }
 
+    static final void runBreakAction(final Exception issue, Action breakAction, Harness harness)
+    {
+        if (breakAction!=null) {
+            BALHelper.psh(issue);
+            try {
+                runInline(breakAction,harness);
+            } finally {
+                BALHelper.pop(issue);
+            }
+        }
+    }
 
 
     static final boolean putData(String key, Object data, StoreType how, Harness harness)
@@ -92,6 +114,11 @@ final class BALHelper
             }
         }
         return done;
+    }
+
+    static final boolean putData(Reference ref, Object data, Harness harness)
+    {
+        return putData(ref.getName(),data,ref.getStoreType(),harness);
     }
 
     static final boolean clrData(String key, StoreType how, Harness harness)

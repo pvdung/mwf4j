@@ -6,6 +6,8 @@
 package org.jwaresoftware.mwf4j.bal;
 
 import  java.util.Collection;
+import  java.util.List;
+import  java.util.concurrent.Future;
 
 import  org.testng.annotations.BeforeMethod;
 import  org.testng.annotations.Test;
@@ -17,9 +19,11 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.TestFixture;
+import  org.jwaresoftware.mwf4j.Variables;
 
 /**
- * Test suite for {@linkplain LaunchAction} and its related classes.
+ * Test suite for {@linkplain LaunchAction} and its related classes. Not much
+ * here; see {@linkplain ListenActionTest} for additional uses of launch.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -28,7 +32,7 @@ import  org.jwaresoftware.mwf4j.TestFixture;
  * @.group    impl,test
  **/
 
-@Test(groups= {"mwf4j","baseline","bal"})
+@Test(groups= {"mwf4j","advanced","bal"})
 public final class LaunchActionTest extends ActionTestSkeleton
 {
 //  ---------------------------------------------------------------------------------------
@@ -43,7 +47,7 @@ public final class LaunchActionTest extends ActionTestSkeleton
             
         MDC.Propagator fixtureClipboard = new MDC.SimplePropagator
             (TestFixture.STMT_NAMELIST, TestFixture.STMT_EXITED_NAMELIST);
-        out.setMDCPropagtor(fixtureClipboard);
+        out.setMDCPropagator(fixtureClipboard);
 
         return out;
     }
@@ -69,6 +73,17 @@ public final class LaunchActionTest extends ActionTestSkeleton
         return set;
     }
 
+    @SuppressWarnings("unchecked")
+    final static Future<?> getLinkOrFail(Variables theVars,String linkVar)
+    {
+        List<Future<?>> l = theVars.get(linkVar,List.class);
+        assertNotNull(l, linkVar+" futureRef List<?>");
+        assertEquals(l.size(),1,linkVar+" futureRefs.size");
+        Future<?> f = l.get(0);
+        assertNotNull(f, linkVar);
+        return f;
+    }
+
 //  ---------------------------------------------------------------------------------------
 //  The test cases (1 per method)
 //  ---------------------------------------------------------------------------------------
@@ -91,6 +106,18 @@ public final class LaunchActionTest extends ActionTestSkeleton
         Sequence main = new SequenceAction().add(out).add(sleep1("zzz"));
         runTASK(main);
         assertTrue(werePerformed("T1|T2|T3"),"all actions launched");
+    }
+
+    @Test(dependsOnMethods={"testSimpleLaunchBulk_1_0_0"})
+    public void testSavebackFutureRefs_1_0_0()
+    {
+        Variables vars = iniDATAMAP();
+        LaunchAction out = newOUT();
+        out.addAction(touch("T1"));
+        out.setLinkSaveRef("harness.Link");
+        runTASK(new SequenceAction().add(out).add(sleep1("zzz")));
+        Future<?> lnk = getLinkOrFail(vars,"harness.Link");
+        assertTrue(lnk.isDone(),"harness.isDone()");
     }
 }
 

@@ -14,6 +14,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
+import org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.behaviors.Executable;
 import  org.jwaresoftware.mwf4j.behaviors.Traceable;
 
@@ -141,7 +142,8 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     {
         StringBuilder sb = LocalSystem.newSmallStringBuilder();
         sb.append(getClass().getSimpleName()).append('@').append(System.identityHashCode(this));
-        sb.append("[A=");
+        sb.append("[H=").append(MDC.currentHarnessTypeOrEmpty());
+        sb.append("|A=");
         try { addToString(sb); } catch(Exception e) {sb.append("toString.ERROR!");}
         sb.append("]");
         return sb.toString();

@@ -10,6 +10,7 @@ import  java.util.Map;
 import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
+import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.helpers.True;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
@@ -36,9 +37,9 @@ public final class WhileActionTest extends ActionTestSkeleton
 //  Harness preparation methods
 //  ---------------------------------------------------------------------------------------
 
-    protected Map<String,Object> iniDATAMAP()
+    protected Variables iniDATAMAP()
     {
-        Map<String,Object> vars = super.iniDATAMAP();
+        Variables vars = super.iniDATAMAP();
         vars.put("counter",new LoopCounter());
         return vars;
     }

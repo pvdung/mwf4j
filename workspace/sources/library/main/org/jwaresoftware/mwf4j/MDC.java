@@ -111,6 +111,17 @@ public final class MDC extends PerThreadStash
         return harness;
     }
 
+    public static String currentHarnessTypeOrEmpty()
+    {
+        HRef href = get(HREF_STACK,HRef.class);
+        if (href!=null) {
+            Harness h = href.myPtr.get();
+            if (h!=null) 
+                return h.typeCN();
+        }
+        return "";
+    }
+
     public static Variables currentVariables()
     {
         return currentHarness().getVariables();

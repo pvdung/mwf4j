@@ -3,9 +3,9 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j.starters;
+package org.jwaresoftware.mwf4j.harness;
 
-import  java.util.concurrent.Executor;
+import  java.util.concurrent.ExecutorService;
 import  java.util.concurrent.Executors;
 
 import  org.jwaresoftware.gestalt.ServiceProviderException;
@@ -72,9 +72,14 @@ public class SimpleHarness extends HarnessSkeleton
         return myData;
     }
 
-    public Executor getExecutorService()
+    public ExecutorService getExecutorService()
     {
         return myExectorService;
+    }
+
+    public String typeCN()
+    {
+        return "main";
     }
 
 
@@ -102,11 +107,11 @@ public class SimpleHarness extends HarnessSkeleton
 
  
  
-    private Executor findExecutorService()
+    private ExecutorService findExecutorService()
     {
-        Executor service=null;
+        ExecutorService service=null;
         try {
-            service = getServiceInstanceOrNull(MWf4J.ServiceIds.EXECUTOR,Executor.class,getIssueHandler());
+            service = getServiceInstanceOrNull(MWf4J.ServiceIds.EXECUTOR,ExecutorService.class,getIssueHandler());
         } catch(ServiceProviderException spiX) {
             Diagnostics.ForCore.warn("Error looking for executor as Executor.class type",spiX);
         }
@@ -120,7 +125,7 @@ public class SimpleHarness extends HarnessSkeleton
 
     private final Activity myOwner;
     private final Variables myData;
-    private final Executor myExectorService;
+    private final ExecutorService myExectorService;
 }
 
 

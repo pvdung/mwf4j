@@ -16,8 +16,8 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
+import org.jwaresoftware.mwf4j.harness.SlaveHarness;
 import  org.jwaresoftware.mwf4j.helpers.RetryDef;
-import  org.jwaresoftware.mwf4j.starters.SlaveHarness;
 
 /**
  * Statement that forks one or more independent statements and optionally

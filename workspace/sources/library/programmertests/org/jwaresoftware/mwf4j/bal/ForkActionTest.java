@@ -69,13 +69,6 @@ public final class ForkActionTest extends ActionTestSkeleton
         iniPerformedList();
     }
 
-    private void zzzzz(long millis)
-    {
-        try {
-            Thread.sleep(millis);
-        } catch(InterruptedException iruptedX) {/*burp*/}
-    }
-
     private Collection<Action> branches(Action... branches)
     {
         Collection<Action> set = LocalSystem.newList();
@@ -148,7 +141,7 @@ public final class ForkActionTest extends ActionTestSkeleton
         assertTrue(werePerformedAndExited("t1|t2"),"branches done after some time");
     }
 
-    public void testWillRetryPass_1_0_0()
+    public void testWillRetryWaitPass_1_0_0()
     {
         ForkAction out = newOUT();
         out.setJoinBreakSupport(new RetryDef(2,_1SEC),touch("break!"));
@@ -159,7 +152,7 @@ public final class ForkActionTest extends ActionTestSkeleton
     }
 
     @Test(expectedExceptions={RunFailedException.class})
-    public void testWillRetryFail_1_0_0()
+    public void testWillRetryWaitFail_1_0_0()
     {
         ForkAction out = newOUT(TestFixture.currentTestName());
         out.setJoinBreakSupport(new RetryDef(2,_1SEC),touch("break!"));
@@ -226,7 +219,7 @@ public final class ForkActionTest extends ActionTestSkeleton
     public void testInterruptedJoinThreadNotifiesParentHarness_1_0_0()
     {
         Sequence mainflow = new SequenceAction("main");
-        Harness mainHarness = newHARNESS(mainflow);
+        Harness mainHarness = newHARNESS("main",mainflow);
 
         JoinStatement join = new JoinStatement(Action.anonINSTANCE, new EndStatement());
         join.setBarrier(new CountDownLatch(1));//NB: *never* tripped => wait forever w/o interrupt!
@@ -237,9 +230,11 @@ public final class ForkActionTest extends ActionTestSkeleton
         Thread joinThread = new Thread(joinHarness,"joinThread");//retain handle to interrupt
         joinThread.start();
 
-        mainflow.add(new JoinInterrupter(joinThread)).add(sleep1("zzz")).add(never());
+        //Make sure we given some time for interrupt to percolate across threads...
+        mainflow.add(new JoinInterrupter(joinThread)).add(sleep1("zzz1")).add(sleep1("zzz2")).add(sleep1("zzz3")).add(never());
         try {
             runTASK(mainHarness);
+            fail("WHAT DA HECK IS GOING ON HERE?! Should not be able to get past main run");
         } catch(RunFailedException Xpected) {
             System.err.println(Xpected);
             assertEquals(Xpected.getCause().getClass(),InterruptedException.class,"error=irupted");

@@ -92,7 +92,7 @@ public abstract class ExtensionPoint extends StatementSkeleton implements Action
 
     protected StringBuilder addToString(StringBuilder sb) 
     {
-        return sb.append(Strings.THIS);
+        return sb.append(Strings.THIS).append("/").append(getId());
     }
 
 

@@ -66,7 +66,7 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
 
     public ControlFlowStatement handle(ControlFlowStatement next, ThrowStatement pendingThrow, Harness harness)
     {
-        Diagnostics.ForBAL.info("Captured exception in {}: {}",getWhatId(),Throwables.getTypedMessage(pendingThrow.getCause()));
+        Diagnostics.ForBAL.info("Captured exception in statement '{}': {}",getWhatId(),Throwables.getTypedMessage(pendingThrow.getCause()));
 
         if (myHaltIfErrorFlag || !myQuietFlag) {
             RunFailedException rX = new RunFailedException(pendingThrow);

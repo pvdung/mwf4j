@@ -16,6 +16,7 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.BreakType;
 import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 /**
@@ -39,8 +40,6 @@ import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 public class JoinStatement extends BALProtectorStatement implements Unwindable
 {
-    enum BreakType { TIMEOUT, INTERRUPTED };
-
     public JoinStatement(Action owner, ControlFlowStatement next)
     {
         super(owner,next);
@@ -58,7 +57,7 @@ public class JoinStatement extends BALProtectorStatement implements Unwindable
         Validate.notNull(retryDef,What.CRITERIA);
         myRetries = retryDef;
         Validate.isFalse(myRetries.getRetryWait().isUndefined(),"timeout undefined");
-        myBreakAction = breakAction;
+        myBreakAction = breakAction;//NB:optional
     }
 
     public void setBody(Action body)
@@ -91,27 +90,22 @@ public class JoinStatement extends BALProtectorStatement implements Unwindable
         return next;
     }
 
-    protected ControlFlowStatement handleBreak(BreakType type, Exception issue, Harness harness)
+    protected ControlFlowStatement handleBreak(BreakType type, final Exception issue, Harness harness)
     {
         if (breadcrumbs().isEnabled()) {
             String because=Throwables.getTypedMessage(issue);
-            breadcrumbs().write("Join '{}' break detected: {}",getWhatId(),because);
+            breadcrumbs().write("Join for '{}' {} break detected: {}",getWhatId(),type,because);
         }
-        final ControlFlowStatement kontinue = new EndStatement();
+        BALHelper.runBreakAction(issue,myBreakAction,harness);
+
         ControlFlowStatement next;
-        if (myBreakAction!=null) {
-            next = myBreakAction.makeStatement(kontinue);
-            next = harness.runParticipant(next);
-            if (next!=kontinue) {
-                return next;
-            }
-        }
         if (myRetries!=null && myRetries.decrementAndGetRetryCount()>0) {
             if (breadcrumbs().isEnabled()) {
                 breadcrumbs().write("Join '{}' retrying (retries left={})",getWhatId(),myRetries.getRetryCount());
             }
             next = this;
         } else {
+            final ControlFlowStatement kontinue = new EndStatement();
             if (myErrorKey!=null) {
                 BALHelper.putData(myErrorKey,issue,myErrorStoreType,harness);
             }
