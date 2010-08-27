@@ -12,16 +12,14 @@ import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.mwf4j.Action;
-import  org.jwaresoftware.mwf4j.TestFixture;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
 import  org.jwaresoftware.mwf4j.starters.ExecutableTestSkeleton;
 import  org.jwaresoftware.mwf4j.starters.SleepAction;
 import  org.jwaresoftware.mwf4j.starters.TouchAction;
 
 /**
- * Starting implementation for an {@linkplain Action action} test suite. Most functions
- * have been pulled up to ExecutableTestSkeleton and TestFixture but we define some
- * shorthand convience methods here.
+ * Starting implementation for an {@linkplain Action action} test suite. 
+ * Mostly adds a set of convenient helper action factory methods.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -37,56 +35,6 @@ public abstract class ActionTestSkeleton extends ExecutableTestSkeleton
 //  ---------------------------------------------------------------------------------------
 //  Harness preparation and verification methods
 //  ---------------------------------------------------------------------------------------
-
-    protected final void iniStatementCount()
-    {
-        TestFixture.iniStatementCount();
-    }
-    
-    protected final int getStatementCount()
-    {
-        return TestFixture.getStatementCount();
-    }
-
-    protected final void iniPerformedList()
-    {
-        TestFixture.iniPerformedList();
-    }
-
-    protected final boolean wasPerformed(String statementName) 
-    {
-        return TestFixture.wasPerformed(statementName);
-    }
-
-    protected final boolean wasPerformed(String statementName, int count) 
-    {
-        return TestFixture.wasPerformed(statementName,count);
-    }
-    
-    protected final boolean werePerformedInOrder(String statementNames)
-    {
-        return TestFixture.werePerformedInOrder(statementNames,'|',true);
-    }
-
-    protected final boolean werePerformedInRelativeOrder(String statementNames)
-    {
-        return TestFixture.werePerformedInRelativeOrder(statementNames,'|',true);
-    }
-
-    protected final boolean werePerformed(String statementNames)
-    {
-        return TestFixture.werePerformed(statementNames,'|',true);
-    }
-
-    protected final boolean werePerformedAndExited(String statementNames)
-    {
-        return TestFixture.werePerformed(statementNames,'|',false);
-    }
-
-    protected final void clrPerformed()
-    {
-        TestFixture.clrPerformed();
-    }
 
     protected final static TouchAction touch(String id)
     {

@@ -36,7 +36,7 @@ public class WhileStatement extends BALStatement implements Unwindable
     {
         super(owner,next);
         myMaxLoopsSupport = new LimitSupport(getOwner());
-        myUnwindSupport = new ReentrantSupport(getOwner(),this);
+        myUnwindSupport = new ReentrantSupport(this,true,this);
     }
 
     public void setTest(Condition test)

@@ -25,12 +25,13 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * a closure of some kind like a Callable or Future but just as
  * typical is for the action itself to produce the data. Subclasses
  * must provide an {@linkplain AssignmentStatement assignment statement}
- * or something derived from that class.
+ * or something derived from that class to do the actual data reference
+ * assignment.
  * <p/>
  * To get this action to store the data, you <em>must</em> specify
  * a {@linkplain #setToKey to key} and a {@linkplain StoreType store
- * type}. Typically data is stored to the controlling harness's data 
- * map or configuration properties; see the precanned MWf4J 
+ * type}. Typically data is stored to the controlling harness's variables 
+ * or configuration properties; see the precanned MWf4J 
  * {@linkplain PutMethod saving strategies} for more information.
  *
  * @since     JWare/MWf4J 1.0.0

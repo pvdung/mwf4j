@@ -5,7 +5,7 @@
 
 package org.jwaresoftware.mwf4j.behaviors;
 
-import org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.Harness;
 
 /**
  * MWf4j entity that has a single "run" type method from which
@@ -20,8 +20,8 @@ import org.jwaresoftware.mwf4j.Harness;
 
 public interface Executable
 {
-    void doEnter(Harness h);
-    void doLeave(Harness h);
+    void doEnter(Harness harness);
+    void doLeave(Harness harness);
 }
 
 

@@ -15,8 +15,8 @@ import  org.jwaresoftware.gestalt.bootstrap.Fixture;
  * continuations, post adjustments, gain access to their [grand]parent activity 
  * (which can change per invocation), and other such goodies. While a harness 
  * is defined as having a single owning activity, there is nothing to prevent
- * a harness from spawing "child or sub harnesses" with their own controlling 
- * activities (which might or might not be the same as the original).
+ * an executed action from spawing "child or sub harnesses" with their own 
+ * controlling activities (which might or might not be the same as the original).
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -32,11 +32,12 @@ public interface Harness extends Runnable, Fixture.Implementation
     ExecutorService getExecutorService();
     void run();
     boolean isRunning();
+    boolean isAborted();
     void addContinuation(ControlFlowStatement participant);
     void addUnwind(Unwindable participant);
     void removeUnwind(Unwindable participant);
     ControlFlowStatement runParticipant(ControlFlowStatement participant);
-    void applyAdjustment(Adjustment action);    
+    void applyAdjustment(Adjustment action);
     Activity getOwner();
     String typeCN();
 }

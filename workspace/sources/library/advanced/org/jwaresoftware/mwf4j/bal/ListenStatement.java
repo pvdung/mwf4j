@@ -66,7 +66,7 @@ public class ListenStatement<T> extends BALProtectorStatement implements Unwinda
     public ListenStatement(Action owner, ControlFlowStatement next)
     {
         super(owner,next);
-        myUnwindSupport = new ReentrantSupport(getOwner(),this);
+        myUnwindSupport = new ReentrantSupport(this,false,this);
     }
 
     public void setListener(Callable<T> listener)

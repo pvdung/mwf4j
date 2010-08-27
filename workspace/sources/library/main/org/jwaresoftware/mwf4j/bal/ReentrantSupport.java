@@ -7,11 +7,12 @@ package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
-import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
+import  org.jwaresoftware.mwf4j.scope.Scopes;
+import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
 
 /**
  * Helper that encapsulates the reusable 'do-once' management code for 
@@ -25,16 +26,17 @@ import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
  * @.group    infra,impl,helper
  **/
 
-public final class ReentrantSupport extends ActionDependentSkeleton implements Resettable
+public final class ReentrantSupport extends StatementDependentSkeleton implements Resettable
 {
-    public ReentrantSupport(Action owner)
+    public ReentrantSupport(ControlFlowStatement owner, boolean scopedFlag)
     {
         super(owner);
+        myScopedFlag = scopedFlag;
     }
 
-    public ReentrantSupport(Action owner, Unwindable unwinder)
+    public ReentrantSupport(ControlFlowStatement owner, boolean scopedFlag, Unwindable unwinder)
     {
-        super(owner);
+        this(owner,scopedFlag);
         myUnwinder = unwinder;
     }
 
@@ -49,6 +51,10 @@ public final class ReentrantSupport extends ActionDependentSkeleton implements R
         boolean firstTime=false;
         if (!myCalledLatch) {
             myCalledLatch=true;
+            //NB: ORDERING IS IMPORTANT HERE!!
+            if (myScopedFlag) {
+                Scopes.enter(getOwner(),harness);
+            }
             if (myUnwinder!=null) {
                 harness.addUnwind(myUnwinder);
             }
@@ -67,8 +73,12 @@ public final class ReentrantSupport extends ActionDependentSkeleton implements R
         boolean undo=false;
         if (myCalledLatch) {
             undo=true;
+            //NB: ORDERING IS IMPORTANT HERE!!
             if (myUnwinder!=null) {
                 harness.removeUnwind(myUnwinder);
+            }
+            if (myScopedFlag) {
+                Scopes.leave(getOwner(),harness);
             }
         }
         reset();
@@ -88,6 +98,7 @@ public final class ReentrantSupport extends ActionDependentSkeleton implements R
 
     private boolean myCalledLatch;
     private Unwindable myUnwinder;
+    private final boolean myScopedFlag;
 }
 
 

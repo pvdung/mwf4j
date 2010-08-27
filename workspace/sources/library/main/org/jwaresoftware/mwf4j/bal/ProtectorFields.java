@@ -48,6 +48,14 @@ public class ProtectorFields implements Protector, Resettable
         to.initThisFrom(this);
     }
 
+    public void copyTo(Protector to)
+    {
+        Validate.notNull(to,What.TARGET);
+        to.setHaltIfError(haltIfErrorFlag);
+        to.setQuiet(quietFlag);
+        to.setUseHaltContinuation(haltContinuationFlag);
+    }
+
     public void copyFrom(ProtectorFields from)
     {
         Validate.notNull(from,What.SOURCE);

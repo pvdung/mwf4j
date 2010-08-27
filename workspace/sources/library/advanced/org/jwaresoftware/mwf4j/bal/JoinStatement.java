@@ -43,7 +43,7 @@ public class JoinStatement extends BALProtectorStatement implements Unwindable
     public JoinStatement(Action owner, ControlFlowStatement next)
     {
         super(owner,next);
-        myUnwindSupport = new ReentrantSupport(getOwner(),this);
+        myUnwindSupport = new ReentrantSupport(this,false,this);
     }
 
     public void setBarrier(CountDownLatch barrier)

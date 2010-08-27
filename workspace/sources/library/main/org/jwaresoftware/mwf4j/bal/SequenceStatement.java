@@ -50,7 +50,7 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
     public SequenceStatement(Action owner, ControlFlowStatement next)
     {
         super(owner,next);
-        myUnwindSupport = new ReentrantSupport(getOwner(),this);
+        myUnwindSupport = new ReentrantSupport(this,true,this);
     }
 
     public void setMembers(List<Action> actions)
