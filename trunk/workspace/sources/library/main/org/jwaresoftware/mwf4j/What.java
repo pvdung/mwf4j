@@ -22,6 +22,7 @@ import  org.jwaresoftware.gestalt.reveal.Identified;
 public class What extends org.jwaresoftware.gestalt.What
 {
     public final static String HARNESS      = "harness";
+    public final static String SCOPE        = "scope";
     public final static String VARIABLE     = "variable";
     public final static String VARIABLES    = "variables";
     public final static String STATEMENT    = "control-flow-statement";

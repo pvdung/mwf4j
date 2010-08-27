@@ -68,7 +68,7 @@ public abstract class ExecutableTestSkeleton
     }
 
 //  ---------------------------------------------------------------------------------------
-//  Harness preparation and verification methods
+//  Harness preparation, helper factory, and execution methods
 //  ---------------------------------------------------------------------------------------
 
     @BeforeMethod
@@ -79,6 +79,28 @@ public abstract class ExecutableTestSkeleton
     @AfterMethod
     protected void tearDown() throws Exception {
         TestFixture.tearDown();
+    }
+
+    protected Variables iniDATAMAP()
+    {
+        Variables shared= new VariablesHashMap();
+        SYSTEM.setServiceInstance(MWf4J.ServiceIds.VARIABLES,shared,null);
+        return shared;
+    }
+
+    protected final void iniStatementCount()
+    {
+        TestFixture.iniStatementCount();
+    }
+
+    protected final void iniPerformedList()
+    {
+        TestFixture.iniPerformedList();
+    }
+
+    protected final void clrPerformed()
+    {
+        TestFixture.clrPerformed();
     }
 
     protected Activity newTASK()
@@ -118,13 +140,6 @@ public abstract class ExecutableTestSkeleton
         return new SlaveHarness(parent,firstStatement);
     }
 
-    protected Variables iniDATAMAP()
-    {
-        Variables shared= new VariablesHashMap();
-        SYSTEM.setServiceInstance(MWf4J.ServiceIds.VARIABLES,shared,null);
-        return shared;
-    }
-
     protected final List<String> runTASK(Harness h)
     {
         List<String> names;
@@ -147,6 +162,54 @@ public abstract class ExecutableTestSkeleton
         return runTASK(newHARNESS(main));
     }
 
+//  ---------------------------------------------------------------------------------------
+//  Statement execution verification methods
+//  ---------------------------------------------------------------------------------------
+
+    protected final int getStatementCount()
+    {
+        return TestFixture.getStatementCount();
+    }
+
+    protected final boolean wasPerformed(String statementName) 
+    {
+        return TestFixture.wasPerformed(statementName);
+    }
+
+    protected final boolean wasPerformed(String statementName, int count) 
+    {
+        return TestFixture.wasPerformed(statementName,count);
+    }
+
+    protected final boolean werePerformedInOrder(String statementNames)
+    {
+        return TestFixture.werePerformedInOrder(statementNames,'|',true);
+    }
+
+    protected final boolean werePerformedInRelativeOrder(String statementNames)
+    {
+        return TestFixture.werePerformedInRelativeOrder(statementNames,'|',true);
+    }
+
+    protected final boolean werePerformed(String statementNames)
+    {
+        return TestFixture.werePerformed(statementNames,'|',true);
+    }
+
+    protected final boolean werePerformedAndExited(String statementNames)
+    {
+        return TestFixture.werePerformed(statementNames,'|',false);
+    }
+
+    protected final boolean wasUnwound(String statementName)
+    {
+        return TestFixture.wasUnwound(statementName);
+    }
+
+    protected final boolean wereUnwoundInOrder(String statementNames)
+    {
+        return TestFixture.wereUnwoundInOrder(statementNames,'|');
+    }
 
 //  ---------------------------------------------------------------------------------------
 //  Useful helper functions for test cases

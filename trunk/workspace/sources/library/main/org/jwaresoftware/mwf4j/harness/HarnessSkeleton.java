@@ -5,9 +5,7 @@
 
 package org.jwaresoftware.mwf4j.harness;
 
-import  java.util.IdentityHashMap;
 import  java.util.List;
-import  java.util.Map;
 import  java.util.Queue;
 import  java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,6 +24,8 @@ import  org.jwaresoftware.mwf4j.MWf4J;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Executable;
+import  org.jwaresoftware.mwf4j.scope.Scope;
+import  org.jwaresoftware.mwf4j.scope.Scopes;
 
 /**
  * Common implementation of the {@linkplain Harness harness} interface for
@@ -39,7 +39,9 @@ import  org.jwaresoftware.mwf4j.behaviors.Executable;
  * <em>MUST manually verify</em> that change's effect on the various subclasses 
  * especially the dependent classes like {@linkplain SlaveHarness} and 
  * {@linkplain ForeverHarness}. Both the BAL and UC test suites must pass
- * before you commit the change.
+ * before you commit the change. Also, if you override {@linkplain #doEnter()}
+ * and/or {@linkplain #doLeave()} you MUST call the inherited versions at
+ * some point.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -72,7 +74,6 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
     public final void run()
     {
-        resetThis();
         doEnter();
         try {
             ControlFlowStatement next = adjusted(firstStatement());
@@ -81,8 +82,10 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
             }
         } catch(RuntimeException rtX) {
             rtX = handleUncaughtError(rtX);
-            if (rtX!=null)
+            if (rtX!=null) {
+                myAbortedFlag=true;
                 throw rtX;
+            }
         } finally {
             doLeave();
         }
@@ -91,6 +94,11 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     public final boolean isRunning()
     {
         return myRunningFlag.get();
+    }
+
+    public final boolean isAborted()
+    {
+        return myAbortedFlag;
     }
 
 
@@ -143,9 +151,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     public void addUnwind(Unwindable participant)
     {
         Validate.notNull(participant,What.CALLBACK);
-        synchronized(myUnwinds) {
-            myUnwinds.put(participant,Boolean.TRUE);
-        }
+        Scopes.addUnwind(participant);
     }
 
 
@@ -153,9 +159,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     public void removeUnwind(Unwindable participant)
     {
         Validate.notNull(participant,What.CALLBACK);
-        synchronized(myUnwinds) {
-            myUnwinds.remove(participant);
-        }
+        Scopes.removeUnwind(participant);
     }
 
 
@@ -184,7 +188,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
     RuntimeException handleUncaughtError(RuntimeException cause)
     {
-        unwindRegistered();
+        doUnwind();
         MDC.psh(MWf4J.MDCKeys.UNCAUGHT_ERROR,cause);
         try {
             doError(cause);
@@ -196,16 +200,9 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
 
 
-    final void unwindRegistered()
+    final void doUnwind()
     {
-        List<Unwindable> unwinds;
-        synchronized(myUnwinds) {
-            unwinds = LocalSystem.newList(myUnwinds.keySet());
-            myUnwinds.clear();
-        }
-        for (Unwindable next:unwinds) {//? protect this block ?
-            next.unwind(this);
-        }
+        Scopes.unwind(this);
     }
 
 
@@ -213,7 +210,9 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     protected void doEnter()
     {
         Validate.stateIsFalse(isRunning(),"running");
-        MDC.pshHarness(getOwner(),this);
+        resetThis();
+        myAbortedFlag = false;
+        myScope = Scopes.enter(this);
         if (getOwner() instanceof Executable) {
             ((Executable)getOwner()).doEnter(this);
         }
@@ -226,7 +225,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     {
         myContinuations.clear();
         myQueue.clear();
-        myUnwinds.clear();
+        myScope = null;
     }
 
 
@@ -237,8 +236,8 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
         if (getOwner() instanceof Executable) {
             ((Executable)getOwner()).doLeave(this);
         }
+        Scopes.leave(this);
         resetThis();
-        MDC.popHarness(getOwner(),this);
         myRunningFlag.set(false);
     }
 
@@ -271,7 +270,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
         assert myAdjustmentAction!=null : "adjustment defined";
         if (myAdjustmentAction.isTerminal()) {
             Diagnostics.ForCore.warn("Received terminal adjustment for {}",getName());
-            unwindRegistered();
+            doUnwind();
         }
         ControlFlowStatement adjustment = myAdjustmentAction.makeStatement(next);
         myAdjustmentAction = null;
@@ -279,11 +278,18 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     }
 
 
+    
+    protected final Scope getScope()
+    {
+        return myScope;
+    }
+
 
     private AtomicBoolean myRunningFlag= new AtomicBoolean();
+    private boolean myAbortedFlag;
     final List<ControlFlowStatement> myContinuations = LocalSystem.newList();
     final Queue<ControlFlowStatement> myQueue = LocalSystem.newLinkedList();
-    private Map<Unwindable,Boolean> myUnwinds = new IdentityHashMap<Unwindable,Boolean>();
+    private Scope myScope;
 
     private Boolean myAdjustFlag;//NB:can be null so need guard
     private final Object myAdjustFlagGuard = new int[0];

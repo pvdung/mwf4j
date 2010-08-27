@@ -19,7 +19,9 @@ import  org.jwaresoftware.gestalt.Strings;
 
 public class MWf4J
 {
+    /** Default namespace prefix for MWf4J components and configuration. */
     public static final String NS="mwf4j";
+
 
     /**
      * ID list of MWf4J related services. Some of these services are provided

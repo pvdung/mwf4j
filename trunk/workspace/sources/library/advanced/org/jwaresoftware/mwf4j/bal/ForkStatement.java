@@ -16,7 +16,8 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
-import org.jwaresoftware.mwf4j.harness.SlaveHarness;
+import  org.jwaresoftware.mwf4j.harness.SpawnedHarness;
+import  org.jwaresoftware.mwf4j.harness.SpawnedHarnessFactory;
 import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 /**
@@ -94,7 +95,8 @@ public class ForkStatement extends BALProtectorStatement
             NotifyJoinStatement notifyJoin = new NotifyJoinStatement(branch,myId,barrier);
             notifyJoin.verifyReady();
 
-            SlaveHarness branchHarness = new SlaveHarness(harness,branch.makeStatement(notifyJoin));
+            ControlFlowStatement first = new IfCalledMakeStatement(branch,notifyJoin);
+            SpawnedHarness branchHarness = SpawnedHarnessFactory.Default.INSTANCE.newHarness(harness,first);
             if (myMdcClipboard!=null) {
                 branchHarness.setMDCInitializer(myMdcClipboard);
             }

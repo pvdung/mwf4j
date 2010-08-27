@@ -3,5 +3,6 @@ behaviors
 helpers
 assign
 starters
+scope
 harness
 bal

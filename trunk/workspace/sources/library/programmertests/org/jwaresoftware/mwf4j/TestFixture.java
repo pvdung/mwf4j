@@ -33,6 +33,7 @@ public final class TestFixture
     public final static String STMT_COUNTER  = "mwf4j.statement.count";
     public final static String STMT_NAMELIST = "mwf4j.statement.names";
     public final static String STMT_EXITED_NAMELIST = "mwf4j.statement.names.exited";
+    public final static String STMT_UNWIND_NAMELIST = "mwf4j.statement.names.unwound";
 
 
     public static Fixture.Implementation setUp()
@@ -59,6 +60,11 @@ public final class TestFixture
     }
 
 
+    // ------------------------------------------------------------------
+    // Capturing the NUMBER of executed statements (just ENTERED-- does 
+    // NOT imply statements completed successfully).
+    // ------------------------------------------------------------------
+ 
     public static final void iniStatementCount()
     {
         MDC.put(STMT_COUNTER,Handle.newZeroInteger());
@@ -83,13 +89,23 @@ public final class TestFixture
         }
     }
 
+    // ------------------------------------------------------------------
+    // Capturing the NAMES of executed statements (both ENTERED and EXITED).
+    // ------------------------------------------------------------------
 
-    public static final void iniPerformedList()
+    public static final void iniPerformedList()//NB: support multi-thread access!
     {
         MDC.put(STMT_NAMELIST, LocalSystem.newThreadSafeList());
         MDC.put(STMT_EXITED_NAMELIST, LocalSystem.newThreadSafeList());
+        MDC.put(STMT_UNWIND_NAMELIST, LocalSystem.newThreadSafeList());
     }
 
+    public static final void clrPerformed()
+    {
+        MDC.clr(STMT_NAMELIST);
+        MDC.clr(STMT_EXITED_NAMELIST);
+        MDC.clr(STMT_UNWIND_NAMELIST);
+    }
 
     public static final void addPerformed(String statementName)
     {
@@ -101,17 +117,43 @@ public final class TestFixture
         MDC.add(STMT_EXITED_NAMELIST, statementName);
     }
 
+    public static final void addUnwound(String statementName)
+    {
+        MDC.add(STMT_UNWIND_NAMELIST, statementName);
+    }
 
     @SuppressWarnings("unchecked")
-    public static final boolean wasPerformed(String statementName)
+    public static final List<String> getPerformed()
     {
-        Object o = MDC.get(STMT_NAMELIST);
+        return MDC.get(STMT_NAMELIST,List.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static final List<String> getExited()
+    {
+        return MDC.get(STMT_EXITED_NAMELIST,List.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static final List<String> getUnwound()
+    {
+        return MDC.get(STMT_UNWIND_NAMELIST,List.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    static final boolean wasCapturedIn(final String theNAMELIST, String statementName)
+    {
+        Object o = MDC.get(theNAMELIST);
         if (o instanceof Collection<?>) {
             return ((Collection)o).contains(statementName);
         }
         return false;
     }
 
+    public static final boolean wasPerformed(String statementName)
+    {
+        return wasCapturedIn(STMT_NAMELIST,statementName);
+    }
 
     @SuppressWarnings("unchecked")
     public static final boolean wasPerformed(String statementName, int count) 
@@ -132,7 +174,6 @@ public final class TestFixture
         return false;
     }
 
-
     @SuppressWarnings("unchecked")
     public static final boolean werePerformed(String statementNames, char delim, boolean in)
     {
@@ -149,13 +190,15 @@ public final class TestFixture
         return false;
     }
 
+    // ------------------------------------------------------------------
+    // Capturing the ORDERING of executed statements (both ENTERED and EXITED).
+    // ------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public static final boolean werePerformedInOrder(String statementNames, char delim, boolean in) 
+    static final boolean wereCapturedInOrder(Object namesObject, String statementNames, char delim) 
     {
-        Object o = MDC.get(in ? STMT_NAMELIST : STMT_EXITED_NAMELIST);
-        if (o instanceof Collection<?>) {
-            Collection<String> c = (Collection<String>)o;
+        if (namesObject instanceof Collection<?>) {
+            Collection<String> c = (Collection<String>)namesObject;
             String[] ordering = Strings.split(statementNames,delim);
             if (c.size()==ordering.length) {
                 int ith=0;
@@ -167,6 +210,13 @@ public final class TestFixture
             }
         }
         return false;
+    }
+
+
+    public static final boolean werePerformedInOrder(String statementNames, char delim, boolean in) 
+    {
+        Object o = MDC.get(in ? STMT_NAMELIST : STMT_EXITED_NAMELIST);
+        return wereCapturedInOrder(o,statementNames,delim);
     }
 
     @SuppressWarnings("unchecked")
@@ -182,7 +232,7 @@ public final class TestFixture
             for (String next:c) {
                 if (ith>0) {
                     if (!ordering[ith].equals(next)) 
-                        return false;
+                        continue;
                     ith++;
                     if (ith==ordering.length)
                         break;
@@ -195,23 +245,21 @@ public final class TestFixture
         return ok;
     }
 
-    @SuppressWarnings("unchecked")
-    public static final List<String> getPerformed()
+    // ------------------------------------------------------------------
+    // Capturing the UNWINDING of executed statements.
+    // ------------------------------------------------------------------
+
+    public static final boolean wasUnwound(String statementName)
     {
-        return MDC.get(STMT_NAMELIST,List.class);
+        return wasCapturedIn(STMT_UNWIND_NAMELIST,statementName);
     }
 
-    @SuppressWarnings("unchecked")
-    public static final List<String> getExited()
+    public static final boolean wereUnwoundInOrder(String statementNames, char delim) 
     {
-        return MDC.get(STMT_EXITED_NAMELIST,List.class);
+        Object o = MDC.get(STMT_UNWIND_NAMELIST);
+        return wereCapturedInOrder(o,statementNames,delim);
     }
 
-    public static final void clrPerformed()
-    {
-        MDC.clr(STMT_NAMELIST);
-        MDC.clr(STMT_EXITED_NAMELIST);
-    }
 
 
     private TestFixture() { /*only static helper API*/ }

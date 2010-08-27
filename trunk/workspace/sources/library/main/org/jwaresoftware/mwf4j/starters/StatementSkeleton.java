@@ -14,7 +14,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
-import org.jwaresoftware.mwf4j.MDC;
+import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.behaviors.Executable;
 import  org.jwaresoftware.mwf4j.behaviors.Traceable;
 

@@ -52,6 +52,12 @@ public class BarfStatement extends StatementSkeleton
         super(owner,next);
     }
 
+    public BarfStatement(String message)
+    {
+        this();
+        setMessage(message);
+    }
+
     public void setMessage(String message)
     {
         myFeedback = Strings.trimToEmpty(message);

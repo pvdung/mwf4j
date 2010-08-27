@@ -18,7 +18,8 @@ import  org.jwaresoftware.mwf4j.Variables;
 
 /**
  * Adapter that lets you customize one or two methods of an existing
- * harness while passing through the majority of the public API. 
+ * harness while passing through the majority of the public API to a
+ * pre-existing instance.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -62,6 +63,11 @@ public class HarnessWrap extends FixtureWrap implements Harness
     public boolean isRunning()
     {
         return getTargetH().isRunning();
+    }
+
+    public boolean isAborted()
+    {
+        return getTargetH().isAborted();
     }
 
     public String typeCN()

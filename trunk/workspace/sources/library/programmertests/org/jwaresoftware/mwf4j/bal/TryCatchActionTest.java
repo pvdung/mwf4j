@@ -28,6 +28,7 @@ import  org.jwaresoftware.mwf4j.assign.Giveback;
 import  org.jwaresoftware.mwf4j.assign.GivebackVar;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.starters.ExtensionPoint;
+import org.jwaresoftware.mwf4j.starters.InstallCheckUnwind;
 import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
 
 /**
@@ -81,6 +82,11 @@ public final class TryCatchActionTest extends ActionTestSkeleton
     protected TryCatchAction newOUT()
     {
         return newOUT(null);
+    }
+
+    private Action checkunwind(String id)
+    {
+        return new InstallCheckUnwind(id);
     }
 
     private TryCatchAction trycatch(String id, Action body)
@@ -420,6 +426,25 @@ public final class TryCatchActionTest extends ActionTestSkeleton
         assertNull(MDC.latestException(),"MDC.latestException (on exit)");
     }
 
+    @Test(dependsOnMethods={"testFailureInHandlerAbortsButCallsAlwaysStill_1_0_0","testFailureInAlwaysAborts_1_0_0"},expectedExceptions= {RunFailedException.class})
+    public void testUnwind_1_0_0()
+    {
+        Sequence body = new SequenceAction("m").add(touch("m.1")).add(checkunwind("m.2")).add(error("m.e"));
+        Sequence iferror = new SequenceAction("e").add(touch("e.1")).add(checkunwind("e.2")).add(error("IFERROR!")).add(never());
+        Sequence always = new SequenceAction("a").add(touch("a.1")).add(checkunwind("a.2")).add(error("ALWAYS!")).add(never());
+        TryCatchAction out = newOUT("t");
+        out.setHaltIfError(false);
+        out.setBody(body);
+        out.setAlways(always);
+        out.addIfError(RuntimeException.class,iferror);
+        try {
+            runTASK(out);
+        } catch(RunFailedException Xpected) {
+            assertTrue(werePerformedInRelativeOrder("m.1|e.1|a.1"),"Run in order 'm.1|e.1|a.1'");
+            assertTrue(wereUnwoundInOrder("m.2|e.2|a.2"),"Blocks unwound in order 'm.2|e.2|a.2'");
+            throw Xpected;
+        }
+    }
 
     /**
      * Verify that nested try/catch/always blocks working as expected. 

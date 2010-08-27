@@ -32,6 +32,12 @@ public class TestStatement extends StatementSkeleton
         super(owner,next);
     }
 
+    public TestStatement(String id, Action owner, ControlFlowStatement next)
+    {
+        this(owner,next);
+        setId(id);
+    }
+
     protected void doAssertions(Harness wrt)
     {
         assertNotNull(wrt,"harness");
@@ -88,7 +94,7 @@ public class TestStatement extends StatementSkeleton
         return next();
     }
 
-    void setId(String id)
+    public void setId(String id)
     {
         myId = id;
     }

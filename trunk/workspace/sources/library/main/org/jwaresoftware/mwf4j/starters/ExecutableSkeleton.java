@@ -10,6 +10,7 @@ import  org.slf4j.Logger;
 import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.reveal.Identified;
 
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
@@ -27,7 +28,7 @@ import  org.jwaresoftware.mwf4j.behaviors.Executable;
  * @.group    impl,helper
  **/
 
-public abstract class ExecutableSkeleton implements Executable
+public abstract class ExecutableSkeleton implements Executable, Identified
 {
     protected static final String NS = MWf4J.NS+".";
 

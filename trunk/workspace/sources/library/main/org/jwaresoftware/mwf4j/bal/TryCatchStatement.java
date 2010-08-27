@@ -17,6 +17,8 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.scope.Scope;
+import  org.jwaresoftware.mwf4j.scope.Scopes;
 
 /**
  * Control flow statement that implements the classic 'try-catch-finally' form to 
@@ -74,10 +76,13 @@ public class TryCatchStatement extends BALProtectorStatement
         ControlFlowStatement continuation=null;
         switch (myPhase) {
             case BODY: {
+                if (myScope==null)
+                    myScope= Scopes.enter(this,harness);
                 continuation = harness.runParticipant(protect(bodyContinued));
                 if (continuation instanceof ThrowStatement) {
                     pendingThrow = (ThrowStatement)continuation;
                     Action handler = getCaughtHandler(pendingThrow.getCause());
+                    Scopes.unwindUpTo(this,harness);
                     if (handler!=null) {
                         bestCatch = handler.makeStatement(this);
                         myPhase = Phase.ONERROR;
@@ -96,6 +101,7 @@ public class TryCatchStatement extends BALProtectorStatement
                 break;
             }
             case NEXT: {
+                Scopes.leave(this,harness);
                 continuation = next();
                 break;
             }
@@ -112,6 +118,7 @@ public class TryCatchStatement extends BALProtectorStatement
                     popError(harness);
                 }
                 if (continuation instanceof ThrowStatement) {
+                    Scopes.unwindUpTo(this,harness);
                     saveUnexpectedError(continuation);
                     myPhase = (myAlways!=null) ? Phase.ALWAYS : Phase.ABORT;//ALWAYS ALWAYS
                     continuation = this;
@@ -132,6 +139,7 @@ public class TryCatchStatement extends BALProtectorStatement
                 }
                 continuation = harness.runParticipant(protect(always));
                 if (continuation instanceof ThrowStatement) {
+                    Scopes.unwindUpTo(this,harness);
                     saveUnexpectedError(continuation);
                     myPhase = Phase.ABORT;
                     continuation = this;
@@ -147,6 +155,7 @@ public class TryCatchStatement extends BALProtectorStatement
             case ABORT: {
                 assert pendingThrow!=null : "ABORT triggered iff there is a delayed (re)throw";
                 unmaskedAllThrownIfWanted(pendingThrow);
+                Scopes.leave(this,harness);
                 continuation = myTrySupport.handle(next(), pendingThrow, harness);
                 break;
             }        
@@ -168,6 +177,7 @@ public class TryCatchStatement extends BALProtectorStatement
         alwaysContinued = null;
         bodyContinued = null;
         errorContinued = null;
+        myScope = null;
         super.resetThis();
     }
 
@@ -296,6 +306,7 @@ public class TryCatchStatement extends BALProtectorStatement
     private ControlFlowStatement bodyContinued, alwaysContinued, errorContinued;
     private ControlFlowStatement bestCatch;
     private ThrowStatement pendingThrow;
+    private Scope myScope;
 }
 
 

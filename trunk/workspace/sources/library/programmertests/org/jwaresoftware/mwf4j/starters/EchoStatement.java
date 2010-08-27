@@ -7,6 +7,7 @@ package org.jwaresoftware.mwf4j.starters;
 
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
@@ -70,6 +71,8 @@ public class EchoStatement extends TestStatement
             o = harness.getConfiguration().getString(myKey,null);
         } else if (StoreType.OBJECT.equals(myType)) {
             o = GivebackVar.fromEval(myKey,null,false).call();
+        } else if (StoreType.SYSTEM.equals(myType)) {
+            o = LocalSystem.getProperty(myKey);
         }
         myId = o==null ? null : Strings.valueOf(o);
         if (myIncludeFlag) {

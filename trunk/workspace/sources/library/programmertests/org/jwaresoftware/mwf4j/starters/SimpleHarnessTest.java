@@ -26,7 +26,8 @@ import  org.jwaresoftware.mwf4j.Unwindable;
 
 /**
  * Test suite to verify balk if bad services installed for expected
- * MWf4J providers.
+ * MWf4J providers. Frankly we depend on most of the overall BAL test suite
+ * to cover all the nooks-n-crannies of the MWf4J harness implementations.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -66,9 +67,11 @@ public final class SimpleHarnessTest extends ExecutableTestSkeleton
         assertNotNull(h.getName());
         h.run();
         assertTrue(TestFixture.wasPerformed("foo"));
+        assertFalse(h.isAborted(),"aborted");
+        assertFalse(h.isRunning(),"running");
     }
 
-    public void testSimplePostedContinution_1_0_0()
+    public void testSimplePostedContinuation_1_0_0()
     {
         newHARNESS(new UnknownAction("bar",FinishLaterStatement.class)).run();
         assertTrue(TestFixture.wasPerformed("bar"));
@@ -118,6 +121,19 @@ public final class SimpleHarnessTest extends ExecutableTestSkeleton
             fail("Should not exit normally from barfing action!");
         } finally {
             assertTrue(MDC.has("unwoundFor.Doom"),"triggered unwinding");
+        }
+    }
+
+    @Test (dependsOnMethods={"testFailsIfActionFails_1_0_0"})
+    public void testAbortFlagSetIfError_1_0_0()
+    {
+        Harness h = newHARNESS("barfola",new UnknownAction("spew",BarfStatement.class));
+        assertFalse(h.isAborted(),"aborted(enter)");
+        try {
+            h.run();
+            fail("Should not exit normally from barfing action!");
+        } catch(ServiceProviderException Xpected) {
+            assertTrue(h.isAborted(),"aborted(leave)");
         }
     }
 
