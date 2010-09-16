@@ -54,6 +54,11 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
         myHaltIfErrorFlag = flag;
     }
 
+    public final boolean isHaltIfError()
+    {
+        return myHaltIfErrorFlag;
+    }
+
     public final void setQuiet(boolean flag)
     {
         myQuietFlag = flag;

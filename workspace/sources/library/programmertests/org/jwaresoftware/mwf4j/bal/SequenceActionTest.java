@@ -6,12 +6,18 @@
 package org.jwaresoftware.mwf4j.bal;
 
 import  java.util.Deque;
+import  java.util.concurrent.Callable;
 
 import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
+import  org.jwaresoftware.gestalt.helpers.Pair;
+
+import  org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MWf4JException;
 import  org.jwaresoftware.mwf4j.Sequence;
+import  org.jwaresoftware.mwf4j.scope.EnterLeaveScopeAction;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
 import  org.jwaresoftware.mwf4j.starters.FinishLaterAction;
 import  org.jwaresoftware.mwf4j.starters.TestStatement;
@@ -24,6 +30,10 @@ import  org.jwaresoftware.mwf4j.starters.UnknownAction;
  * Note other statements+actions should always include a "as part of a sequence"
  * and "as part of a heavily nested sequence" test case in their own suites. 
  * This suite (being at top o' pile) relies on simple echo and touch actions only.
+ * <p/>
+ * Note that we test the rewindablility of sequence thoroughly in the 
+ * {@linkplain RewindAction rewind action} test suite to avoid the dependency
+ * on that action and others here.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -39,7 +49,6 @@ public final class SequenceActionTest extends ActionTestSkeleton
 //  Harness preparation methods
 //  ---------------------------------------------------------------------------------------
 
-
     private SequenceAction newOUT(String id)
     {
         SequenceAction out = id==null ? new SequenceAction() : new SequenceAction(id);
@@ -51,7 +60,6 @@ public final class SequenceActionTest extends ActionTestSkeleton
     {
         return newOUT(null);
     }
-
 
 //  ---------------------------------------------------------------------------------------
 //  The test cases (1 per method)
@@ -292,7 +300,7 @@ public final class SequenceActionTest extends ActionTestSkeleton
     }
 
     /**
-     * Verify following with try+halt flags setup:
+     * Verify following with try+halt flags setup: <pre>
      *   m=[(halt=Y)
      *    m.1,
      *    m.2=[ (halt=N,tryeach=N)
@@ -315,6 +323,7 @@ public final class SequenceActionTest extends ActionTestSkeleton
      *    m.6,
      *    m.7
      *   ]
+     * </pre>
      */
     public void testContinueOnError1NestedLevel_1_0_0()
     {
@@ -392,6 +401,58 @@ public final class SequenceActionTest extends ActionTestSkeleton
             assertSame(thrown.pop(),throPeeep.getCause(),"2nd = peeep");
             throw Xpected;
         }
+    }
+
+    /**
+     * Verify a set of nested sequence from multiple independent threads to
+     * ensure sequence scoping works as expected.<pre>
+     * !=[
+     *   aaa
+     *   {=bbb
+     *     chk.aaa
+     *     $=[
+     *       %=[
+     *         ccc
+     *         $=[
+     *           ddd
+     *           chk.ddd
+     *           ddd
+     *           chk.ddd(2)
+     *         ]
+     *         chk.ccc
+     *         chk.aaa
+     *       ]
+     *       bbb
+     *       ccc
+     *       chk.ccc(2)
+     *       chk.bbb
+     *     ]
+     *   }
+     *   chk.ddd
+     *   chk.ccc
+     *   chk.bbb
+     * ]
+     * </pre>
+     */
+    public void testMultithreadedNestedScopes_1_0_0() throws Exception
+    {
+        //Just make some nested sequences that should work per-thread
+        Sequence ddd = newOUT("$").add(touch("ddd")).add(checkdone("ddd",1)).add(touch("ddd")).add(checkdone("ddd",2));
+        Sequence ccc = newOUT("%").add(touch("ccc")).add(ddd).add(checkdone("ccc")).add(checkdone("aaa"));
+        Sequence bbb = newOUT("$").add(ccc).add(touch("bbb")).add(touch("ccc")).add(checkdone("ccc",2)).add(checkdone("bbb"));
+        Pair<Action,Action> enterleave= EnterLeaveScopeAction.newPair("xxx");
+        final Sequence out = block("!").add(touch("aaa")).add(enterleave.get1()).add(checkdone("aaa"))
+                                .add(bbb).add(enterleave.get2()).add(checkdone("ddd")).add(checkdone("ccc"))
+                                .add(checkdone("bbb"));
+
+        Callable<Harness> harnessFactory = new Callable<Harness>() {
+            public Harness call() {
+                String tn = Thread.currentThread().getName();
+                return newHARNESS("main."+tn,out);
+            }
+        };
+
+        runTASK(harnessFactory,3L);
     }
 }
 

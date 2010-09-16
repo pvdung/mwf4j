@@ -65,6 +65,11 @@ public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
     {
         return new GivebackVar<T>(keyOrExpr,fallbackValue,failIfError,Mode.EXPRESSION);
     }
+    
+    public final static<T> GivebackVar<T> fromEvalOfOptional(String keyOrExpr)
+    {
+        return new GivebackVar<T>(keyOrExpr,null,false,true,Mode.EXPRESSION);
+    }
 
 //  ---------------------------------------------------------------------------------------
 //  Implementation:
@@ -76,11 +81,16 @@ public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
         myKeyOrExpr = keyOrExpr;
     }
 
-    public GivebackVar(String keyOrExpr, T fallbackValue, boolean failIfError, Mode mode)
+    public GivebackVar(String keyOrExpr, T fallbackValue, boolean failIfError, boolean quiet, Mode mode)
     {
-        super(fallbackValue,failIfError,mode);
+        super(fallbackValue,failIfError,quiet,mode);
         Validate.notBlank(keyOrExpr,What.ITEM_ID);
         myKeyOrExpr = keyOrExpr;
+    }
+
+    public GivebackVar(String keyOrExpr, T fallbackValue, boolean failIfError, Mode mode)
+    {
+        this(keyOrExpr,fallbackValue,failIfError,false,mode);
     }
 
     protected String getSelector()

@@ -20,9 +20,12 @@ import  org.jwaresoftware.mwf4j.behaviors.Protector;
 /**
  * Implementation for an ordered sequence of sibling actions. User can
  * setup for a single-use sequence (underlying action list is passed
- * directly to control statement for use), or for a long-lived
- * multi-use sequence (each statement is created against a snapshot
+ * directly to control statement for use), or for a multi-threaded and/or
+ * multi-use sequence (each statement is created against a deep snapshot
  * of the current list of actions). Default use is for a single-use case.
+ * Note that for the {@linkplain Mode#MULTIPLE MULTIPLE} case, YOU have to
+ * ensure the constituent actions are either publicly cloneable or safe for 
+ * concurrent use from multiple threads.
  * <p/>
  * There is some built-in error handling for this sequence. To force each
  * sub-action to be run even if one or more of them throw <em>any</em>
@@ -121,7 +124,7 @@ public class SequenceAction extends BALProtectorAction implements Sequence
     {
         List<Action> actions = myActions;
         if (Mode.MULTIPLE.equals(myUseMode)) {
-            actions = LocalSystem.newListCopy(myActions);
+            actions = LocalSystem.newListDeepCopy(myActions);
         }
         return actions;
     }

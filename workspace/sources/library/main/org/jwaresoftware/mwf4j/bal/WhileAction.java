@@ -12,11 +12,12 @@ import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
 import  org.jwaresoftware.mwf4j.helpers.False;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
 /**
- * Action that will (re)run an application-supplied action as long as
+ * Action that will (re)run another application-supplied action as long as
  * a given condition returns <i>true</i>. You can guard against run-away
  * loops with the {@linkplain #setHaltIfMax haltIfMax option}.
  *
@@ -29,7 +30,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * @see       ForEachAction
  **/
 
-public class WhileAction extends ActionSkeleton
+public class WhileAction extends ActionSkeleton implements CallBounded
 {
     public WhileAction()
     {

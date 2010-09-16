@@ -14,6 +14,7 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
 
 /**
  * Statement that keeps returning a copy of a prescribed body statement
@@ -30,7 +31,7 @@ import  org.jwaresoftware.mwf4j.assign.StoreType;
  * @.group    infra,impl
  **/
 
-public class WhileStatement extends BALStatement implements Unwindable
+public class WhileStatement extends BALStatement implements CallBounded, Unwindable
 {
     public WhileStatement(Action owner, ControlFlowStatement next) 
     {

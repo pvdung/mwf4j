@@ -18,6 +18,11 @@ import  org.jwaresoftware.mwf4j.behaviors.Protector;
  * action failed and the sequence's {@linkplain #setHaltIfError(boolean) haltIfError}
  * option is enabled; otherwise, it will return the continuation setup at
  * construction time.
+ * <p/>
+ * If a sequence is rewinded to an index that precedes or equals a failed
+ * statement position, that failure is wiped as if it never happened. The
+ * assumption is that the retry (if successful) overrides the first failed
+ * attempt for that and any subsequent statement.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -49,51 +54,51 @@ public class TryEachSequenceStatement extends SequenceStatement implements Prote
         myTrySupport.setUseContinuation(flag);
     }
 
-    protected ControlFlowStatement runInner(Harness harness)
-    {
-        ControlFlowStatement next;
-        if (getMembers().hasNext()) {
-            myUnwindSupport.loop(harness);
-            next = harness.runParticipant(protect(getMembers().next()));
-            if (next instanceof ThrowStatement) {
-                ThrowStatement signal = (ThrowStatement)next;
-                signal.setNextThrown(lastThrown);
-                lastThrown = signal;
-                next = this;
-            }
-        } else {
-            next = next();
-            if (lastThrown!=null) {
-                next = myTrySupport.handle(next, lastThrown, harness);
-            }
-            myUnwindSupport.finished(harness);
-        }
-        return next;
-    }
-
     private ControlFlowStatement protect(ControlFlowStatement statement)
     {
         return BALHelper.protect(getOwner(),statement);
     }
 
-    private void resetThis()
+    @Override
+    ControlFlowStatement runMember(int index, Harness harness, ControlFlowStatement member)
     {
+        ControlFlowStatement next = harness.runParticipant(protect(member));
+        if (next instanceof ThrowStatement) {
+            ThrowStatement signal = (ThrowStatement)next;
+            signal.setNextThrown(lastThrown);
+            signal.setPosition(index);
+            lastThrown = signal;
+            next = this;
+        }
+        return next;
+    }
+
+    @Override
+    final void resetThis()
+    {
+        super.resetThis();
         lastThrown = null;
         myTrySupport.reset();
     }
 
-    public void unwind(Harness harness)
+    @Override
+    final ControlFlowStatement finishThis(Harness harness, ControlFlowStatement next)
     {
-        resetThis();
-        super.unwind(harness);
+        if (lastThrown!=null) {
+            next = myTrySupport.handle(next,lastThrown,harness);
+        }
+        return super.finishThis(harness,next);
     }
 
-    public void reset()
+    @Override
+    void rewindThis(int index, Harness harness)
     {
-        resetThis();
-        super.reset();
+        if (lastThrown!=null) {
+            if (lastThrown.getPosition()>=index) 
+                lastThrown=null;//Wiped
+        }
+        super.rewindThis(index,harness);
     }
-
 
     private ThrowStatement lastThrown;
     private TrySupport myTrySupport;

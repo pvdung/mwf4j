@@ -5,14 +5,20 @@
 
 package org.jwaresoftware.mwf4j.starters;
 
+import  static org.testng.Assert.assertTrue;
+
 import  java.util.Arrays;
 import  java.util.List;
+import  java.util.concurrent.Callable;
+import  java.util.concurrent.CountDownLatch;
+import  java.util.concurrent.TimeUnit;
 
 import  org.testng.annotations.AfterMethod;
 import  org.testng.annotations.BeforeMethod;
 
 import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Activity;
@@ -60,6 +66,7 @@ public abstract class ExecutableTestSkeleton
     public static class PlainHarness extends SimpleHarness {
         public PlainHarness(Activity activity, Fixture.Implementation fixture) {
             super(activity,fixture);
+            //Diagnostics.ForFlow.info("Created "+What.idFor(this)+"/activity="+activity.getId());
         }
         public void doError(Throwable cause) {
             MDC.put("errorHandler."+getOwner().getId(), cause.getMessage());
@@ -103,6 +110,42 @@ public abstract class ExecutableTestSkeleton
         TestFixture.clrPerformed();
     }
 
+    protected final static List<String> dmpPerformed(String prefix, TraceSupport breadcrumbs)
+    {
+        if (prefix==null) prefix="PERFORMED";
+        List<String> names;
+        names = TestFixture.getExited();
+        if (names==null) names = Empties.STRING_LIST;
+        if (breadcrumbs==null)
+            LocalSystem.show(prefix+"-LEAVE: "+Arrays.toString(names.toArray()));
+        else 
+            breadcrumbs.write("{}-LEAVE: {}",prefix,Arrays.toString(names.toArray()));
+
+        names = TestFixture.getPerformed();
+        if (names==null) names = Empties.STRING_LIST;
+        if (breadcrumbs==null)
+            LocalSystem.show(prefix+"-ENTER: "+Arrays.toString(names.toArray()));
+        else 
+            breadcrumbs.write("{}-ENTER: {}",prefix,Arrays.toString(names.toArray()));
+        
+        return names;
+    }
+
+    protected final static List<String> dmpPerformed(String prefix)
+    {
+        return dmpPerformed(prefix,null);
+    }
+
+    protected final static void dmpPerformed(String label, List<String> names, TraceSupport breadcrumbs)
+    {
+        if (label==null) label="PERFORMED";
+        if (names==null) names= Empties.STRING_LIST;
+        if (breadcrumbs==null)
+            LocalSystem.show(label+": "+Arrays.toString(names.toArray()));
+        else 
+            breadcrumbs.write("{}: {}",label,Arrays.toString(names.toArray()));
+    }
+
     protected Activity newTASK()
     {
         return new PlainTask();
@@ -140,19 +183,13 @@ public abstract class ExecutableTestSkeleton
         return new SlaveHarness(parent,firstStatement);
     }
 
-    protected final List<String> runTASK(Harness h)
+    protected static final List<String> runTASK(Harness h)
     {
         List<String> names;
         try {
             h.run();
         } finally {
-            names = TestFixture.getExited();
-            if (names==null) names = Empties.STRING_LIST;
-            System.out.println("PERFORMED-LEAVE: "+Arrays.toString(names.toArray()));
-
-            names = TestFixture.getPerformed();
-            if (names==null) names = Empties.STRING_LIST;
-            System.out.println("PERFORMED-ENTER: "+Arrays.toString(names.toArray()));
+            names = dmpPerformed(null);
         }
         return names;
     }
@@ -160,6 +197,39 @@ public abstract class ExecutableTestSkeleton
     protected final List<String> runTASK(Action main)
     {
         return runTASK(newHARNESS(main));
+    }
+
+    protected static void runTASK(final Callable<Harness> harnessFactory, long timeout) throws Exception
+    {
+        final int NUMTHREADS=4;
+        final CountDownLatch start= new CountDownLatch(1);
+        final CountDownLatch latch= new CountDownLatch(NUMTHREADS);
+        Runnable test = new Runnable() {
+            public void run() {
+                final String id = Thread.currentThread().getName();
+                LocalSystem.show("### THREAD '"+id+"' started");
+                try { start.await(); } catch(Exception X) { }
+                try {
+                    Harness h = harnessFactory.call();
+                    try {
+                        h.run();
+                    } finally {
+                        dmpPerformed("PERFORMED(THR="+id+")");
+                    }
+                } catch(Exception unXpected) {
+                    throw new RuntimeException(unXpected);
+                }
+                LocalSystem.show("### THREAD '"+id+"' success!");
+                latch.countDown();
+            }
+        };
+        for (int i=0;i<NUMTHREADS;i++) {
+            Thread t= new Thread(test,"TT."+i);
+            t.start();
+        }
+        timeout = Math.max(timeout,1L);
+        start.countDown();
+        assertTrue(latch.await(timeout,TimeUnit.SECONDS),"all threads successful");
     }
 
 //  ---------------------------------------------------------------------------------------
@@ -210,6 +280,7 @@ public abstract class ExecutableTestSkeleton
     {
         return TestFixture.wereUnwoundInOrder(statementNames,'|');
     }
+
 
 //  ---------------------------------------------------------------------------------------
 //  Useful helper functions for test cases

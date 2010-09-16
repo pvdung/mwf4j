@@ -14,7 +14,7 @@ import  org.jwaresoftware.mwf4j.TestFixture;
 import  org.jwaresoftware.mwf4j.Unwindable;
 
 /**
- * Unwindable that mark the harness with stamp that the unwind been executed. 
+ * Unwindable that marks the harness with stamp that the unwind been executed. 
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -23,9 +23,9 @@ import  org.jwaresoftware.mwf4j.Unwindable;
  * @.group    test,helper
  **/
 
-public final class CheckUnwound implements Unwindable 
+public final class TestUnwinder implements Unwindable 
 {
-    public CheckUnwound(String id) 
+    public TestUnwinder(String id) 
     {
         Validate.notNull(id,"id");
         myId = id;
@@ -49,4 +49,4 @@ public final class CheckUnwound implements Unwindable
 }
 
 
-/* end-of-CheckUnwound.java */
+/* end-of-TestUnwinder.java */

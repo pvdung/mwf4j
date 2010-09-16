@@ -11,15 +11,24 @@ import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.gestalt.ServiceProviderException;
 import  org.jwaresoftware.gestalt.Strings;
+import  org.jwaresoftware.gestalt.helpers.Pair;
+
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4JException;
-import  org.jwaresoftware.mwf4j.helpers.CheckUnwound;
+import  org.jwaresoftware.mwf4j.Sequence;
+import  org.jwaresoftware.mwf4j.TestFixture;
+import  org.jwaresoftware.mwf4j.bal.ActionTestSkeleton;
+import  org.jwaresoftware.mwf4j.bal.ForkAction;
+import  org.jwaresoftware.mwf4j.bal.TryCatchAction;
+import  org.jwaresoftware.mwf4j.helpers.RetryDef;
+import  org.jwaresoftware.mwf4j.helpers.TestUnwinder;
+import  org.jwaresoftware.mwf4j.starters.AddTestUnwindAction;
 import  org.jwaresoftware.mwf4j.starters.BarfStatement;
+import  org.jwaresoftware.mwf4j.starters.CheckUnwound;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
-import  org.jwaresoftware.mwf4j.starters.ExecutableTestSkeleton;
 import  org.jwaresoftware.mwf4j.starters.FailStatement;
 import  org.jwaresoftware.mwf4j.starters.TestExtensionPoint;
 import  org.jwaresoftware.mwf4j.starters.TestStatement;
@@ -28,6 +37,9 @@ import  org.jwaresoftware.mwf4j.starters.TouchAction;
 /**
  * Test suite for {@linkplain Scopes} and related classes including all
  * default POJO implementations of misc&#46; interfaces.
+ * <p/>
+ * We also include tests that test the basics of sequence and trycatch
+ * actions with complex scopes in effect.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -37,13 +49,13 @@ import  org.jwaresoftware.mwf4j.starters.TouchAction;
  **/
 
 @Test(groups= {"mwf4j","baseline","scope"})
-public final class ScopesTest extends ExecutableTestSkeleton
+public final class ScopesTest extends ActionTestSkeleton
 {
     private static final String _STUT= "__statement_under_test";
 
     static final class CheckEnterLeaveScope extends ScopeBean {
-        CheckEnterLeaveScope(String name) {
-            super(name);
+        CheckEnterLeaveScope(ControlFlowStatement owner, String name) {
+            super(owner,name);
         }
         public void doEnter(Harness harness) {
             harness.getVariables().put(getName()+".enter",Boolean.TRUE);
@@ -56,13 +68,16 @@ public final class ScopesTest extends ExecutableTestSkeleton
             public ScopeKey newKey(ControlFlowStatement owner) {
                 return new ScopeKeyBean(owner);
             }
-            public Scope newScope(String name) {
-                return new CheckEnterLeaveScope(name);
+            public Scope newScope(ControlFlowStatement owner,String name) {
+                return new CheckEnterLeaveScope(owner,name);
             }
         };
     }
 
     static final class BarfOnEnterScope extends ScopeBean {
+        BarfOnEnterScope(ControlFlowStatement owner) {
+            super(owner);
+        }
         public void doEnter(Harness harness) {
             ControlFlowStatement mine = harness.getVariables().get(_STUT,ControlFlowStatement.class);
             if (mine!=null)
@@ -75,8 +90,8 @@ public final class ScopesTest extends ExecutableTestSkeleton
             public ScopeKey newKey(ControlFlowStatement owner) {
                 return new ScopeKeyBean(owner);
             }
-            public Scope newScope(String name) {
-                return new BarfOnEnterScope();
+            public Scope newScope(ControlFlowStatement owner, String name) {
+                return new BarfOnEnterScope(owner);
             }
         };
     }
@@ -91,6 +106,27 @@ public final class ScopesTest extends ExecutableTestSkeleton
     private static ControlFlowStatement newStatement(String id)
     {
         return new TestStatement(Action.anonINSTANCE,ControlFlowStatement.nullINSTANCE);
+    }
+
+    private static ForkAction fork(boolean carry)
+    {
+        ForkAction fork = new ForkAction("run'em");
+        if (carry) {
+            MDC.Propagator fixtureClipboard = new MDC.SimplePropagator
+                (TestFixture.STMT_NAMELIST, TestFixture.STMT_EXITED_NAMELIST, TestFixture.STMT_UNWIND_NAMELIST);
+            fork.setMDCPropagtor(fixtureClipboard);
+        }
+        fork.setJoinBreakSupport(new RetryDef(1,_1SEC*3L),null);//Don't hang forever if something barfs
+        return fork;
+    }
+
+    private TryCatchAction trycatch(Action body, Action always)
+    {
+        TryCatchAction trycatch = new TryCatchAction();
+        trycatch.setHaltIfError(false);
+        trycatch.setBody(body);
+        trycatch.setAlways(always);
+        return trycatch;
     }
 
     private static void assumeNoScopeStack()
@@ -116,6 +152,30 @@ public final class ScopesTest extends ExecutableTestSkeleton
 //  ---------------------------------------------------------------------------------------
 //  The test cases (1 per method)
 //  ---------------------------------------------------------------------------------------
+
+    public void testScopeKeyBeanCompare_1_0_0()
+    {
+        ControlFlowStatement stmt1= new TestStatement(null,ControlFlowStatement.nullINSTANCE);
+        ControlFlowStatement stmt2= new TestStatement(null,ControlFlowStatement.nullINSTANCE);
+        ScopeKey out1= ScopeFactory.newKey(stmt1);
+        assertNotNull(out1, "key1 created");
+        assertSame(out1.getOwner(), stmt1, "owner1==assigned");
+        ScopeKey out2= ScopeFactory.newKey(stmt2);
+        assertNotNull(out2, "key2 created");
+        assertSame(out2.getOwner(), stmt2, "owner2==assigned");
+        assertNotSame(out1,out2);
+        assertFalse(out1.equals(out2),"out1.equals(out2)");
+        assertFalse(out2.equals(out1),"out2.equals(out1)");
+        String _lstack= TestFixture.currentTestName();
+        MDC.pshifmissing(_lstack, out1);
+        MDC.pshifmissing(_lstack, out2);
+        assertEquals(MDC.size(_lstack),2);
+        assertTrue(MDC.has(_lstack,out1),"out1 recognized as being on MDC stack");
+        ScopeKey out1p = ScopeFactory.newKey(stmt1);
+        assertNotSame(out1p,out1);
+        assertEquals(out1p,out1,"equality based on statement");
+        assertTrue(MDC.has(_lstack,out1p),"out1 recognized as being on MDC stack");
+    }
 
     public void testTypicalHappyNestingPath_1_0_0()
     {
@@ -189,15 +249,15 @@ public final class ScopesTest extends ExecutableTestSkeleton
 
         ScopeFactory.setProviderInstance(CheckEnterLeaveScope.factoryInstance);
         ControlFlowStatement st0,st1,st2;
-        CheckUnwound uw0,uw1,uw2,uwx;
+        TestUnwinder uw0,uw1,uw2,uwx;
         Harness h = newHARNESS();
         Scope s0 = Scopes.enter((st0=newStatement("do")),"do",h);
-        Scopes.addUnwind((uw0= new CheckUnwound("do")));
+        Scopes.addUnwind((uw0= new TestUnwinder("do")));
         Scope s1 = Scopes.enter((st1=newStatement("try")),"try",h);
-        Scopes.addUnwind((uw1= new CheckUnwound("try")));
+        Scopes.addUnwind((uw1= new TestUnwinder("try")));
         Scope s2 = Scopes.enter((st2=newStatement("for")),"for",h);
-        s2.addUnwind((uw2= new CheckUnwound("for")));//should be same!
-        s1.addUnwind((uwx= new CheckUnwound("err")));
+        s2.addUnwind((uw2= new TestUnwinder("for")));//should be same!
+        s1.addUnwind((uwx= new TestUnwinder("err")));
         assertSame(s2,Scopes.nearestOrFail());
         
         final int n = MDC.size(Scopes._STACK);
@@ -212,7 +272,7 @@ public final class ScopesTest extends ExecutableTestSkeleton
         Scope old_s2 = s2;
         s2 = Scopes.enter((st2=newStatement("for2")),"for2",h);
         assertNotSame(s2,old_s2,"new scope allocated per callback");
-        Scopes.addUnwind((uw2= new CheckUnwound("for2")));
+        Scopes.addUnwind((uw2= new TestUnwinder("for2")));
         Scopes.unwindUpTo(st0,h);
         assertFalse(uwx.unwound(),"'err'.doUnwind NOT called");
         assertTrue(uw2.unwound(),"'for2'.doUnwind() called");
@@ -222,7 +282,7 @@ public final class ScopesTest extends ExecutableTestSkeleton
         assertEquals(MDC.size(Scopes._STACK),n-2,"two popped");
         assertSame(s0,Scopes.nearestOrFail());
 
-        s0.unwindAll(h);
+        s0.doUnwind(h);
         assertTrue(uw0.unwound(),"'do'.doUnwind() called");
         assertNull(h.getVariables().getFlag("do.leave"),"'do'.doLeave() NOT called");
         assertEquals(MDC.size(Scopes._STACK),n-2,"scope.unwindAll does not touch stack!");
@@ -269,7 +329,7 @@ public final class ScopesTest extends ExecutableTestSkeleton
         assertEnterLeave(hId,h);
     }
 
-    private static class OrphanUnwind extends TestExtensionPoint {
+    private static class OrphanUnwind extends TestExtensionPoint {//ONLY FOR 1 THREAD USE!
         OrphanUnwind() {
             super("orphan");
         }
@@ -278,7 +338,7 @@ public final class ScopesTest extends ExecutableTestSkeleton
         }
         protected ControlFlowStatement runInner(Harness harness) {
             Scopes.enter(this,"orphan",harness);//Never 'leave' explicitly
-            Scopes.addUnwind(new CheckUnwound(getId()));
+            Scopes.addUnwind(new TestUnwinder(getId()));
             return next();
         }
     }
@@ -311,23 +371,13 @@ public final class ScopesTest extends ExecutableTestSkeleton
         }
     }
 
-    private static class HarnessUnwind extends TestExtensionPoint {
-        HarnessUnwind(String id) {
-            super(id);
-        }
-        protected ControlFlowStatement runInner(Harness harness) {
-            Scopes.addUnwind(new CheckUnwound(getId()));//Should link to harness scope!
-            return next();
-        }
-    }
-
-    private static class OrphanSequence extends TestExtensionPoint { 
+    private static class OrphanSequence extends TestExtensionPoint {//ONLY FOR 1 THREAD USE!
         OrphanSequence() {
             super("flow");
             ControlFlowStatement o4= new BarfStatement("ADIOS CRUEL WORLD!!");
             ControlFlowStatement o3= new OrphanUnwind("s2").makeStatement(o4);
             ControlFlowStatement o2= new OrphanUnwind("s1").makeStatement(o3);
-            ControlFlowStatement o1= new HarnessUnwind("top").makeStatement(o2);
+            ControlFlowStatement o1= new AddTestUnwindAction("top").makeStatement(o2);
             myStatements = o1;
         }
         protected ControlFlowStatement runInner(Harness harness) {
@@ -351,6 +401,76 @@ public final class ScopesTest extends ExecutableTestSkeleton
             assertTrue(wereUnwoundInOrder("s2|s1|top"),"Unwound in expected order 's2->s1->top'");
             assumeNoScopeStack();
         }
+    }
+
+    @Test(dependsOnMethods={"testTypicalHappyNestingPath_1_0_0"})
+    public void testMultithreadedTypicalPathA_1_0_0()
+    {
+        iniPerformedList();
+        ScopeFactory.setProviderInstance(CheckEnterLeaveScope.factoryInstance);
+        ForkAction fork = fork(true);
+        Sequence t1 = block("t1").add(touch("a")).add(block("b").add(touch("b.1"))).add(touch("c"));
+        fork.addBranch(t1);
+        Sequence t2 = block("t2").add(touch("1")).add(block("2").add(touch("2.a"))).add(touch("3"));
+        fork.addBranch(t2);
+        Sequence t3 = block("t3").add(touch("X")).add(block("Y").add(touch("Y.a"))).add(touch("Z"));
+        fork.addBranch(t3);
+
+        runTASK(fork);
+        assertTrue(werePerformedAndExited("a|b.1|c|1|2.a|3|X|Y.a|Z"),"all actions run");
+    }
+
+    /**
+     * Verify this from independent threads (use fork):<pre>
+     *  Touch(aaa)
+     *  Enter new scope named(bbb)
+     *  Touch(ccc)
+     *  Sequence[
+     *    Touch(ddd)
+     *    Try(haltiferror=no)
+     *      Sequence[
+     *        Sequence[
+     *          Verify ccc executed ONCE
+     *          Touch(eee)
+     *          Verify aaa executed ONCE
+     *          Touch(aaa)
+     *          Verify eee executed ONCE
+     *        ]
+     *        Install check unwinder(fff)
+     *        Barf
+     *      ]
+     *    Always
+     *      Sequence[
+     *        Verify ddd executed ONCE
+     *        Verify eee executed ONCE
+     *        Verify aaa executed TWICE
+     *        Verify unwound(fff)
+     *        Touch(ddd)
+     *      ]
+     *  ]
+     *  Verify ddd executed TWICE
+     *  Unwind(bbb)
+     *  </pre>
+     */
+    @Test(dependsOnMethods={"testTypicalHappyNestingPath_1_0_0"})
+    public void testMultithreadedTypicalPathB_1_0_0()
+    {
+        Sequence xxx = block("@").add(checkdone("ccc")).add(touch("eee")).add(checkdone("aaa")).add(touch("aaa")).add(checkdone("aaa",2)).add(checkdone("eee"));
+        Sequence yyy = block("#").add(xxx).add(new AddTestUnwindAction("uuu")).add(error("xx1"));
+        Sequence zzz = block("%").add(checkdone("ddd")).add(checkdone("eee")).add(checkdone("aaa",2)).add(new CheckUnwound("fff","uuu")).add(touch("ddd"));
+        Sequence ddd = block("$").add(touch("ddd")).add(trycatch(yyy,zzz));
+        Pair<Action,Action> enterleave= EnterLeaveScopeAction.newPair("bbb");
+        Sequence tst = block("!").add(touch("aaa")).add(enterleave.get1()).add(touch("ccc")).add(ddd).add(checkdone("ddd",2)).add(enterleave.get2());
+
+        runTASK(tst);//verify our chain works before blasting off in new threads
+        clrPerformed();
+
+        ForkAction fork = fork(false);
+        fork.addBranch(tst);
+        fork.addBranch(tst);
+        fork.addBranch(tst);
+        fork.addBranch(tst);
+        runTASK(fork);
     }
 }
 

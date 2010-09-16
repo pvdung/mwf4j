@@ -40,7 +40,7 @@ import  org.jwaresoftware.mwf4j.starters.TestExtensionPoint;
  * @.group    impl,test
  **/
 
-@Test(groups= {"mwf4j","advanced","bal"})
+@Test(groups= {"mwf4j","advanced","bal","advanced"})
 public final class ListenActionTest extends ActionTestSkeleton
 {
 //  ---------------------------------------------------------------------------------------

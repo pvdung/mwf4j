@@ -77,7 +77,7 @@ public final class SlaveHarness extends SpawnedHarnessSkeleton
             } while (!notified && --tryCount>0);
         }
         if (!notified) {
-            Feedback.ForCore.error("Unable to notify control harness of issue!",issue);
+            Feedback.ForCore.error("Slave harness unable to notify parent harness of fatal issue!",issue);
             returned=issue;//DONT LOSE IT...(though might be ignored anyway)
         }
         return returned;

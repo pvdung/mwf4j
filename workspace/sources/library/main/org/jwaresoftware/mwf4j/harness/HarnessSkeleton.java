@@ -10,6 +10,7 @@ import  java.util.Queue;
 import  java.util.concurrent.atomic.AtomicBoolean;
 
 import  org.jwaresoftware.gestalt.Effect;
+import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
 import  org.jwaresoftware.gestalt.bootstrap.FixtureWrap;
@@ -246,7 +247,9 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     protected void doError(Throwable cause)
     {
         Diagnostics.ForCore.warn("Unhandled "+typeCN()+" harness exception for "+getName(),cause);
-        getIssueHandler().problemOccured("Unhandled run error ON "+typeCN(),Effect.ABORT,cause);
+        Thread thr = Thread.currentThread();
+        String yah = ""+thr.getId()+":"+Strings.trimToEmpty(thr.getName());
+        getIssueHandler().problemOccured("Unhandled run error ON "+typeCN()+" [THREAD="+yah+"]",Effect.ABORT,cause);
     }
 
 

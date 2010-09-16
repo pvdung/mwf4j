@@ -60,7 +60,7 @@ public abstract class ActionSkeleton implements Action
 
     public String toString()
     {
-        return What.subidFor(this,getId(),"Action");
+        return What.subidFor(this,"Action",getId());
     }
 
 

@@ -33,7 +33,7 @@ public class NotifyJoinStatement extends BALStatement
     protected NotifyJoinStatement(Action owner, ControlFlowStatement next)
     {
         super(owner,next);
-        resetThis();
+        //resetThis();
     }
 
     public NotifyJoinStatement(Action owner, String forkId, CountDownLatch barrier)
@@ -57,6 +57,7 @@ public class NotifyJoinStatement extends BALStatement
 
     protected ControlFlowStatement runInner(Harness harness)
     {
+        Validate.stateNotNull(myBarrier,What.BARRIER);
         myBarrier.countDown();
         notifyCompleted(harness);
 

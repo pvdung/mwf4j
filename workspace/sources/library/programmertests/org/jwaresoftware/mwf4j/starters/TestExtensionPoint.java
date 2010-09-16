@@ -20,7 +20,7 @@ import  org.jwaresoftware.mwf4j.TestFixture;
  * @.group    impl,test,helper
  **/
 
-public abstract class TestExtensionPoint extends ExtensionPoint
+public abstract class TestExtensionPoint extends CloneableExtensionPoint
 {
     protected TestExtensionPoint(String id)
     {
@@ -35,15 +35,31 @@ public abstract class TestExtensionPoint extends ExtensionPoint
     public void doEnter(Harness h) 
     {
         super.doEnter(h);
-        TestFixture.incStatementCount();
-        TestFixture.addPerformed(getId());
+        if (wantsEnterLeaveMarked()) {
+            TestFixture.incStatementCount();
+            TestFixture.addPerformed(getId());
+        }
     }
     
     public void doLeave(Harness h)
     {
-        TestFixture.addExited(getId());
+        if (wantsEnterLeaveMarked()) {
+            TestFixture.addExited(getId());
+        }
         super.doLeave(h);
     }
+
+    public final void setEnterLeaveMarked(boolean flag)
+    {
+        myEnterLeaveFlag=flag;
+    }
+
+    protected final boolean wantsEnterLeaveMarked()
+    {
+        return myEnterLeaveFlag;
+    }
+
+    private boolean myEnterLeaveFlag=true;//notify on enter+leave
 }
 
 

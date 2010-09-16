@@ -32,7 +32,7 @@ import  org.jwaresoftware.mwf4j.Variables;
  * @.group    impl,test
  **/
 
-@Test(groups= {"mwf4j","advanced","bal"})
+@Test(groups= {"mwf4j","advanced","bal","advanced"})
 public final class LaunchActionTest extends ActionTestSkeleton
 {
 //  ---------------------------------------------------------------------------------------

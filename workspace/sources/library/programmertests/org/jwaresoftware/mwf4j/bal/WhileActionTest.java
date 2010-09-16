@@ -12,12 +12,12 @@ import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.helpers.NIterations;
+import  org.jwaresoftware.mwf4j.helpers.Once;
+import  org.jwaresoftware.mwf4j.helpers.OnceAfterStarted;
 import  org.jwaresoftware.mwf4j.helpers.True;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
-import  org.jwaresoftware.mwf4j.starters.NIterations;
-import  org.jwaresoftware.mwf4j.starters.Once;
-import  org.jwaresoftware.mwf4j.starters.OnceAfterStarted;
 import  org.jwaresoftware.mwf4j.starters.StampAction;
 
 /**

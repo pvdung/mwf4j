@@ -12,6 +12,8 @@ import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.starters.CheckPerformed;
+import  org.jwaresoftware.mwf4j.starters.CheckPerformedInOrder;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
 import  org.jwaresoftware.mwf4j.starters.ExecutableTestSkeleton;
 import  org.jwaresoftware.mwf4j.starters.SleepAction;
@@ -56,6 +58,13 @@ public abstract class ActionTestSkeleton extends ExecutableTestSkeleton
         return new EpicFail();
     }
 
+    protected final static SequenceAction block(String id)
+    {
+        SequenceAction action = new SequenceAction(id);
+        action.setMode(SequenceAction.Mode.MULTIPLE);
+        return action;
+    }
+
     protected final static Action sleep(long millis)
     {
         return new SleepAction(millis);
@@ -77,6 +86,22 @@ public abstract class ActionTestSkeleton extends ExecutableTestSkeleton
         if (id==null) id= SleepAction.idFrom(_1SEC*numsecs);
         return new SleepAction(id,_1SEC*numsecs);
     }
+
+    protected final static Action checkdone(String name)
+    {
+        return new CheckPerformed("chk."+name,name);
+    }
+
+    protected final static Action checkdone(String name, int times)
+    {
+        return new CheckPerformed("chk."+name,name,times);
+    }
+
+    protected final static Action checkdoneorder(String subid, String names)
+    {
+        return new CheckPerformedInOrder("chk."+subid,names);
+    }
+
 
 //  ---------------------------------------------------------------------------------------
 //  The test cases (1 per method)

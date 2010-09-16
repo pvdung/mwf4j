@@ -5,11 +5,14 @@
 
 package org.jwaresoftware.mwf4j.scope;
 
+import  java.util.Collections;
 import  java.util.Iterator;
+import  java.util.List;
 
 import  org.jwaresoftware.gestalt.Effect;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.helpers.Pair;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
@@ -24,12 +27,22 @@ import  org.jwaresoftware.mwf4j.What;
  * for operations like unwinds, etc. A control flow statement that needs 
  * unwinding in case of an exception (e.g. sequences, loops, etc.), should
  * activate a scope and register their unwindable helpers when they're first
- * activated.
+ * activated. 
+ * <p/>
+ * Scopes also provide base support for <i>rewinding</i> of executed actions. 
+ * The application can retrieve a set of registered rewind points
+ * (only available for active scopes). If one of these rewind points is used,
+ * the existing scopes are unwound up to that point's own scope, and the
+ * owning statement re-run from the point described by the rewind point. Note
+ * that <em>what</em> exactly a rewind entails is control statement specific;
+ * for example, a sequence might let you rewind to any of its component 
+ * actions, whereas a loop forces you to rerun the entire thing as if no
+ * iterations had been done.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   n/a
+ * @.safety   special (data accessed is tied to thread-local)
  * @.group    infra,impl,helper
  * @see       MDC
  **/
@@ -45,7 +58,7 @@ public final class Scopes
         ScopeKey key = ScopeFactory.newKey(statement);
         MDC.pshifmissing(_STACK,key);
         try {
-            Scope block = ScopeFactory.newScope(name);
+            Scope block = ScopeFactory.newScope(statement,name);
             key.setScope(block);
             block.doEnter(harness);
             return block;
@@ -90,6 +103,23 @@ public final class Scopes
         return block;
     }
 
+    public static List<Scope> copyOf(Harness harness, boolean reverse)
+    {
+        Validate.stateIsTrue(harness==null || MDC.currentHarness()==harness,"harness is nearest");
+        List<Scope> list= LocalSystem.newList(MDC.size(_STACK));
+        Iterator<ScopeKey> qitr= MDC.itr(_STACK, ScopeKey.class);
+        if (qitr!=null) {
+            for (;qitr.hasNext();) {
+                Scope block = qitr.next().getScope();
+                Validate.fieldNotNull(block,What.SCOPE);
+                list.add(block);
+            }
+            if (reverse && !list.isEmpty())
+                Collections.reverse(list);//OLDEST first...
+        }
+        return list;
+    }
+
     public static void addUnwind(Unwindable participant)
     {
         nearestOrFail().addUnwind(participant);
@@ -115,7 +145,7 @@ public final class Scopes
             Scope block = nextKey.getScope();
             Validate.fieldNotNull(block,What.SCOPE);
             if (unwindFirst) 
-                block.unwindAll(harness);
+                block.doUnwind(harness);
             block.doLeave(harness);
         } while (true);
     }
@@ -191,8 +221,35 @@ public final class Scopes
             unwindUpTo(harnessKey.getOwner(),harness);
         }
         if (harnessKey!=null) {
-            harnessKey.getScope().unwindAll(harness);
+            harnessKey.getScope().doUnwind(harness);
         }
+    }
+
+    public static Scope findOrFail(Rewindpoint marker) 
+    {
+        Validate.neitherNull(marker,What.CURSOR,marker.getOwner(),What.STATEMENT);
+        Scope block=null;
+        Iterator<ScopeKey> qitr = MDC.itr(_STACK,ScopeKey.class);
+        if (qitr!=null) {
+            final ControlFlowStatement target = marker.getOwner();
+            for (;qitr.hasNext();) {
+                ScopeKey nextKey = qitr.next();
+                if (target.equals(nextKey.getOwner())) {
+                    block = nextKey.getScope();
+                    Validate.fieldNotNull(block,What.SCOPE);
+                    break;
+                }
+            }
+        }
+        return block;
+    }
+
+    public static ControlFlowStatement rewindFrom(Rewindpoint marker, Harness harness)
+    {
+        Validate.neitherNull(marker,What.CURSOR,harness,What.HARNESS);
+        Scope block = findOrFail(marker);
+        unwindUpTo(block.getOwner(),harness);
+        return block.doRewind(marker,harness);
     }
 }
 

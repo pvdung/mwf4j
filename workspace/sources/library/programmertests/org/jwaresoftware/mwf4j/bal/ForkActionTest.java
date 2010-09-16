@@ -37,7 +37,7 @@ import  org.jwaresoftware.mwf4j.starters.TestStatement;
  * @.group    impl,test
  **/
 
-@Test(groups= {"mwf4j","baseline","bal"})
+@Test(groups= {"mwf4j","baseline","bal","advanced"})
 public final class ForkActionTest extends ActionTestSkeleton
 {
 //  ---------------------------------------------------------------------------------------

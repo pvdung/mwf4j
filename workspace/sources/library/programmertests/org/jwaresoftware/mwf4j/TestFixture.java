@@ -5,9 +5,11 @@
 
 package org.jwaresoftware.mwf4j;
 
+import  java.util.Arrays;
 import  java.util.Collection;
 import  java.util.List;
 
+import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
 import  org.jwaresoftware.gestalt.fixture.FixtureProperties;
@@ -40,6 +42,7 @@ public final class TestFixture
     {
         LocalSystem.setProperty("ojg.ns", "mwf4j");
         LocalSystem.setProperty("mwf4j.environment.type","DEV");
+        LocalSystem.setProperty("mwf4j.logger",Feedback.GROUPING_CORE);
         LocalSystem.setProperty("mwf4j.logger.diagnostics",Diagnostics.GROUPING_CORE);
         LocalSystem.setProperty("mwf4j.name","MWf4J_TestBench");
         return new FromPropertiesFixture(new FixtureProperties.FromLocalSystem());
@@ -138,6 +141,12 @@ public final class TestFixture
     public static final List<String> getUnwound()
     {
         return MDC.get(STMT_UNWIND_NAMELIST,List.class);
+    }
+
+    public static final void print(List<String> names, String label) 
+    {
+        if (names==null) names = Empties.STRING_LIST;
+        LocalSystem.show(label+": "+Arrays.toString(names.toArray()));
     }
 
     @SuppressWarnings("unchecked")

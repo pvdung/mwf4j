@@ -10,7 +10,10 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
+import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
+import  org.jwaresoftware.mwf4j.scope.RewindCursor;
+import  org.jwaresoftware.mwf4j.scope.Scope;
 import  org.jwaresoftware.mwf4j.scope.Scopes;
 import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
 
@@ -53,7 +56,7 @@ public final class ReentrantSupport extends StatementDependentSkeleton implement
             myCalledLatch=true;
             //NB: ORDERING IS IMPORTANT HERE!!
             if (myScopedFlag) {
-                Scopes.enter(getOwner(),harness);
+                myScope=Scopes.enter(getOwner(),harness);
             }
             if (myUnwinder!=null) {
                 harness.addUnwind(myUnwinder);
@@ -94,11 +97,31 @@ public final class ReentrantSupport extends StatementDependentSkeleton implement
     {
         myCalledLatch=false;
         myUnwinder=unwinder;
+        myScope=null;
     }
+
+    public Scope scope()
+    {
+        return myScope;
+    }
+
+    public void addRewindpoint(RewindCursor cursor)
+    {
+        Validate.fieldNotNull(myScope,What.SCOPE);
+        myScope.addRewindpoint(cursor);
+    }
+
+    public void removeRewindpoint(RewindCursor cursor)
+    {
+        Validate.fieldNotNull(myScope,What.SCOPE);
+        myScope.removeRewindpoint(cursor);
+    }
+
 
     private boolean myCalledLatch;
     private Unwindable myUnwinder;
     private final boolean myScopedFlag;
+    private Scope myScope;
 }
 
 

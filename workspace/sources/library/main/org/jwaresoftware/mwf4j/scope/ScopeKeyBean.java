@@ -19,7 +19,7 @@ import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   n/a
+ * @.safety   single
  * @.group    infra,impl,helper
  **/
 

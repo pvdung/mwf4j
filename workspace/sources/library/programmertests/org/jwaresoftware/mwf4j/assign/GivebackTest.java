@@ -183,6 +183,8 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         Object a = GivebackVar.fromEval(key,false).call();
         System.out.println("IT("+key+"): "+a);
         assertNull(a,"<random> key is null");
+        a = GivebackVar.fromEvalOfOptional(key).call();
+        assertNull(a,"<random> key is null");
     }
 
     public void testGivebackNull()

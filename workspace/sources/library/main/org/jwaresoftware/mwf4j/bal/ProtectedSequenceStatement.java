@@ -52,44 +52,30 @@ public class ProtectedSequenceStatement extends SequenceStatement implements Pro
         myTrySupport.setUseContinuation(flag);
     }
 
-    protected ControlFlowStatement runInner(Harness harness)
-    {
-        ControlFlowStatement next;
-        if (getMembers().hasNext()) {
-            myUnwindSupport.loop(harness);
-            next = harness.runParticipant(protect(getMembers().next()));
-            if (next instanceof ThrowStatement) {
-                ThrowStatement lastThrown = (ThrowStatement)next;
-                next = myTrySupport.handle(next(),lastThrown,harness);//NB: abort;move past me... 
-            }
-        } else {
-            next = next();//NB: move past me...
-            myUnwindSupport.finished(harness);
-        }
-        return next;
-    }
-
     private ControlFlowStatement protect(ControlFlowStatement statement)
     {
         return BALHelper.protect(getOwner(),statement);
     }
 
-    private void resetThis()
+    @Override
+    ControlFlowStatement runMember(int index, Harness harness, ControlFlowStatement member)
     {
+        ControlFlowStatement next = harness.runParticipant(protect(member));
+        if (next instanceof ThrowStatement) {
+            ThrowStatement lastThrown = (ThrowStatement)next;
+            lastThrown.setPosition(index);
+            next = myTrySupport.handle(next(),lastThrown,harness);//NB: abort;move past me... 
+        }
+        return next;
+    }
+
+    @Override
+    final void resetThis()
+    {
+        super.resetThis();
         myTrySupport.reset(false,false,true);
     }
 
-    public void unwind(Harness harness)
-    {
-        resetThis();
-        super.unwind(harness);
-    }
-
-    public void reset()
-    {
-        resetThis();
-        super.reset();
-    }
 
     private TrySupport myTrySupport;
 }

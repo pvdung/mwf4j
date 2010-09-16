@@ -18,6 +18,7 @@ import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackValue;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
+import  org.jwaresoftware.mwf4j.helpers.ClosureException;
 
 /**
  * Starting point for application statements that actually do
@@ -115,8 +116,15 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
     protected void consumePayload(T payload, Harness harness)
     {
         Validate.fieldNotNull(mySetter,What.SET_METHOD);
-        if (!mySetter.put(getToKey(), payload)) {
-            breadcrumbs().write("Unable to complete 'put' of assignment!");
+        String underKey = getToKey();
+        if (payload!=null) {
+            if (!mySetter.put(underKey, payload)) {
+                breadcrumbs().write("Unable to complete 'put' of assignment!");
+            }
+        } else {
+            if (!mySetter.putNull(underKey)) {
+                breadcrumbs().write("Unable to complete 'putNull' of assignment!");
+            }
         }
     }
 
