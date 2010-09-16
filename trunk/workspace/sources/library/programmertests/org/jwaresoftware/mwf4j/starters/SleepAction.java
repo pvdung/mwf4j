@@ -7,8 +7,10 @@ package org.jwaresoftware.mwf4j.starters;
 
 import  java.util.concurrent.TimeUnit;
 
+import  org.jwaresoftware.gestalt.Validate;
+
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
-import  org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.What;
 
 /**
  * Action that blocks its parent thread for specified amount of time.
@@ -16,11 +18,12 @@ import  org.jwaresoftware.mwf4j.Harness;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   single
+ * @.safety   multiple (once configured)
  * @.group    impl,test,helper
+ * @see       SleepStatement
  **/
 
-public final class SleepAction extends TestExtensionPoint
+public final class SleepAction extends ActionSkeleton
 {
     public final static String idFrom(long millis)
     {
@@ -44,14 +47,16 @@ public final class SleepAction extends TestExtensionPoint
         myMillis = millis;
     }
 
-    protected ControlFlowStatement runInner(Harness harness)
+    public void configure(ControlFlowStatement statement)
     {
-        try {
-            Thread.sleep(myMillis);
-        } catch(InterruptedException iruptedX) {
-            breadcrumbs().caught(iruptedX);
-        }
-        return next();
+        Validate.isA(statement,SleepStatement.class,What.STATEMENT);
+        ((SleepStatement)statement).setMillis(myMillis);
+    }
+
+    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    {
+        SleepStatement sleep = new SleepStatement(getId(),this,next);
+        return finish(sleep);
     }
 
     private long myMillis;

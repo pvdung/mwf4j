@@ -46,11 +46,12 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
         this(null,true,Mode.EXPRESSION);
     }
 
-    protected GivebackMapEntrySkeleton(T fallbackValue, boolean failIfError, Mode mode)
+    protected GivebackMapEntrySkeleton(T fallbackValue, boolean failIfError, boolean quiet, Mode mode)
     {
         myDirectFlag = Mode.DIRECT.equals(mode);
         myFallbackValue = fallbackValue;
         myHaltIfErrorFlag = failIfError;
+        myQuietFlag = quiet;
     }
 
     protected GivebackMapEntrySkeleton(T fallbackValue, boolean failIfError)
@@ -58,6 +59,10 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
         this(fallbackValue,failIfError,Mode.EXPRESSION);
     }
 
+    protected GivebackMapEntrySkeleton(T fallbackValue, boolean failIfError, Mode mode)
+    {
+        this(fallbackValue,failIfError,false,mode);
+    }
 
     public T call()
     {
@@ -82,7 +87,7 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
                 throw new GivebackException(selector,getX);
             }
             gotten = null;
-            if (Diagnostics.ForFlow.isWarnEnabled())
+            if (!myQuietFlag && Diagnostics.ForFlow.isWarnEnabled())
                 Diagnostics.ForFlow.warn("Unable to eval giveback '"+selector+"'",getX);
         }
         return gotten==null ? myFallbackValue : gotten;
@@ -107,8 +112,11 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
             throw new GivebackException(rtX);
         }
     }
+
+
     private final boolean myDirectFlag;
     private final boolean myHaltIfErrorFlag;
+    private final boolean myQuietFlag;
     private T myFallbackValue;
 }
 

@@ -39,6 +39,7 @@ public class What extends org.jwaresoftware.gestalt.What
     public final static String CONFIG       = "configuration";
     public final static String BARRIER      = "barrier";
     public final static String REFERENCE    = "reference";
+    public final static String OWNER        = "owner";
 
     public static final String getNonBlankId(final Identified object)
     {

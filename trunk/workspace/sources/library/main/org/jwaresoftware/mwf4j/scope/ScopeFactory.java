@@ -41,12 +41,12 @@ public final class ScopeFactory
     public interface SPI
     {
         ScopeKey newKey(ControlFlowStatement owner);
-        Scope newScope(String name);
+        Scope newScope(ControlFlowStatement owner, String name);
 
 
         /** 
          * Null-proxy provider that returns singleton null-proxy bean
-         * and key.
+         * and key. Only useful as a <em>marker</em>!
          *
          * @since   JWare/MWf4J 1.0.0
          * @author  ssmc, &copy;2009 <a href="@Module_WEBSITE@">SSMC</a>
@@ -60,7 +60,7 @@ public final class ScopeFactory
             public ScopeKey newKey(ControlFlowStatement owner) {
                 return ScopeKey.nullINSTANCE;
             }
-            public Scope newScope(String name) {
+            public Scope newScope(ControlFlowStatement owner, String name) {
                 return Scope.nullINSTANCE;
             }
         }
@@ -80,8 +80,8 @@ public final class ScopeFactory
             public ScopeKey newKey(ControlFlowStatement owner) {
                 return new ScopeKeyBean(owner);
             }
-            public Scope newScope(String name) {
-                return new ScopeBean(name);
+            public Scope newScope(ControlFlowStatement owner, String name) {
+                return new ScopeBean(owner,name);
             }
         }
     }
@@ -99,9 +99,9 @@ public final class ScopeFactory
         return key;
     }
 
-    public final static Scope newScope(String name)
+    public final static Scope newScope(ControlFlowStatement statement, String name)
     {
-        Scope scope = INSTANCE.newScope(name);
+        Scope scope = INSTANCE.newScope(statement,name);
         Validate.resultNotNull(scope,"scope");
         return scope;
     }

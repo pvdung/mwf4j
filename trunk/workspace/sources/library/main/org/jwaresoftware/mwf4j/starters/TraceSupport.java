@@ -93,6 +93,15 @@ public class TraceSupport
     }
 
 
+    public final void signaling(String message)
+    {
+        if (isEnabled()) {
+            Object[] finalargs= new Object[]{currentIndent(),myLink.getId(),message};
+            logger().error("{} >Signal from '{}': {}",finalargs);
+        }
+    }
+
+
     protected final String indentMarker()
     {
         return myIndentMarker;
@@ -109,7 +118,6 @@ public class TraceSupport
     {
         Object[] args = new Object[]{MDC.enterIndent(indentMarker()),myLink.typeCN(),myLink.toString()};
         logger().trace("{}Enter {} {}",args);
-
     }
 
 
@@ -140,6 +148,15 @@ public class TraceSupport
     {
         if (isEnabled()) {
             logger().trace("{} >NEXT: {}",currentIndent(),next);
+        }
+    }
+
+
+    public void doUnwind(Harness h)
+    {
+        if (isEnabled()) {
+            Object[] args = new Object[]{currentIndent(),myLink.typeCN(),myLink.toString()};
+            logger().trace("{}Unwind {} {}",args);
         }
     }
 

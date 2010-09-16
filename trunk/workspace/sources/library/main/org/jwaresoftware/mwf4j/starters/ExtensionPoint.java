@@ -31,12 +31,14 @@ import  org.jwaresoftware.mwf4j.What;
  * (re)use from a single thread of control. Because the 'next' continuation
  * attribute for an extension point will change for each reuse via
  * 'makeStatement' and internal states can change for 'runInner' you should
- * not use a single extension point instance from multiple threads.
+ * not use a single extension point instance from multiple threads. Therefore,
+ * do not use extension points from containers like sequences and loops
+ * that might create copies for use in forked or other multi-threaded cases.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   single
+ * @.safety   single (including ALL subclasses)
  * @.group    infra,impl
  **/
 

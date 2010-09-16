@@ -10,10 +10,10 @@ import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.helpers.False;
+import  org.jwaresoftware.mwf4j.helpers.Once;
+import  org.jwaresoftware.mwf4j.helpers.OnceAfterStarted;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
-import  org.jwaresoftware.mwf4j.starters.Once;
-import  org.jwaresoftware.mwf4j.starters.OnceAfterStarted;
 
 /**
  * Test suite for {@linkplain DoWhileAction} and associated statements.

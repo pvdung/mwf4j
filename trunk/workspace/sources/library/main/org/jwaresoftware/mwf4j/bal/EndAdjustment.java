@@ -20,7 +20,7 @@ import  org.jwaresoftware.mwf4j.starters.ExtensionPoint;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   multiple
+ * @.safety   special (for use only to terminal a harness run)
  * @.group    infra,impl,helper
  **/
 

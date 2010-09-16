@@ -15,9 +15,10 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 /**
  * Test action that unconditionally returns an instance of a user-supplied 
  * statement class. Assumes there is a public constructur for statement class
- * that takes an action and control flow statement reference. 
+ * that takes an action and control flow statement reference. Target statement
+ * must be enterly defined by this single constructor.
  *
- * @since     JWare/MWf4j 1.0.0
+ * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single

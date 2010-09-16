@@ -3,7 +3,7 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j.starters;
+package org.jwaresoftware.mwf4j.helpers;
 
 import  java.util.concurrent.atomic.AtomicBoolean;
 

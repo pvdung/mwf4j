@@ -24,7 +24,9 @@ import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
  * <p/>
  * Ensures the thrown exception is-a RuntimeException. Next statement
  * (if every queried) is always and {@linkplain EndStatement end
- * statement}.
+ * statement}. For index-based composites, you can associate a position
+ * marker with each throw which you can use to determine the whether a
+ * rewind affects delayed signals.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
@@ -92,10 +94,21 @@ public final class ThrowStatement extends BALStatement
         return this.nextThrown;
     }
 
+    public void setPosition(int internalMark)
+    {
+        myPosition = internalMark;
+    }
+
+    public final int getPosition()
+    {
+        return myPosition;
+    }
+
     public void reconfigure()
     {
         nextThrown = null;
         length = 1;
+        myPosition = -1;
         super.reconfigure();
     }
 
@@ -129,7 +142,8 @@ public final class ThrowStatement extends BALStatement
     private Exception theCause;
     private ThrowStatement nextThrown;
     private int length=1;
-    private String myAnnouncement;
+    private String myAnnouncement;//OPTIONAL
+    private int myPosition= -1;//OPTIONAL
 }
 
 

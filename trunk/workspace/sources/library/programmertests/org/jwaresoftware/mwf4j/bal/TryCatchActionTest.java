@@ -28,7 +28,7 @@ import  org.jwaresoftware.mwf4j.assign.Giveback;
 import  org.jwaresoftware.mwf4j.assign.GivebackVar;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.starters.ExtensionPoint;
-import org.jwaresoftware.mwf4j.starters.InstallCheckUnwind;
+import  org.jwaresoftware.mwf4j.starters.AddTestUnwindAction;
 import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
 
 /**
@@ -84,9 +84,9 @@ public final class TryCatchActionTest extends ActionTestSkeleton
         return newOUT(null);
     }
 
-    private Action checkunwind(String id)
+    private Action unwind(String id)
     {
-        return new InstallCheckUnwind(id);
+        return new AddTestUnwindAction(id);
     }
 
     private TryCatchAction trycatch(String id, Action body)
@@ -429,9 +429,9 @@ public final class TryCatchActionTest extends ActionTestSkeleton
     @Test(dependsOnMethods={"testFailureInHandlerAbortsButCallsAlwaysStill_1_0_0","testFailureInAlwaysAborts_1_0_0"},expectedExceptions= {RunFailedException.class})
     public void testUnwind_1_0_0()
     {
-        Sequence body = new SequenceAction("m").add(touch("m.1")).add(checkunwind("m.2")).add(error("m.e"));
-        Sequence iferror = new SequenceAction("e").add(touch("e.1")).add(checkunwind("e.2")).add(error("IFERROR!")).add(never());
-        Sequence always = new SequenceAction("a").add(touch("a.1")).add(checkunwind("a.2")).add(error("ALWAYS!")).add(never());
+        Sequence body = new SequenceAction("m").add(touch("m.1")).add(unwind("m.2")).add(error("m.e"));
+        Sequence iferror = new SequenceAction("e").add(touch("e.1")).add(unwind("e.2")).add(error("IFERROR!")).add(never());
+        Sequence always = new SequenceAction("a").add(touch("a.1")).add(unwind("a.2")).add(error("ALWAYS!")).add(never());
         TryCatchAction out = newOUT("t");
         out.setHaltIfError(false);
         out.setBody(body);

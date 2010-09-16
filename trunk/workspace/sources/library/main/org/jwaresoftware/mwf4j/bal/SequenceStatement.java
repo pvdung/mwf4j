@@ -17,6 +17,9 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
+import  org.jwaresoftware.mwf4j.scope.NumberRewindCursor;
+import  org.jwaresoftware.mwf4j.scope.RewindCursor;
+import  org.jwaresoftware.mwf4j.scope.Rewindable;
 
 /**
  * Control flow statement that iterates through statements returned
@@ -43,9 +46,11 @@ import  org.jwaresoftware.mwf4j.behaviors.Resettable;
  * @see       SequenceAction
  **/
 
-public class SequenceStatement extends BALStatement implements Unwindable, Resettable
+public class SequenceStatement extends BALStatement implements Unwindable, Resettable, Rewindable
 {
-    static final Iterator<ControlFlowStatement> NONE = Empties.newIterator();
+    private static final List<Action> NO_MEMBERS= Empties.newList();
+    private static final Iterator<ControlFlowStatement> NO_FEED = Empties.newIterator();
+    
 
     public SequenceStatement(Action owner, ControlFlowStatement next)
     {
@@ -56,33 +61,40 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
     public void setMembers(List<Action> actions)
     {
         Validate.notNull(actions,What.ACTIONS);
-        myMembers = new StatementIterator(this,actions);
+        myMembers = actions;
+        myMemberFeed = new StatementIterator(this,actions);
     }
 
     protected ControlFlowStatement runInner(Harness harness)
     {
         ControlFlowStatement next;
-        if (myMembers.hasNext()) {
+        if (myMemberFeed.hasNext()) {
             myUnwindSupport.loop(harness);
-            myCount++;
-            next = harness.runParticipant(myMembers.next());//NB:continuation|get next...
+            myUnwindSupport.addRewindpoint(newRewindpoint(myCount));
+            next = runMember(myCount++,harness,myMemberFeed.next());
         } else {
-            next = next();
-            myUnwindSupport.finished(harness);
+            next = finishThis(harness,next());
         }
         return next;
     }
 
-    protected final Iterator<ControlFlowStatement> getMembers()
+    ControlFlowStatement finishThis(Harness harness, ControlFlowStatement next)
     {
-        return myMembers;
+        myUnwindSupport.finished(harness);
+        return next;
     }
 
-    private void resetThis()
+    void resetThis()
     {
-        myMembers = NONE;
+        myMembers = NO_MEMBERS;
+        myMemberFeed = NO_FEED;
         myCount = 0;
         myUnwindSupport.reset(this);
+    }
+
+    ControlFlowStatement runMember(int index, Harness harness, ControlFlowStatement member)
+    {
+        return harness.runParticipant(member);
     }
 
     public void reconfigure()
@@ -94,6 +106,7 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
 
     public void unwind(Harness harness)
     {
+        breadcrumbs().doUnwind(harness);
         resetThis();
     }
 
@@ -107,10 +120,31 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
         return super.addToString(sb).append("|called=").append(myCount);
     }
 
+    public ControlFlowStatement rewind(RewindCursor to, Harness harness)
+    {
+        Validate.isA(to,NumberRewindCursor.class,What.CURSOR);
+        int index = ((NumberRewindCursor)to).getInt();
+        Validate.isTrue(0<=index && index<myMembers.size(), "valid rewind index["+index+"]");
+        rewindThis(index,harness);
+        return this;
+    }
+
+    void rewindThis(int index, Harness harness)
+    {
+        myCount = index;
+        myMemberFeed = new StatementIterator(this,myMembers.subList(index, myMembers.size()));
+    }
+
+    protected NumberRewindCursor newRewindpoint(int index)
+    {
+        String aid = getWhatId();//NB: make it something determinate for testability!
+        return new NumberRewindCursor(this,myCount,NumberRewindCursor.nameFrom(aid,index));
+    }
 
 
     private int myCount;
-    private Iterator<ControlFlowStatement> myMembers = NONE;
+    private List<Action> myMembers = NO_MEMBERS;
+    private Iterator<ControlFlowStatement> myMemberFeed = NO_FEED;
     ReentrantSupport myUnwindSupport;//NB:visible to BAL subclasses ONLY!
 }
 

@@ -7,13 +7,9 @@ package org.jwaresoftware.mwf4j.starters;
 
 import  static org.testng.Assert.*;
 
-import  org.jwaresoftware.gestalt.Strings;
-
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
-import  org.jwaresoftware.mwf4j.TestFixture;
-
 
 /**
  * Test statement to verify basic bits about incoming harness on 'run' handling.
@@ -25,7 +21,7 @@ import  org.jwaresoftware.mwf4j.TestFixture;
  * @.group    impl,test
  **/
 
-public class TestStatement extends StatementSkeleton
+public class TestStatement extends LiteLiteStatementSkeleton
 {
     public TestStatement(Action owner, ControlFlowStatement next)
     {
@@ -47,59 +43,11 @@ public class TestStatement extends StatementSkeleton
         assertNotNull(wrt.getExecutorService(),"executor");
     }
 
-    public void doEnter(Harness wrt)
-    {
-        super.doEnter(wrt);
-        TestFixture.incStatementCount();
-        addPerformedIfNamed();
-    }
-
-    public void doLeave(Harness wrt)
-    {
-        addExitedIfNamed();
-        super.doLeave(wrt);
-    }
-
-    private String getName()
-    {
-        String name = myId;
-        if (name==null) {
-            Action owner = getOwner();
-            if (owner!=null && !Strings.isEmpty(owner.getId())) {
-                name = owner.getId();
-            }
-        }
-        return name;
-    }
-
-    protected final void addPerformedIfNamed()
-    {
-        String name = getName();
-        if (name!=null) {
-            TestFixture.addPerformed(name);//Must work for multiple calls to same-named statement!
-        }
-    }
-
-    protected final void addExitedIfNamed()
-    {
-        String name = getName();
-        if (name!=null) {
-            TestFixture.addExited(name);//Must work for multiple calls to same-named statement!
-        }
-    }
-
     protected ControlFlowStatement runInner(Harness wrt)
     {
         doAssertions(wrt);
         return next();
     }
-
-    public void setId(String id)
-    {
-        myId = id;
-    }
-
-    protected String myId=null;
 }
 
 
