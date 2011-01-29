@@ -6,22 +6,31 @@
 package org.jwaresoftware.mwf4j;
 
 /**
- * A single component of an {@linkplain Activity}. Actions can be 
- * atomic (indivisible) or composite.
+ * The definition of a single action in some {@linkplain Activity activity}.  
+ * Actions can be atomic (indivisible) or composite (sub-actions); synchronous
+ * or asynchrous. Technically, actions are not "the thing what gets executed"
+ * when an activity is run; instead, every action functions as a 
+ * {@linkplain #makeStatement factory} for the runnable control 
+ * {@linkplain ControlFlowStatement statement(s)} that actually do the work 
+ * when the action is "run" as part of an activity by a {@linkplain Harness
+ * harness}. You use actions as a way to <em>define the piece of work  
+ * and to create a harness-executable representation of that work</em>.
  * <p/>
- * A single action instance can be 're-executed' within its lifetime
- * if its {@linkplain #makeStatement makeStatement} factory method is 
- * triggered multiple times. Whether the action can be reconfigured 
- * with new attribute values (which are then passed through to subsequent 
- * new statements) is implementation defined. Therefore, <em>ALL</em> 
- * per-call dependent state should be transfered or stored within a
- * generated control statement before returning from the factory method.
+ * A single action instance can be "re-run" within its lifetime if its
+ * {@linkplain #makeStatement factory method} is triggered 
+ * multiple times. Whether you can reconfigure an action to a different
+ * definition between calls to run is implementation defined. Therefore, 
+ * to be safe, your actions should transfer <em>ALL</em> state that its
+ * control statement needs to function <em>to the statement itself</em>  
+ * before returning from the factory method.
  * <p/>
- * It may also be possible for a single action instance to be shared  
- * by multiple other actions <em>at the same time</em>. While this is largely
- * system-dependent, if an action is used as a memory-based store for
- * shared context, it's possible it will participate in distinct actions,
- * possibly concurrently.
+ * It is also possible for a single action instance to be used by multiple
+ * other actions <em>at the same time</em> (for example, another composite
+ * action). While if/how this works this is largely system-dependent, it's 
+ * possible a user will try to use a single action instance in distinct 
+ * activities, possibly concurrently. So if your action is a memory-based 
+ * store for shared context you must document its limitations under such
+ * use cases accordingly.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
