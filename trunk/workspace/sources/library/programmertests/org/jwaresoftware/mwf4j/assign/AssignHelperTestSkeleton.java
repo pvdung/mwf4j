@@ -31,7 +31,7 @@ import  org.jwaresoftware.testng.TestLabel;
  * Starting test suite skeleton for give and save back tests.
  *
  * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test

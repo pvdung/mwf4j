@@ -17,7 +17,7 @@ import  org.jwaresoftware.mwf4j.What;
  * works for many common application build workflows. 
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   guarded
  * @.group    impl,infra
@@ -54,10 +54,19 @@ public abstract class ActivitySkeleton extends ExecutableSkeleton implements Act
 
 
 
+    protected final Action getDefinitionOrFail()
+    {
+        Action action = getDefinition();
+        Validate.fieldNotNull(action,What.ACTION);
+        return action;
+    }
+
+
+
     public ControlFlowStatement firstStatement()
     {
         ControlFlowStatement end = new ActivityEndStatement();
-        return getDefinition().makeStatement(end);
+        return getDefinitionOrFail().makeStatement(end);
     }
 
 

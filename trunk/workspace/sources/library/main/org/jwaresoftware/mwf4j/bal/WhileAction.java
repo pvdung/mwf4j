@@ -22,7 +22,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * loops with the {@linkplain #setHaltIfMax haltIfMax option}.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    infra,impl

@@ -33,7 +33,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionToActivityAdapter;
  * logged but "lost" to the parent.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   special (same as superclass)
  * @.group    infra,impl,helper

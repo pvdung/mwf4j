@@ -8,12 +8,13 @@ package org.jwaresoftware.mwf4j;
 import  org.jwaresoftware.gestalt.ServiceProviderException;
 
 /**
- * MWf4j marker runtime exception used when other, more specific, 
- * exception not available. Also can use to wrap checked exception if
- * subclass implements Throwables&#46;CheckedWrapper.
+ * MWf4j marker runtime exception used when another, more specific, 
+ * exception is not available. You can also use this type of exception to
+ * wrap a checked exception if subclass implements 
+ * Throwables&#46;CheckedWrapper.
  *
- * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @since     JWare/MWf4J 1.0.0
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    api,infra

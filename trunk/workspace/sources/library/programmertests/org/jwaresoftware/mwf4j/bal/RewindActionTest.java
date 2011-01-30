@@ -21,13 +21,13 @@ import  org.jwaresoftware.mwf4j.scope.NumberRewindCursor;
  * Test suite for {@linkplain RewindAction} and associated components.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test
  **/
 
-@Test(groups= {"mwf4j","baseline","bal","advanced"})
+@Test(groups= {"mwf4j","bal","advanced"})
 public final class RewindActionTest extends ActionTestSkeleton
 {
 //  ---------------------------------------------------------------------------------------

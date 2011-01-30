@@ -18,9 +18,10 @@ import  org.jwaresoftware.mwf4j.assign.GivebackProperty.Source;
  * properties or the current harness's configuration override properties
  * (the default). Throws a {@linkplain SavebackException saveback exception} 
  * if the System or harness is unable to save property value for any reason.
+ * Null puts are interpreted as unsets for the named items.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    impl,helper

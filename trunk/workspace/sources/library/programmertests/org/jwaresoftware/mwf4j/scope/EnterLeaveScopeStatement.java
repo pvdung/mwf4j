@@ -14,7 +14,7 @@ import  org.jwaresoftware.mwf4j.starters.LiteLiteStatementSkeleton;
  * Statement that either enters of leaves an application-named scope.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test,helper

@@ -8,19 +8,25 @@ package org.jwaresoftware.mwf4j;
 
 /**
  * A statement whose execution results in a choice being made as to which
- * of one or more paths should be followed. A control statement instance
- * should belong to one action at most, during its lifetime. 
- * <p/>
- * A control statement can spawn dynamic continuation statements which it 
- * must 'pass back' to the owning action for queuing and <em>eventual</em>
- * execution (the statement should never assume the continuation will
- * occur immediately on return from its own execution unless that is a 
- * contract established by the statement type with all actions). A
- * control statement should also not assume it is the <em>only</em> 
- * running statement associated with its action!
+ * of one or more paths should be followed. Within the context of an ongoing
+ * {@linkplain Activity activity}, think of a control statement as the
+ * ultimate, useful decider of whether a piece of work gets done or not. 
+ * (Note that a decision to "do the work" does not imply that the statement
+ * itself does the work or even knows what the work is; see {@linkplain 
+ * org.jwaresoftware.mwf4j.starters.ExtensionPoint extension point}.)
+ * <p/> 
+ * A control statement is typically created by an {@linkplain Action action}
+ * to which it is linked for the rest of its lifetime. However, a control 
+ * statement can spawn completely independent continuation statements which
+ * it passes to its execution {@linkplain Harness harness} for queuing and 
+ * <em>eventual</em> execution. The statement should never assume the 
+ * continuation will occur immediately on return from its own execution 
+ * unless that is a contract established by the statement type with all 
+ * harnesses. Finally, a control statement should never assume it is the 
+ * <em>only</em> running statement associated with its action or harness!
  *
- * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @since     JWare/MWf4J 1.0.0
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
  * @.group    api,infra

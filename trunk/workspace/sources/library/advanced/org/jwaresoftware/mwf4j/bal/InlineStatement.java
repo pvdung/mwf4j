@@ -19,7 +19,7 @@ import  org.jwaresoftware.mwf4j.What;
  * statement's scope. Uses a nested harness to do the heavy lifting.
  *
  * @since    JWare/MWf4J 1.0.0
- * @author   ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author   ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version  @Module_VERSION@
  * @.safety  special (same as superclass)
  * @.group   infra,impl,helper

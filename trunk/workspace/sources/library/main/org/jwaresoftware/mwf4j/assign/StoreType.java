@@ -10,7 +10,7 @@ package org.jwaresoftware.mwf4j.assign;
  * environment. Used by assignment statements.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    infra,api,helper

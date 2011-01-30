@@ -16,14 +16,14 @@ import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.MDC;
-import org.jwaresoftware.mwf4j.Sequence;
-import org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.Sequence;
+import  org.jwaresoftware.mwf4j.assign.StoreType;
 
 /**
  * Test suite for {@linkplain AssignAction} and its associated statements.
  *
  * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test

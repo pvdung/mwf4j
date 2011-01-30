@@ -20,7 +20,7 @@ import  org.jwaresoftware.mwf4j.What;
  * references with blank names (null or all whitespace) to be undefined.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,helper
@@ -70,6 +70,7 @@ public final class Reference extends Pair<String,StoreType> implements Named, Id
         return getName();
     }
 
+    @Override
     public String set1(String key)
     {
         Validate.notBlank(key,What.KEY);
@@ -86,6 +87,7 @@ public final class Reference extends Pair<String,StoreType> implements Named, Id
         return get2();
     }
 
+    @Override
     public StoreType set2(StoreType storeType)
     {
         Validate.notNull(storeType,What.TYPE);

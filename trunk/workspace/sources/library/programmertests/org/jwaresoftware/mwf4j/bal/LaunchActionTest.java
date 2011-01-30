@@ -26,13 +26,13 @@ import  org.jwaresoftware.mwf4j.Variables;
  * here; see {@linkplain ListenActionTest} for additional uses of launch.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test
  **/
 
-@Test(groups= {"mwf4j","advanced","bal","advanced"})
+@Test(groups= {"mwf4j","bal","advanced"})
 public final class LaunchActionTest extends ActionTestSkeleton
 {
 //  ---------------------------------------------------------------------------------------

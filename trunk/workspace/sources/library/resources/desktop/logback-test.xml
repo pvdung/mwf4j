@@ -34,9 +34,11 @@
   <logger name="JWare" level="TRACE">
     <appender-ref ref="OJG"/>
   </logger>
+
   <logger name="Diagnostics.JWare" level="TRACE" additivity="false">
     <appender-ref ref="OJG-DIAGNOSTICS"/>
   </logger>
+
   <logger name="Diagnostics.JWare.Services.MWf4J.Flow" level="TRACE" additivity="false">
     <appender-ref ref="MWf-DIAGNOSTICS-FLOW"/>
   </logger>

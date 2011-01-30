@@ -11,10 +11,11 @@ import  org.jwaresoftware.gestalt.reveal.Identified;
 
 /**
  * Mixin interface that lets tracing and history components work with
- * any source object.
+ * any source object. Assumes an SLF4J framework-based implemenation for
+ * feedback.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    api,helper
@@ -26,21 +27,21 @@ public interface Traceable extends Identified
     /**
      * Returns a marker name for same-type components participating
      * in the execution. For instance, all control flow statements
-     * might return "statement" while all actions might return "actions".
+     * might return "statement" while all actions might return "action".
      **/
     String typeCN();
 
     
     /**
-     * Returns the logger the tracing component should use by default.
+     * Returns the SLF4J logger the tracing component should use by default.
      * Never returns <i>null</i>; typically shared by same-type components.
      **/
     Logger logger();
-    
+
 
     /** 
-     * Returns descriptive string for use in the trace stream. Note that 
-     * this string is often NOT  the same as the regular 
+     * Returns a descriptive string of this object for use in the trace 
+     * stream. Note that this string is often NOT the same as the regular 
      * Object&#46;toString's output!
      **/
     String toString();

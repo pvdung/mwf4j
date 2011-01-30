@@ -19,7 +19,7 @@ import  org.jwaresoftware.mwf4j.What;
  * you customize the factory, you should do this ONCE and AS SOON AS POSSIBLE.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
  * @.group    infra,impl,helper
@@ -33,7 +33,7 @@ public final class ScopeFactory
      * {@linkplain ScopeFactory#setProviderInstance(SPI)} method.
      *
      * @since   JWare/MWf4J 1.0.0
-     * @author  ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @author  ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
      * @version @Module_VERSION@
      * @.safety n/a
      * @.group  infra,impl,helper
@@ -49,7 +49,7 @@ public final class ScopeFactory
          * and key. Only useful as a <em>marker</em>!
          *
          * @since   JWare/MWf4J 1.0.0
-         * @author  ssmc, &copy;2009 <a href="@Module_WEBSITE@">SSMC</a>
+         * @author  ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
          * @version @Module_VERSION@
          * @.safety multiple
          * @.group  impl,helper
@@ -71,7 +71,7 @@ public final class ScopeFactory
          * {@linkplain ScopeBean} and {@linkplain ScopeKeyBean}.
          *
          * @since   JWare/MWf4J 1.0.0
-         * @author  ssmc, &copy;2009 <a href="@Module_WEBSITE@">SSMC</a>
+         * @author  ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
          * @version @Module_VERSION@
          * @.safety multiple
          * @.group  impl,helper

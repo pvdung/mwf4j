@@ -18,9 +18,12 @@ import  org.jwaresoftware.mwf4j.What;
  * its configuration, the local system, or something else. Basically
  * any information you can get to via a {@linkplain Giveback Giveback} 
  * interface.
+ * <p/>
+ * Any unhandled exception the giveback signals is wrapped by a outer
+ * {@linkplain GivebackException}.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    impl,helper

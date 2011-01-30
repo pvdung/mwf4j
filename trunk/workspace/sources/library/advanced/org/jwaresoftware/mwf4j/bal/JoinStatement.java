@@ -32,7 +32,7 @@ import  org.jwaresoftware.mwf4j.helpers.RetryDef;
  * if the join continues (silently) or signals an error.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    infra,impl
@@ -72,8 +72,11 @@ public class JoinStatement extends BALProtectorStatement implements Unwindable
         try {
             myUnwindSupport.loop(harness);
             boolean ok = true;
-            if (myRetries==null) myBarrier.await();
-            else ok = myBarrier.await(myRetries.getRetryWait().getLength(),myRetries.getRetryWait().getUOM());
+            if (myRetries==null) {
+                myBarrier.await();//NB: BLOCKS INDEFINITELY!
+            } else {
+                ok = myBarrier.await(myRetries.getRetryWait().getLength(),myRetries.getRetryWait().getUOM());
+            }
             if (ok) {
                 breadcrumbs().write("Release criteria met for join '{}' [count={}]",getWhatId(),myReleaseNum);
                 next = BALHelper.makeInstanceOfBody(this,harness,next(),myBody);

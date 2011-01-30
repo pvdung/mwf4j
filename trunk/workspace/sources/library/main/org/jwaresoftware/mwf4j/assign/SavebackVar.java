@@ -26,7 +26,8 @@ import  org.jwaresoftware.mwf4j.assign.GivebackMapEntrySkeleton.Mode;
  * the creation of the Jexl interpreter. So, for simple map puts, it's  
  * better to create a {@linkplain #toMap() direct saveback data} instance. 
  * Throws a {@linkplain SavebackException saveback exception} if the harness
- * is unable to save the value for any reason.
+ * is unable to save the value for any reason. Null puts are interpreted as
+ * removes for generic maps and null assignments for expressions.
  * <p/>
  * <pre>
  *   SavebackVar&lt;Long&gt; longSaver = new SavebackVar&lt;Long&gt;();
@@ -34,7 +35,7 @@ import  org.jwaresoftware.mwf4j.assign.GivebackMapEntrySkeleton.Mode;
  * </pre>
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    impl,helper

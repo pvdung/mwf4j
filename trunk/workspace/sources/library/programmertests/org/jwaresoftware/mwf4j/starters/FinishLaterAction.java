@@ -14,7 +14,7 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
  * just posts a no-op end statement for continuation testing).
  *
  * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    helper,test

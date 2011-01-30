@@ -24,7 +24,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * was supplied to the if action's statement factory method.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   special (multiple after configured for makeStatement)
  * @.group    infra,impl

@@ -10,8 +10,8 @@ import  org.jwaresoftware.gestalt.Strings;
 /**
  * MWf4J global constants.
  *
- * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @since     JWare/MWf4J 1.0.0
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
  * @.group    api,infra
@@ -32,8 +32,8 @@ public class MWf4J
      * Note that the services are named such that you can use the names directly
      * within container configuration files in JSON or XML.
      *
-     * @since     JWare/MWf4j 1.0.0
-     * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @since     JWare/MWf4J 1.0.0
+     * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
      * @version   @Module_VERSION@
      * @.safety   n/a
      * @.group    impl,infra

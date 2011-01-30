@@ -7,11 +7,11 @@ package org.jwaresoftware.mwf4j.assign;
 
 /**
  * Giveback implementation that just returns a payload that was 
- * assigned on construction. Useful for giving back hard-coded
+ * assigned at construction. Useful for giving back a hard-coded
  * constant or literal values.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    impl,helper

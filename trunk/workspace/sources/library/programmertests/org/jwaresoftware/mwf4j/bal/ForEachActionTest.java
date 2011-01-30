@@ -31,13 +31,12 @@ import  org.jwaresoftware.mwf4j.starters.ClosureSkeleton;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EchoStatement;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
-import  org.jwaresoftware.mwf4j.starters.TouchAction;
 
 /**
  * Test suite for the {@linkplain ForEachAction} and its associated statements.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test
@@ -289,8 +288,8 @@ public final class ForEachActionTest extends ActionTestSkeleton
         iniStatementCount();
         List<String> names = listOfThree();
 
-        SequenceAction body = new SequenceAction("foreachseq-body");
-        body.add(new TouchAction("action1"));
+        SequenceAction body = block("foreachseq-body");
+        body.add(touch("action1"));
         body.add(new EchoAction("foreachseq"));
         final int xpectedStatementCount = names.size()*body.size();
 
@@ -329,19 +328,19 @@ public final class ForEachActionTest extends ActionTestSkeleton
      * ]
      * </pre>
      */
-    public void test1NestedLevel_1_0_0()
+    public void testHappyPathForNestedBranch_1_0_0()
     {
         final String[] DOW= Strings.split("Mon,Tue,Wed,Thu,Fri,Sat,Sun",",");
         iniStatementCount();
         Map<String,Object> shared= iniDATAMAP();
-        Sequence seq = new SequenceAction("do")
+        Sequence seq = block("do")
                             .add(sete("a","wkend","(0+0)"))
                             .add(sete("b","wkday","(0+0)"))
                             .add(sete("c","count","(0+0)"));
         ForEachAction out= newOUT();
         out.setCursor("dayofweek");
         out.setDataset(Arrays.asList(DOW));
-        out.setBody(new SequenceAction("d")
+        out.setBody(block("d")
             .add(new EchoAction("d.1","dayofweek",true))
             .add(decision("d.2",
                     new IsWeekday(),
@@ -382,7 +381,7 @@ public final class ForEachActionTest extends ActionTestSkeleton
         action2_2.setBody(new EchoAction("action-3.0","k",true));
         action2_2.setCopy(false);
 
-        SequenceAction action1_1Body= new SequenceAction("action1_1.body");
+        SequenceAction action1_1Body= block("action1_1.body");
         action1_1Body.add(new EchoAction("action-2.0","j",true));
         action1_1Body.add(new EchoAction("action-2.1","j",StoreType.DATAMAP));
         action1_1Body.add(action2_2);
@@ -394,7 +393,7 @@ public final class ForEachActionTest extends ActionTestSkeleton
         action1_1.setBody(action1_1Body);
         action1_1.setCursorStoreType(StoreType.DATAMAP);
         
-        SequenceAction action0_0Body = new SequenceAction("action0_0.body");
+        SequenceAction action0_0Body = block("action0_0.body");
         action0_0Body.add(new EchoAction("action-1.0","i",true));
         action0_0Body.add(action1_1);
         action0_0Body.add(new EchoAction("action-1.2","i",true));
@@ -411,6 +410,21 @@ public final class ForEachActionTest extends ActionTestSkeleton
         assertTrue(wasPerformed("action-1.2[i0]",1),"action-1.2[i=0] performed 1 times");
         assertTrue(wasPerformed("action-1.2[i2]",1),"action-1.2[i=2] performed 1 times");
     }
+
+    /*
+    public void testForEachInsideDeepNestedSequence_1_0_0() //Verify cleanup of cursor!
+    {
+        iniStatementCount();
+        List<String> names = listOfThree();
+        ForEachAction out = newOUT();
+        out.setCursor("s");
+        out.setDataset(names);
+        out.setBody(new EchoAction("e","s"));
+        runTASK(Actions.blockz("t", Actions.singletonFactory(out), 3));
+        assertTrue(wasPerformed("larry",4));
+        assertTrue(wasPerformed("curly",4));
+    }
+    */
 }
 
 

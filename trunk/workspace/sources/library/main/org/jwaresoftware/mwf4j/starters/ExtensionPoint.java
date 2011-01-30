@@ -36,7 +36,7 @@ import  org.jwaresoftware.mwf4j.What;
  * that might create copies for use in forked or other multi-threaded cases.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single (including ALL subclasses)
  * @.group    infra,impl

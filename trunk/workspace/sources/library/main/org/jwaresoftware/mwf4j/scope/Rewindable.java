@@ -9,10 +9,11 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 
 /**
- * ---- (( INSERT DOCUMENTATION )) ----
+ * Mixin interface for any control flow statement that a harness can
+ * rewind to (for re-execution).
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
  * @.group    impl,infra
