@@ -17,7 +17,7 @@ import  org.jwaresoftware.mwf4j.TestFixture;
  * Test suite for {@linkplain ExtensionPoint} and typical usage expected.
  *
  * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test

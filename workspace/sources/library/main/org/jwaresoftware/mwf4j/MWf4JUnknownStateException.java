@@ -16,10 +16,10 @@ package org.jwaresoftware.mwf4j;
  * "out-of-memory" error. If the JVM's efforts work, the next closure to
  * access the MDC for the harness will be stuck. The application can rewind
  * to a point where it can reinstall the harness, restart the entire 
- * activity, or um die.
+ * activity, or (um) die.
  *
- * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @since     JWare/MWf4J 1.0.0
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    api,infra

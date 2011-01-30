@@ -39,7 +39,7 @@ import  org.jwaresoftware.mwf4j.behaviors.Protector;
  * handler by turning the {@linkplain #setQuiet(boolean) quiet} option off.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   special (multiple after configured for makeStatement)
  * @.group    infra,impl

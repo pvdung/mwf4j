@@ -24,7 +24,7 @@ import  org.jwaresoftware.mwf4j.starters.TouchAction;
  * Mostly adds a set of convenient helper action factory methods.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,test

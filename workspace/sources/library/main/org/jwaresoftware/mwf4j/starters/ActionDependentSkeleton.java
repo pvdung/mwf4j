@@ -12,11 +12,13 @@ import  org.jwaresoftware.mwf4j.ActionDependent;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
- * Starting implementation for action-dependent implementations.  
- * Tracks the owner action attribute.
+ * Starting implementation for action-dependent implementations. Tracks the
+ * owner action attribute and provides a basic identifier utility function,
+ * {@linkplain #getWhatId()} that is based on the dependent's owner's 
+ * identity.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,helper
@@ -56,7 +58,7 @@ public abstract class ActionDependentSkeleton implements ActionDependent
         return What.getNonBlankId(getOwner());
     }
 
-    private Action myOwner;
+    private Action myOwner;//NB: can be NULL
 }
 
 

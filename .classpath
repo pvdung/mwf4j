@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/.recycle|**/.recycle/|**/.svn|**/doc-files" kind="src" path="workspace/sources/library/main"/>
+    <classpathentry excluding="**/.recycle|**/.recycle/|**/.svn|**/doc-files" kind="src" path="workspace/sources/library/main"/>
     <classpathentry excluding="**/.recycle|**/.recycle/|**/.svn|**/doc-files" kind="src" path="workspace/sources/library/advanced"/>
-	<classpathentry excluding="**/.recycle|**/.recycle/|**/.svn|**/doc-files" kind="src" path="workspace/sources/library/programmertests"/>
-	<classpathentry excluding="**/.recycle|**/.recycle/" kind="src" path="workspace/sources/library/resources/shared"/>
-	<classpathentry excluding="**/.recycle|**/.recycle/" kind="src" path="workspace/sources/library/resources/desktop"/>
-	<classpathentry kind="src" path="workspace/sources/library/examples"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OJG"/>
-	<classpathentry kind="lib" path="dependencies/library/main/jkc-jexl/lib/commons-jexl.jar" sourcepath="dependencies/library/main/jkc-jexl/src.zip"/>
-	<classpathentry kind="lib" path="dependencies/library/main/logback/lib/logback-core.jar" sourcepath="dependencies/library/main/logback/src.zip"/>
-	<classpathentry kind="lib" path="dependencies/library/main/logback/lib/logback-classic.jar" sourcepath="dependencies/library/main/logback/src.zip"/>
-	<classpathentry kind="output" path="workspace/outputs/classes-eclipse"/>
+    <classpathentry excluding="**/.recycle|**/.recycle/|**/.svn|**/doc-files" kind="src" path="workspace/sources/library/programmertests"/>
+    <classpathentry excluding="**/.recycle|**/.recycle/" kind="src" path="workspace/sources/library/resources/shared"/>
+    <classpathentry excluding="**/.recycle|**/.recycle/" kind="src" path="workspace/sources/library/resources/desktop"/>
+    <classpathentry excluding="**/.recycle|**/.recycle/|**/.svn|**/doc-files" kind="src" path="workspace/sources/examples/library"/>
+    <classpathentry excluding="**/.recycle|**/.recycle/|**/.svn|**/doc-files" kind="src" path="workspace/sources/examples/traner"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry combineaccessrules="false" kind="src" path="/OJG"/>
+    <classpathentry kind="lib" path="dependencies/library/main/jkc-jexl/lib/commons-jexl.jar" sourcepath="dependencies/library/main/jkc-jexl/src.zip"/>
+    <classpathentry kind="lib" path="dependencies/library/main/logback/lib/logback-core.jar" sourcepath="dependencies/library/main/logback/src.zip"/>
+    <classpathentry kind="lib" path="dependencies/library/main/logback/lib/logback-classic.jar" sourcepath="dependencies/library/main/logback/src.zip"/>
+    <classpathentry kind="lib" path="dependencies/examples/traner/mina/lib/mina-core.jar" sourcepath="dependencies/examples/traner/mina/src.zip"/>
+    <classpathentry kind="lib" path="dependencies/examples/traner/quickfixj/lib/quickfixj-core.jar" sourcepath="dependencies/examples/traner/quickfixj/src.zip"/>
+    <classpathentry kind="lib" path="dependencies/examples/traner/quickfixj/lib/quickfixj-msg-fix44.jar" sourcepath="dependencies/examples/traner/quickfixj/src.zip"/>
+    <classpathentry kind="output" path="workspace/outputs/classes-eclipse"/>
 </classpath>

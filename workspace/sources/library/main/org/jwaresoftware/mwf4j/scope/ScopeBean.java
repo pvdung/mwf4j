@@ -31,7 +31,7 @@ import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
  * (uses the empty string by default).
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   guarded
  * @.group    infra,impl,helper

@@ -17,7 +17,7 @@ import  org.jwaresoftware.mwf4j.What;
  * Will call underlying runnable and return <i>null</i> unconditionally.
  *
  * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    impl,helper

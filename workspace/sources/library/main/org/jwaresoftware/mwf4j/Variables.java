@@ -14,8 +14,8 @@ import  org.jwaresoftware.gestalt.fixture.GetTypedMethods;
  * opaque 'get' and 'put' methods, there are several convenient conversion
  * getter methods provided for common simple types like numbers, dates, etc.
  *
- * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @since     JWare/MWf4J 1.0.0
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    api,infra

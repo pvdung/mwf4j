@@ -18,7 +18,7 @@ import  org.jwaresoftware.mwf4j.What;
  * we expect all other context is maintained by the owning control statement.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    infra,impl,helper

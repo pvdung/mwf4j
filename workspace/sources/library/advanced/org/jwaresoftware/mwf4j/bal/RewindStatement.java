@@ -23,12 +23,12 @@ import  org.jwaresoftware.mwf4j.scope.Rewindpoint;
  * Statement that will apply an adjustment to its harness to rewind to an 
  * application supplied rewind point. The rewind point is determined at 
  * statement execution time by a supplied callback. You can also setup a
- * rewind to execute a maximum number of time (retries). The retry count
- * is maintained externally as an atomic integer; you must supply a callback
- * to retrieve the integer reference.
+ * rewind to execute a maximum number of times (retries). The retry count
+ * is maintained externally as an atomic integer; the application must 
+ * supply a callback to retrieve this integer reference.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    infra,impl

@@ -43,7 +43,7 @@ import  org.jwaresoftware.mwf4j.helpers.VariablesHashMap;
  * continuations added during execution are processed.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   special (single while constructed, guarded during run)
  * @.group    impl,helper

@@ -18,7 +18,7 @@ import  org.jwaresoftware.mwf4j.What;
  * arbitrary action to its completion before returning (requires a harness).
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   special (as guarded as linked action and its statement factory)
  * @.group    impl,helper
@@ -27,29 +27,29 @@ import  org.jwaresoftware.mwf4j.What;
 
 public final class ActionToActivityAdapter implements Activity
 {
-    public ActionToActivityAdapter(Action action)
+    public ActionToActivityAdapter(Action definition)
     {
-        this(action, new ActivityEndStatement());
+        this(definition, new ActivityEndStatement());
     }
 
-    public ActionToActivityAdapter(Action action, ControlFlowStatement end)
+    public ActionToActivityAdapter(Action definition, ControlFlowStatement end)
     {
-        Validate.neitherNull(action,What.ACTION,end,What.STATEMENT);
-        myAction  = action;
+        Validate.neitherNull(definition,What.ACTION,end,What.STATEMENT);
+        myDefinition  = definition;
         myEnd = end;
     }
 
     public String getId()
     {
-        return myAction.getId();
+        return myDefinition.getId();
     }
 
     public ControlFlowStatement firstStatement()
     {
-        return myAction.makeStatement(myEnd);
+        return myDefinition.makeStatement(myEnd);
     }
 
-    private Action myAction;
+    private Action myDefinition;
     private ControlFlowStatement myEnd;
 }
 

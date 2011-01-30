@@ -36,7 +36,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
  * being called from a single root activity directly).
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
  * @.group    impl,infra
@@ -214,7 +214,7 @@ public final class MDC extends PerThreadStash
      * from the source MDC's thread; the paste from the targets'.
      *
      * @since     JWare/MWf4J 1.0.0
-     * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
      * @version   @Module_VERSION@
      * @.safety   n/a
      * @.group    impl,infra
@@ -250,7 +250,7 @@ public final class MDC extends PerThreadStash
      * overwrites the propagator's snapshot.
      *
      * @since     JWare/MWf4J 1.0.0
-     * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
      * @version   @Module_VERSION@
      * @.safety   single
      * @.group    impl,helper

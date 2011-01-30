@@ -13,8 +13,8 @@ package org.jwaresoftware.mwf4j;
  * cleanup. Implementors should ignore request if no cleanup needed or cleanup
  * has been done.
  *
- * @since     JWare/MWf4j 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @since     JWare/MWf4J 1.0.0
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,helper

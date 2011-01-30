@@ -12,12 +12,13 @@ import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
- * Put method that does puts the information to the shared MDC. Throws
+ * Put method that saves information to the current shared MDC. Throws
  * a {@linkplain SavebackException saveback exception} if MDC unable to 
- * put for any reason (including bad inputs).
+ * put for any reason (including bad inputs). Null puts are interpreted
+ * as MDC clears for the named items.
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,helper

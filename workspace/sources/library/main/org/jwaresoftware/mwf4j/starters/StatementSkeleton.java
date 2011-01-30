@@ -19,23 +19,23 @@ import  org.jwaresoftware.mwf4j.behaviors.Executable;
 import  org.jwaresoftware.mwf4j.behaviors.Traceable;
 
 /**
- * Starting implementation for control flow statements. Tracks the 
- * owner action and next statement attributes and provides a template method
+ * Starting implementation for control flow statements. Tracks the statement's
+ * "owner" action and next statement attributes and provides a template method
  * for {@linkplain #run(Harness) run()} that logs (at 'finest' trace level)
  * entry and exit. Subclasses must implement the abstract 
  * {@linkplain #runInner(Harness) runInner} method and optionally the
  * {@linkplain #verifyReady()} method. Note that this skeleton DOES define
  * the {@linkplain #isTerminal()} method to return <i>false</i> (the usual
- * for all types of statements except end ones}.
+ * for all types of statements except end ones).
  *
  * @since     JWare/MWf4J 1.0.0
- * @author    ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+ * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    impl,helper
  **/
 
-public abstract class StatementSkeleton extends ActionDependentSkeleton 
+public abstract class StatementSkeleton extends ActionDependentSkeleton
     implements Executable, ControlFlowStatement
 {
     /** 
@@ -193,7 +193,7 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     }
 
 
-    private ControlFlowStatement nextStatement;
+    private ControlFlowStatement nextStatement;//NB: can be NULL
     private TraceSupport breadcrumbs = new TraceSupport(new TraceLink());
 }
 
