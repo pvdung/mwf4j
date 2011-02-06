@@ -50,7 +50,7 @@ public final class ForkActionTest extends ActionTestSkeleton
             ? new ForkAction() 
             : new ForkAction(id);
             
-        MDC.Propagator fixtureClipboard = new MDC.SimplePropagator
+        MDC.Propagator fixtureClipboard = new MDC.CopyPropagator
             (TestFixture.STMT_NAMELIST, TestFixture.STMT_EXITED_NAMELIST);
         out.setMDCPropagtor(fixtureClipboard);
 

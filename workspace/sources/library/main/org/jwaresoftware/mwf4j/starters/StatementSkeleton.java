@@ -20,13 +20,14 @@ import  org.jwaresoftware.mwf4j.behaviors.Traceable;
 
 /**
  * Starting implementation for control flow statements. Tracks the statement's
- * "owner" action and next statement attributes and provides a template method
+ * linked action and next statement attributes and provides a template method
  * for {@linkplain #run(Harness) run()} that logs (at 'finest' trace level)
  * entry and exit. Subclasses must implement the abstract 
  * {@linkplain #runInner(Harness) runInner} method and optionally the
- * {@linkplain #verifyReady()} method. Note that this skeleton DOES define
- * the {@linkplain #isTerminal()} method to return <i>false</i> (the usual
- * for all types of statements except end ones).
+ * {@linkplain #verifyReady()} and {@linkplain #doError doError()} methods. 
+ * Note that this skeleton DOES define the {@linkplain #isTerminal()} method
+ * to return <i>false</i> (the usual for all types of statements except 
+ * end ones).
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -41,7 +42,7 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     /** 
      * Link that permits any subclasses some control over trace feedback.
      * @since JWare/MWf4J 1.0.0
-     * @author  ssmc, &copy;2010 <a href="@Module_WEBSITE@">SSMC</a>
+     * @author  ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
      * @version @Module_VERSION@
      * @.safety single
      * @.group  impl,helper
@@ -109,7 +110,8 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
 
     public boolean isAnonymous()
     {
-        return getOwner()==null;
+        Action action = getOwner();
+        return action==null || action==Action.anonINSTANCE;
     }
 
 
@@ -153,7 +155,7 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     protected abstract ControlFlowStatement runInner(Harness harness);
 
 
-    public ControlFlowStatement run(Harness harness) //NB: enforces a breadcrumbs trail...
+    public ControlFlowStatement run(final Harness harness) //NB: enforces a breadcrumbs trail...
     {
         breadcrumbs().doEnter(harness);
         doEnter(harness);
@@ -161,6 +163,9 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
             ControlFlowStatement next= runInner(harness);
             breadcrumbs().doNexxt(next,harness);
             return next;
+        } catch(RuntimeException rtX) {
+            doError(harness,rtX);
+            throw rtX;
         } finally {
             doLeave(harness);
             breadcrumbs().doLeave(harness);
@@ -175,6 +180,12 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
 
 
     public void doLeave(Harness h)
+    {
+        //Nothing by default
+    }
+
+
+    public void doError(Harness h, Throwable issue)
     {
         //Nothing by default
     }

@@ -14,7 +14,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackValue;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
 /**
@@ -22,7 +22,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * be 'data' objects) and call an application-supplied action for
  * each. Each data object is stored in either the execution's harness
  * datamap or in the current thread's data stash. Application must 
- * supply the key used for storing the data object temporarily.
+ * supply the cursor key used for storing the data object temporarily.
  * <p/>
  * The body of a foreach will be asked to create a new statement
  * for each loop iteration unless you disable this with the
@@ -47,19 +47,18 @@ public class ForEachAction extends ActionSkeleton
     public ForEachAction(String id)
     {
         super(id);
-        myCursorKey=BAL.getCursorKey(getId());
+        myCursor.setName(BAL.getCursorKey(getId()));
     }
 
-    public void setCursor(String key)
+    public void setCursorKey(String key)
     {
         Validate.notBlank(key,What.CURSOR);
-        myCursorKey = key;
+        myCursor.setName(key);
     }
 
-    public void setCursorStoreType(StoreType type)
+    public void setCursor(Reference key)
     {
-        Validate.notNull(type,What.TYPE);
-        myCursorStoreType = type;
+        myCursor.copyFrom(key);
     }
 
     public void setBody(Action body)
@@ -94,10 +93,9 @@ public class ForEachAction extends ActionSkeleton
 
     public void configure(ControlFlowStatement statement)
     {
-        Validate.isTrue(statement instanceof ForEachStatement,"statement kindof foreach");
+        Validate.isA(statement,ForEachStatement.class,What.STATEMENT);
         ForEachStatement foreach = (ForEachStatement)statement;
-        foreach.setCursorKey(myCursorKey);
-        foreach.setCursorStoreType(myCursorStoreType);
+        foreach.setCursor(myCursor);
         foreach.setGetter(myGetter);
         if (myBody!=null) {
             if (myCopyFlag) {
@@ -110,11 +108,10 @@ public class ForEachAction extends ActionSkeleton
         }
     }
 
-    private String myCursorKey;
+    private Reference myCursor= new Reference();
     private Action myBody;
-    private StoreType myCursorStoreType = BAL.getCursorStoreType();
-    private boolean myCopyFlag = BAL.getNewStatementPerLoopFlag();
-    private Callable<Collection<?>> myGetter = ForEachStatement.GivebackEMPTY_LIST;
+    private boolean myCopyFlag= BAL.getNewStatementPerLoopFlag();
+    private Callable<Collection<?>> myGetter= ForEachStatement.GivebackEMPTY_LIST;
 
 }
 

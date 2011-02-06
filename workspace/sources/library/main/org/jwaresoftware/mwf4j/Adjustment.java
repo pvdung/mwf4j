@@ -8,7 +8,7 @@ package org.jwaresoftware.mwf4j;
 /**
  * Special action that is used to apply an adhoc adjustment to a running
  * activity via its harness. The harness expects a <em>terminal</em> adjustment's
- * statement to stop the execution loop IMMEDIATELY so it initiates the
+ * statement to stop the execution loop IMMEDIATELY so it initiates its
  * exception termination processing (for instance unwinds are triggered).
  * Non-terminal adjustments have their statements executed before existing
  * primary statements (including the first statement if needed) and queued

@@ -19,11 +19,11 @@ package org.jwaresoftware.mwf4j;
  * to which it is linked for the rest of its lifetime. However, a control 
  * statement can spawn completely independent continuation statements which
  * it passes to its execution {@linkplain Harness harness} for queuing and 
- * <em>eventual</em> execution. The statement should never assume the 
+ * <em>eventual</em> execution. (The statement should never assume the 
  * continuation will occur immediately on return from its own execution 
  * unless that is a contract established by the statement type with all 
- * harnesses. Finally, a control statement should never assume it is the 
- * <em>only</em> running statement associated with its action or harness!
+ * harnesses. Also, a control statement should never assume it is the 
+ * <em>only</em> running statement associated with its action or harness!)
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -41,7 +41,9 @@ public interface ControlFlowStatement extends ActionDependent
     Action getOwner();
     ControlFlowStatement next();
 
-    /** Null proxy for a control flow statement (end). **/
+    /** Null proxy for a control flow statement (terminal and anonymous
+     *  attributes are true always). Does not  have a owning action; 
+     *  {@linkplain #getOwner} returns <i>null</i> always. **/
     public static final ControlFlowStatement nullINSTANCE= new ControlFlowStatement() 
     {
         public Action getOwner() 

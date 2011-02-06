@@ -21,8 +21,12 @@ import  org.jwaresoftware.mwf4j.behaviors.Executable;
  * Shell that describes a local scope of execution for one or more control
  * flow statements. A scope is OWNED by one and only one statement. Typical
  * properties and/or functions associated with a scope include unwindables
- * (for error handling), rewindables (for redo support), and transient fixture
- * overrides (for local variable support).
+ * (for error handling), rewindables (for redo support), and transient 
+ * fixture overrides (for local variable support).
+ * <p/>
+ * A statement usually installs a scope-- not a harness. A harness can 
+ * install a outer scope to handle unwinds and as a last-resort cleanup;
+ * however this is not required for MWf4J.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -56,6 +60,8 @@ public interface Scope extends Named, Executable, ControlFlowStatementDependent
         public void doEnter(Harness harness) {
         }
         public void doLeave(Harness harness) {
+        }
+        public void doError(Harness harness, Throwable issue) {
         }
         public void addUnwind(Unwindable participant) {
         }

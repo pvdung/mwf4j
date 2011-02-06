@@ -26,6 +26,7 @@ import  org.jwaresoftware.mwf4j.TestFixture;
 import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.assign.Giveback;
 import  org.jwaresoftware.mwf4j.assign.GivebackVar;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.starters.ExtensionPoint;
 import  org.jwaresoftware.mwf4j.starters.AddTestUnwindAction;
@@ -413,8 +414,7 @@ public final class TryCatchActionTest extends ActionTestSkeleton
         out.setHaltIfError(false);
         out.setQuiet(false);
         out.setBody(error("BLEECH", new BException("BLEECH")));
-        out.setErrorKey("mydata.lastError");
-        out.setErrorStoreType(StoreType.OBJECT);
+        out.setError(new Reference("mydata.lastError",StoreType.OBJECT));
         Giveback<Exception> getError = GivebackVar.fromEval("mydata.lastError");
         out.addIfError(Exception.class, new IfErrorHandler("cleanup",getError));
 

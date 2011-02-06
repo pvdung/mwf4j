@@ -88,7 +88,7 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
             }
             gotten = null;
             if (!myQuietFlag && Diagnostics.ForFlow.isWarnEnabled())
-                Diagnostics.ForFlow.warn("Unable to eval giveback '"+selector+"'",getX);
+                Diagnostics.ForFlow.warn("Unable to evaluate giveback '"+selector+"'",getX);
         }
         return gotten==null ? myFallbackValue : gotten;
     }

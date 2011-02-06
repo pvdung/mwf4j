@@ -54,7 +54,7 @@ public final class MDC extends PerThreadStash
      * installed at another level. Note that the same source can appear at
      * different levels of stack for recursiveness support.
      * 
-     * @since  JWare/MWf4j 1.0.0
+     * @since  JWare/MWf4J 1.0.0
      * @.group impl,helper
      * @.impl  Make sure can unit test within package.
      */
@@ -255,12 +255,12 @@ public final class MDC extends PerThreadStash
      * @.safety   single
      * @.group    impl,helper
      **/
-    public final static class SimplePropagator implements Propagator
+    public abstract static class SimplePropagator implements Propagator
     {
         private final List<String> myCopyNames;
         private Map<String,Object> mySnapshot;
 
-        public SimplePropagator(String...names) 
+        SimplePropagator(String...names) 
         {
             Validate.notEmpty(names,What.CRITERIA);
             myCopyNames= LocalSystem.newList(Math.max(names.length,10));
@@ -275,21 +275,25 @@ public final class MDC extends PerThreadStash
             myCopyNames.add(name);
         }
 
-        public Map<String,Object> copy()
+        final Map<String,Object> copy(boolean isTransfer)
         {
             Map<String,Object> snapshot = LocalSystem.newMap();
             Map<String,Object> stash = getOrNull();//NB: in source thread!
             if (stash!=null) {
                 for (String name:myCopyNames) {
                     if (stash.containsKey(name)) {
-                        snapshot.put(name,stash.get(name));
+                        if (isTransfer) {
+                            snapshot.put(name,stash.remove(name));
+                        } else {
+                            snapshot.put(name,stash.get(name));
+                        }
                     }
                 }
             }
             mySnapshot = snapshot;
             return snapshot;
         }
-
+        
         public void paste(Map<String,Object> snapshot)
         {
             Validate.notNull(snapshot,What.CRITERIA);
@@ -305,6 +309,53 @@ public final class MDC extends PerThreadStash
         }
     }
 
+
+    /**
+     * Copy that copies named MDC items as-is to target. On exit from copy
+     * <em>both source and target</em> contain the named references.
+     *
+     * @since     JWare/MWf4J 1.0.0
+     * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
+     * @version   @Module_VERSION@
+     * @.safety   single
+     * @.group    impl,helper
+     **/
+    public final static class CopyPropagator extends SimplePropagator
+    {
+        public CopyPropagator(String...names)
+        {
+            super(names);
+        }
+        @Override
+        public Map<String,Object> copy()
+        {
+            return copy(false);
+        }
+    }
+
+
+    /**
+     * Copy that transfers named MDC items as-is to target. On exit from 
+     * copy <em>only the target</em> contains the named references.
+     *
+     * @since     JWare/MWf4J 1.0.0
+     * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
+     * @version   @Module_VERSION@
+     * @.safety   single
+     * @.group    impl,helper
+     **/
+    public final static class HandoverPropagator extends SimplePropagator
+    {
+        public HandoverPropagator(String...names)
+        {
+            super(names);
+        }
+        @Override
+        public Map<String,Object> copy()
+        {
+            return copy(true);
+        }
+    }
 
     private MDC() {
         //only static APIs

@@ -17,10 +17,10 @@ import  org.jwaresoftware.mwf4j.What;
  * Starting implementation for a closure that expects to extract
  * the current action harness from the surrounding thread's
  * {@linkplain MDC}. Note that an instance of this class alters instance
- * state during a call -- so it is NOT safe for use from multiple threads
+ * state during a call-- so it is NOT safe for use from multiple threads
  * concurrently.
  *
- * @since     JWare/MWf4j 1.0.0
+ * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single

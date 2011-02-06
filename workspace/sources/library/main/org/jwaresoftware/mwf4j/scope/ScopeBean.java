@@ -28,7 +28,8 @@ import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
 /**
  * Simple POJO implementation of the {@linkplain Scope} interface. Note
  * that a scope's owning statement must be non-NULL but its name is optional
- * (uses the empty string by default).
+ * (uses the empty string by default). For the inherited doError message,
+ * this implementation does nothing.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -106,6 +107,11 @@ public class ScopeBean extends StatementDependentSkeleton implements Scope
         synchronized(myUnwinds) {
             myUnwinds.clear();
         }
+    }
+
+    public void doError(Harness harness, Throwable issue)
+    {
+        Validate.stateIsTrue(myEnabledFlag.get()==true,"enabled");
     }
 
     public String toString()

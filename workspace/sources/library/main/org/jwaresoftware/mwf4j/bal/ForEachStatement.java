@@ -18,8 +18,12 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
+import  org.jwaresoftware.mwf4j.helpers.ClosureException;
+import  org.jwaresoftware.mwf4j.scope.NumberRewindCursor;
+import  org.jwaresoftware.mwf4j.scope.RewindCursor;
+import  org.jwaresoftware.mwf4j.scope.Rewindable;
 
 /**
  * Control flow statement that calls another statement for each
@@ -46,9 +50,9 @@ import  org.jwaresoftware.mwf4j.behaviors.Resettable;
  * @.group    infra,impl
  **/
 
-public class ForEachStatement extends BALStatement implements Unwindable, Resettable
+public class ForEachStatement extends BALStatement implements Unwindable, Resettable, Rewindable
 {
-    static Callable<Collection<?>> GivebackEMPTY_LIST= new Callable<Collection<?>>() {
+    static final Callable<Collection<?>> GivebackEMPTY_LIST= new Callable<Collection<?>>() {
         public Collection<?> call() {
             return Empties.LIST;
         }
@@ -66,16 +70,10 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
         myGetter = getter;
     }
 
-    public void setCursorKey(String key)
+    public void setCursor(Reference key)
     {
         Validate.notNull(key,What.CURSOR);
-        myCursorKey = key;
-    }
-
-    public void setCursorStoreType(StoreType type)
-    {
-        Validate.notNull(type,What.TYPE);
-        myCursorStoreType = type;
+        myCursor.copyFrom(key);
     }
 
     public void setBody(ControlFlowStatement body)
@@ -107,6 +105,7 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
         if (next==null) {
             if (myWorker.hasNext()) {
                 myUnwindSupport.loop(harness);
+                myUnwindSupport.addRewindpoint(newRewindpoint(++myIndex));
                 Object data = myWorker.next();
                 next = getIterationOfBody(data,harness);
             } else {
@@ -120,11 +119,11 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
     private void resetThis()
     {
         myWorker=null;
+        myIndex= -1;
         myGetter= GivebackEMPTY_LIST;
         myBody=null;
         myBodyFactory=null;
-        myCursorKey=null;
-        myCursorStoreType= BAL.getCursorStoreType();
+        myCursor.reset();
         myUnwindSupport.reset(this);
     }
 
@@ -137,13 +136,13 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
 
     private void unwindThis(Harness harness, boolean clrData)
     {
-        if (clrData) BALHelper.clrData(myCursorKey,myCursorStoreType,harness);
+        if (clrData) BALHelper.clrData(myCursor,harness);
         resetThis();
     }
 
     public void unwind(Harness harness)
     {
-        Validate.stateNotNull(myCursorKey,What.CURSOR);
+        Validate.stateIsFalse(myCursor.isUndefined(),What.CURSOR_UNDEF);
         unwindThis(harness,true);
     }
 
@@ -154,8 +153,8 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
 
     protected ControlFlowStatement getIterationOfBody(Object data, Harness harness)
     {
-        BALHelper.putData(myCursorKey,data,myCursorStoreType,harness);//NB: *before* factory call!
-        return BALHelper.makeIterationOfBody(this, harness, myBody, myBodyFactory);
+        BALHelper.putData(myCursor,data,harness);//NB: *before* factory call!
+        return BALHelper.makeIterationOfBody(this,harness,myBody,myBodyFactory);
     }
 
     public void verifyReady()
@@ -163,17 +162,48 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
         super.verifyReady();
         Validate.stateIsTrue(myBody!=null || myBodyFactory!=null,
                 "body or body-factory has been defined");
-        Validate.stateNotNull(myCursorKey,What.KEY);
+        Validate.stateIsFalse(myCursor.isUndefined(),What.CURSOR_UNDEF);
     }
 
- 
+    public ControlFlowStatement rewind(RewindCursor to, Harness harness)
+    {
+        Validate.stateNotNull(myWorker,What.ENABLED);
+        Validate.isA(to,NumberRewindCursor.class,What.CURSOR);
+        int index = ((NumberRewindCursor)to).getInt();
+        Validate.isTrue(0<=index && myIndex>=index, "valid rewind index["+index+"]");
+        rewindThis(index,harness);
+        return this;
+    }
+
+    private void rewindThis(final int index, Harness harness)
+    {
+        try {
+            MDC.pshHarness(this,harness);
+            myWorker = myGetter.call().iterator();
+            int stopindex=index;
+            while((stopindex-->0) && myWorker.hasNext()) { myWorker.next(); } //SKIP-AHEAD
+            myIndex=index;
+        } catch(Exception getX) {
+            throw new ClosureException("Unable to rewind foreach data iterator",getX);
+        } finally {
+            MDC.popHarness(this,harness);
+        }
+    }
+
+    private NumberRewindCursor newRewindpoint(int index)
+    {
+        String aid = getWhatId();//NB: make it something determinate for testability!
+        return new NumberRewindCursor(this,index,NumberRewindCursor.nameFrom(aid,index));
+    }
+
+    
     private Callable<Collection<?>> myGetter= GivebackEMPTY_LIST;
     private Iterator<?> myWorker;
     private ControlFlowStatement myBody;
     private Action myBodyFactory;
-    private String myCursorKey;
-    private StoreType myCursorStoreType= BAL.getCursorStoreType();
+    private Reference myCursor= new Reference();//REQUIRED!
     private ReentrantSupport myUnwindSupport;
+    private int myIndex= -1;//NB: for rewind use ONLY!
 }
 
 

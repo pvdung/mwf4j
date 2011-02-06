@@ -5,6 +5,7 @@
 
 package org.jwaresoftware.mwf4j.bal;
 
+import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.reveal.Identified;
 import  org.jwaresoftware.gestalt.reveal.Named;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
@@ -102,11 +103,15 @@ final class BALHelper
                 break;
             }
             case PROPERTY: {
-                harness.getConfiguration().getOverrides().setString(key,String.valueOf(data)); 
+                harness.getConfiguration().getOverrides().setString(key,Strings.valueOf(data)); 
+                break;
+            }
+            case SYSTEM: {
+                LocalSystem.setProperty(key, Strings.valueOf(data));
                 break;
             }
             case OBJECT: {
-                new SavebackVar<Object>(harness.getVariables()).put(key,data); 
+                new SavebackVar<Object>(harness.getVariables()).put(key,data);
                 break;
             }
             default: {
@@ -118,7 +123,10 @@ final class BALHelper
 
     static final boolean putData(Reference ref, Object data, Harness harness)
     {
-        return putData(ref.getName(),data,ref.getStoreType(),harness);
+        boolean done=true;
+        if (ref!=null && !ref.isUndefined())
+            done = putData(ref.getName(),data,ref.getStoreType(),harness);
+        return done;
     }
 
     static final boolean clrData(String key, StoreType how, Harness harness)
@@ -137,6 +145,10 @@ final class BALHelper
                 harness.getConfiguration().getOverrides().unsetProperty(key);
                 break;
             }
+            case SYSTEM: {
+                LocalSystem.unsetProperty(key);
+                break;
+            }
             case OBJECT: {
                 try {  new SavebackVar<Object>(harness.getVariables()).putNull(key);
                 } catch(SavebackException anyX) {
@@ -153,7 +165,13 @@ final class BALHelper
         return done;
     }
 
- 
+    static final boolean clrData(Reference ref, Harness harness)
+    {
+        boolean done=true;
+        if (ref!=null && !ref.isUndefined())
+            done = clrData(ref.getName(),ref.getStoreType(),harness);
+        return done;
+    }
     
 
     static final void activate(Condition test)

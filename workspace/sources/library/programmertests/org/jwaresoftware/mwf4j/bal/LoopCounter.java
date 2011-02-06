@@ -23,6 +23,7 @@ public final class LoopCounter
     public LoopCounter() {
         super();
     }
+
     public void setI(Integer loopCount) {
         if (loopCount!=null) //null=>'cleanup'
             _last = loopCount;

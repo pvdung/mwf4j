@@ -13,27 +13,30 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
  
 /**
- * Starting implementation for custom 'work' action nodes that function as
- * their own statements. Basically an extension point is the continuation
- * that's executed by a "real" control flow statement. Extension points
- * contain the application or service logic outside of MWf4J and is an
- * alternative to callables and futures if you want to maintain the simple
- * Action vs Statement interface to the world.
+ * Starting implementation for custom application work adapted to MWf4J
+ * action and statement interfaces. Basically an extension point is a 
+ * your custom logic and computation that's executed by one of the simple 
+ * pre-canned control flow statements as a continuation. Extension points
+ * are an alternative to callables and futures if you prefer to integrate 
+ * your service logic directly into the MWf4J framework.
  * <p/>
- * Extension points return themselves ('this') from the standard 
- * 'makeStatement' factory method always. Subclasses need to implement the
- * inherited abstract method 'runInner' with their functionality. The 
- * inherited 'configure' method is made into a no-op as the action itself
- * contains all configuration details (nothing is passed on to an independent
- * statement). 
+ * Extension points are actions that return themselves ({@code this}) from 
+ * the standard {@code makeStatement} factory method. To create a usable
+ * extension point, you must implement the inherited abstract method 
+ * {@code runInner} with your functionality. The inherited statement
+ * {@code configure} method for extension points are a no-op as the action 
+ * itself contains all configuration details (nothing is passed on to an 
+ * independent statement). 
  * <p/>
- * Extension points are by definition <em>SINGLE USE</em> or safe for 
- * (re)use from a single thread of control. Because the 'next' continuation
- * attribute for an extension point will change for each reuse via
- * 'makeStatement' and internal states can change for 'runInner' you should
- * not use a single extension point instance from multiple threads. Therefore,
- * do not use extension points from containers like sequences and loops
- * that might create copies for use in forked or other multi-threaded cases.
+ * <b>WARNING:</b> By definition, extension points are <em>single use</em>
+ * actions. Because a continuation statement is <em>supplied to</em> an 
+ * extension point (via its action {@code makeStatement}), you cannot reuse
+ * a single instance across multiple (possible concurrent) calls to {@code makeStatement},
+ * as each call alters the internal state of the one extension point. 
+ * Therefore, do not use extension points from containers like sequences 
+ * or loops that can create action copies for use in forked or other 
+ * multi-threaded flows. To be safe, you should even avoid (re)using a 
+ * single extension point multiple times within a single threaded activity.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>

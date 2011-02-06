@@ -45,7 +45,7 @@ public final class LaunchActionTest extends ActionTestSkeleton
             ? new LaunchAction() 
             : new LaunchAction(id);
             
-        MDC.Propagator fixtureClipboard = new MDC.SimplePropagator
+        MDC.Propagator fixtureClipboard = new MDC.CopyPropagator
             (TestFixture.STMT_NAMELIST, TestFixture.STMT_EXITED_NAMELIST);
         out.setMDCPropagator(fixtureClipboard);
 

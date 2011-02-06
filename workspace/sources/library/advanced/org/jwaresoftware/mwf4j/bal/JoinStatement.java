@@ -109,9 +109,7 @@ public class JoinStatement extends BALProtectorStatement implements Unwindable
             next = this;
         } else {
             final ControlFlowStatement kontinue = new EndStatement();
-            if (myErrorKey!=null) {
-                BALHelper.putData(myErrorKey,issue,myErrorStoreType,harness);
-            }
+            BALHelper.putData(myError,issue,harness);
             next = myTrySupport.handle(kontinue,new ThrowStatement(getOwner(),issue),harness);
             if (next==kontinue) {
                 next= BALHelper.makeInstanceOfBody(this,harness,next(),myBody);

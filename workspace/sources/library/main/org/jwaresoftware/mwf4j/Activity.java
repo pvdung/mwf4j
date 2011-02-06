@@ -13,9 +13,13 @@ package org.jwaresoftware.mwf4j;
  * called the activity's <i>definition</i> although you can create the first 
  * statement using some other means. It is from the first statement 
  * that the activity progresses by passing back continuation statements (the 
- * next steps) to the controlling harness. Eventually there are no more 
- * statements to execute, the harness stops, and the systems considers that
- * activity as completed. 
+ * next steps or parallel steps) to the controlling harness. Eventually 
+ * there are no more statements to execute <em>for that harness</em>, the 
+ * harness stops, and the MWf4J system considers that activity to be 
+ * completed (successfully or otherwise). If the original activity spawned
+ * separate independent harnesses with their own activities it's possible 
+ * that those additional activities are still running; however, the
+ * original harness activity is done. 
  * <p/>
  * The statements that comprise an activity do not have to be formally 
  * sequential. During the process, you can also post dynamically generated 

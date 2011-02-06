@@ -36,10 +36,12 @@ public class What extends org.jwaresoftware.gestalt.What
     public final static String CALLBACK     = "callback";
     public final static String BODY         = "body";
     public final static String CURSOR       = "cursor";
+    public final static String CURSOR_UNDEF = "cursor-undefined";
     public final static String CONFIG       = "configuration";
     public final static String BARRIER      = "barrier";
     public final static String REFERENCE    = "reference";
     public final static String OWNER        = "owner";
+    public final static String ENABLED      = "enabled";
 
     public static final String getNonBlankId(final Identified object)
     {

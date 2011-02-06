@@ -10,7 +10,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.Protector;
 
 /**
@@ -61,21 +61,19 @@ public abstract class BALProtectorStatement extends BALStatement implements Prot
         myTrySupport.setUseContinuation(flag);
     }
 
-    public final void setErrorKey(String errorKey, StoreType storeType)
+    public final void setError(Reference ref)
     {
-        if (errorKey!=null) {
-            Validate.notBlank(errorKey,What.KEY);
-            Validate.notNull(storeType,What.TYPE);
+        if (ref==null) {
+            myError.reset();
+        } else {
+            myError.copyFrom(ref);
         }
-        myErrorKey = errorKey;
-        myErrorStoreType = storeType;
     }
 
     void resetThis() //NB: for inherited use only within BAL
     {
         myTrySupport.reset();
-        myErrorKey = null;
-        myErrorStoreType= BAL.getDataStoreType();
+        myError.reset();
     }
 
     protected void reset()
@@ -94,21 +92,18 @@ public abstract class BALProtectorStatement extends BALStatement implements Prot
     {
         Validate.notNull(from,What.STATEMENT);
         myTrySupport.copyFrom(from.myTrySupport);
-        myErrorKey = from.myErrorKey;
-        myErrorStoreType = from.myErrorStoreType;
+        myError.copyFrom(from.myError);
     }
 
     public void copyFrom(ProtectorFields from)
     {
         Validate.notNull(from,What.ACTION);
         myTrySupport.copyFrom(from);
-        myErrorKey = from.errorKey;
-        myErrorStoreType = from.errorStoreType;
+        myError.copyFrom(from.errorKey,from.errorStoreType);
     }
 
     protected final TrySupport myTrySupport;
-    protected String myErrorKey;//OPTIONAL
-    protected StoreType myErrorStoreType= BAL.getDataStoreType();
+    protected final Reference myError= new Reference();//OPTIONAL
 }
 
 

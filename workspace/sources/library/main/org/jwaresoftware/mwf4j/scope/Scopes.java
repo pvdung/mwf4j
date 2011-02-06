@@ -227,7 +227,8 @@ public final class Scopes
 
     public static Scope findOrFail(Rewindpoint marker) 
     {
-        Validate.neitherNull(marker,What.CURSOR,marker.getOwner(),What.STATEMENT);
+        Validate.notNull(marker,What.CURSOR);
+        Validate.notNull(marker.getOwner(),What.STATEMENT);
         Scope block=null;
         Iterator<ScopeKey> qitr = MDC.itr(_STACK,ScopeKey.class);
         if (qitr!=null) {

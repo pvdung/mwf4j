@@ -11,7 +11,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
 import  org.jwaresoftware.mwf4j.helpers.False;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
@@ -19,7 +19,8 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 /**
  * Action that will (re)run another application-supplied action as long as
  * a given condition returns <i>true</i>. You can guard against run-away
- * loops with the {@linkplain #setHaltIfMax haltIfMax option}.
+ * loops with the {@linkplain #setHaltIfMax haltIfMax option}. You can also
+ * setup an loop cursor to capture the 0-based iteration index.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -40,7 +41,6 @@ public class WhileAction extends ActionSkeleton implements CallBounded
     public WhileAction(String id)
     {
         super(id);
-        myCursorKey=BAL.getCursorKey(getId());
     }
 
     public void setTest(Condition test)
@@ -76,16 +76,20 @@ public class WhileAction extends ActionSkeleton implements CallBounded
         myHaltContinuationFlag = flag;
     }
 
-    public void setCursor(String key)
+    public final void enableCursor()
     {
-        Validate.notBlank(key,What.CURSOR);
-        myCursorKey = key;
+        setCursorKey(BAL.getCursorKey(getId()));
     }
 
-    public void setCursorStoreType(StoreType type)
+    public void setCursorKey(String key)
     {
-        Validate.notNull(type,What.TYPE);
-        myCursorStoreType = type;
+        Validate.notBlank(key,What.CURSOR);
+        myCursor.setName(key);
+    }
+
+    public void setCursor(Reference key)
+    {
+        myCursor.copyFrom(key);
     }
 
     public ControlFlowStatement makeStatement(ControlFlowStatement next)
@@ -98,7 +102,7 @@ public class WhileAction extends ActionSkeleton implements CallBounded
 
     public void configure(ControlFlowStatement statement)
     {
-        Validate.isTrue(statement instanceof WhileStatement,"statement kindof while");
+        Validate.isA(statement,WhileStatement.class,What.STATEMENT);
         WhileStatement loop = (WhileStatement)statement;
         loop.setTest(myTest);
         if (myBody!=null) {
@@ -110,10 +114,7 @@ public class WhileAction extends ActionSkeleton implements CallBounded
         } else {
             loop.setBody(new EmptyStatement(loop)); 
         }
-        if (myCursorKey!=null) {
-            loop.setCursorKey(myCursorKey);
-            loop.setCursorStoreType(myCursorStoreType);
-        }
+        loop.setCursor(myCursor);
         if (myLimit!=null) {
             loop.setMaxIterations(myLimit);
             loop.setHaltIfMax(myHaltIfMaxFlag);
@@ -133,8 +134,7 @@ public class WhileAction extends ActionSkeleton implements CallBounded
     private boolean myHaltIfMaxFlag = false;
     private Integer myLimit = null;//Undefined => none
     private boolean myHaltContinuationFlag = BAL.getUseHaltContinuationsFlag();
-    private String myCursorKey;
-    private StoreType myCursorStoreType = BAL.getCursorStoreType();
+    private Reference myCursor = new Reference();//OPTIONAL
 }
 
 

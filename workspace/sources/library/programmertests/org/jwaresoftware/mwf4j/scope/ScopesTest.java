@@ -112,7 +112,7 @@ public final class ScopesTest extends ActionTestSkeleton
     {
         ForkAction fork = new ForkAction("run'em");
         if (carry) {
-            MDC.Propagator fixtureClipboard = new MDC.SimplePropagator
+            MDC.Propagator fixtureClipboard = new MDC.CopyPropagator
                 (TestFixture.STMT_NAMELIST, TestFixture.STMT_EXITED_NAMELIST, TestFixture.STMT_UNWIND_NAMELIST);
             fork.setMDCPropagtor(fixtureClipboard);
         }

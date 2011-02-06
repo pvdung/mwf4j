@@ -44,7 +44,7 @@ public class MWf4J
         public final static String EXECUTOR   = NS+"_Harness_Executor";
 
         /** Optional concurrent map for a single BAL activity run. **/
-        public final static String VARIABLES   = NS+"_Harness_Variables";
+        public final static String VARIABLES  = NS+"_Harness_Variables";
 
         /** Optional JexlEngine instance for BAL activities. **/
         public final static String JEXLENGINE = NS+"_Harness_JexlEngine";
@@ -54,6 +54,17 @@ public class MWf4J
     }
 
 
+    /**
+     * Names of objects that MWf4J stores as MDC variables to pass back to
+     * the application. Often these variables used to present
+     * information to application-supplied hooks (like error handlers).
+     *
+     * @since     JWare/MWf4J 1.0.0
+     * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
+     * @version   @Module_VERSION@
+     * @.safety   multiple
+     * @.group    api,helper
+     **/
     public static final class MDCKeys
     {
         /** When a uncaught error unwinds all the way back to the activity's

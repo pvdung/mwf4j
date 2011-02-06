@@ -21,9 +21,10 @@ import  org.jwaresoftware.mwf4j.behaviors.Traceable;
  * and other component execution. Default is customized for BAL and ECA type fine
  * tracing, but can be customized for other components via Traceable link. Uses
  * the {@linkplain MDC} indentation utilities to give slightly more sane looking
- * output for nested statements.
+ * output for nested statements. Easily plugged in as implementation support
+ * for {@linkplain org.jwaresoftware.mwf4j.behaviors.Executable Executables}.
  * <p/>
- * <b>Implementation Note:</b> The result of {@linkplain #isEnabled()} should
+ * <b>Usage note 1:</b> the result of {@linkplain #isEnabled()} should
  * NOT change during the lifetime of a single trace support instance. If this
  * attribute flips back-n-forth, the enter/leave pairs (default trace markers)
  * can get out of sequence. This method was not made final to allow extensions
@@ -75,11 +76,17 @@ public class TraceSupport
     }
 
 
+    protected final void caughtThis(Throwable detected)
+    {
+        Object[] args= new Object[]{currentIndent(),myLink.getId(),Throwables.getTypedMessage(detected)};
+        logger().warn("{} >Detected exception in '{}': {}",args);
+    }
+
+
     public final void caught(Throwable detected)
     {
         if (isEnabled()) {
-            Object[] finalargs= new Object[]{currentIndent(),myLink.getId(),Throwables.getTypedMessage(detected)};
-            logger().warn("{} >Detected exception in '{}': {}",finalargs);
+            caughtThis(detected);
         }
     }
 
@@ -161,6 +168,14 @@ public class TraceSupport
     }
 
 
+    public void doError(Harness h, Throwable issue)
+    {
+        if (isEnabled()) {
+            caughtThis(issue);
+        }
+    }
+
+
     private void verifyLink(Traceable link)
     {
         Validate.notNull(link,What.CALLBACK);
@@ -170,7 +185,7 @@ public class TraceSupport
 
 
     protected final Traceable myLink;
-    private String myIndentMarker;
+    private final String myIndentMarker;
 }
 
 
