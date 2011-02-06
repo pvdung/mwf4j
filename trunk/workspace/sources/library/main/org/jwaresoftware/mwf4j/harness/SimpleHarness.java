@@ -34,13 +34,14 @@ import  org.jwaresoftware.mwf4j.helpers.VariablesHashMap;
  * concurrent map. Unwindables must self-[un]register as part of their
  * execution.
  * <p/>
- * <b>Usage Note:</b> Most of the getter methods (like getVariables) are
+ * <b>Usage note 1:</b> most of the getter methods (like getVariables) are
  * expected to be <em>available immediately after construction</em>. So 
  * it's important that the harness creator pre-populate the incoming
  * fixture with all service provider overrides and configuration BEFORE
  * creating the harness. Also, any pre-installed continuations and unwinds
  * are <em>CLEARED</em> on entry to {@linkplain #run()}! Only unwinds and
  * continuations added during execution are processed.
+ * <p/>
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>

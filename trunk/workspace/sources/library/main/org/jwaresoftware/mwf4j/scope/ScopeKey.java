@@ -14,7 +14,7 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatementDependent;
  * Per-thread unique key for a scope-generating statement. Used to determine
  * if a scope already exists for a particular statement. A scope key's
  * linked scope <em>has no bearing on the key itself</em>; only the statement
- * does. It's even permitted (though not be our default implementation) for
+ * does. It's even permitted (though not by our default implementation) for
  * a single key to have different linked scopes (or none at all) during its
  * lifetime.
  *

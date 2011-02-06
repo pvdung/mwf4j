@@ -75,6 +75,27 @@ public final class RewindActionTest extends ActionTestSkeleton
         return out;
     }
 
+    /*
+    unset(a-cursor)
+    foreach("a","i=0;i<5;i++")
+     echo-cursor()
+     foreach("b","j=0;j<2;j++")
+       echo-cursor()
+       if (j==1)
+         rewind("b",to=0,max=1)
+     unset(b-cursor)
+     if (i==1||i==3)
+        rewind("a",to=i,max=1)
+    rewind("main",0,1)
+     */
+/*    private List<Integer> dataset(int n)
+    {
+        List<Integer> ints = LocalSystem.newList(5);
+        int i=0;
+        while(--n>0) ints.add(Integer.valueOf(i++));
+        return ints;
+    }
+*/ 
 //  ---------------------------------------------------------------------------------------
 //  The test cases (1 per method)
 //  ---------------------------------------------------------------------------------------

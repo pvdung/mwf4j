@@ -10,9 +10,9 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 /**
- * Factory for spawned dependent harness objects. Expected to produce instances or 
- * derivatives of {@linkplain SpawnHarness}. Two implementations are provided
- * for the known MWf4J spawnable harness types.
+ * Factory for spawned dependent harness objects. Expected to produce 
+ * instances or derivatives of {@linkplain SpawnHarness}. Two implementations
+ * are provided for the known MWf4J spawnable harness types.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>

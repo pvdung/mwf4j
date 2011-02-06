@@ -5,6 +5,8 @@
 
 package org.jwaresoftware.mwf4j.assign;
 
+import  org.apache.commons.lang.ObjectUtils;
+
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.helpers.Pair;
@@ -12,10 +14,11 @@ import  org.jwaresoftware.gestalt.reveal.Identified;
 import  org.jwaresoftware.gestalt.reveal.Named;
 
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Resettable;
 
 /**
- * Common struct definition of fields used to track a variable and its
- * {@linkplain StoreType store type} implementation. Defaults to saving
+ * Common struct definition of fields used to track a variable's name and 
+ * its {@linkplain StoreType store type} implementation. Defaults to saving
  * the named item (key) into the current harness's data map. We consider
  * references with blank names (null or all whitespace) to be undefined.
  *
@@ -26,7 +29,8 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    impl,helper
  **/
 
-public final class Reference extends Pair<String,StoreType> implements Named, Identified
+public final class Reference extends Pair<String,StoreType> 
+    implements Named, Identified, Resettable
 {
     public final static StoreType getDefaultDataType()
     {
@@ -58,6 +62,11 @@ public final class Reference extends Pair<String,StoreType> implements Named, Id
     public boolean isUndefined()
     {
         return Strings.isBlank(getName());
+    }
+
+    public void reset()
+    {
+        resetThis();
     }
 
     public String getName()
@@ -105,9 +114,44 @@ public final class Reference extends Pair<String,StoreType> implements Named, Id
         initThisFrom(other);        
     }
 
+    public void copyFrom(String key, StoreType storeType)
+    {
+        if (storeType==null) {
+            storeType = getDefaultDataType();
+        }
+        if (Strings.isBlank(key)) {
+            ini(null,storeType);
+        } else {
+            ini(key,storeType);
+        }
+    }
+
+    public static Reference newFrom(Reference from)
+    {
+        return from==null ? null : new Reference(from);
+    }
+
     private void resetThis()
     {
         ini(null,getDefaultDataType());
+    }
+
+    public boolean equals(Object other)
+    {
+        if (other==this) return true;
+        if (other==null) return false;
+        if (getClass().equals(other.getClass())) {
+            Reference otherref= (Reference)other;
+            return Strings.equal(getId(),otherref.getId()) &&
+                    ObjectUtils.equals(getStoreType(),otherref.getStoreType());
+                    
+        }
+        return false;
+    }
+
+    public int hashCode()
+    {
+        return ObjectUtils.hashCode(getId());
     }
 
     private void initThisFrom(Reference other)

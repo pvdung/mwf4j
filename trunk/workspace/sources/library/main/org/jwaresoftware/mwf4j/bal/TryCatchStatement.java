@@ -196,14 +196,12 @@ public class TryCatchStatement extends BALProtectorStatement
 
     private void pshError(Harness harness)
     {
-        Exception ourError= unmask(pendingThrow.getCause());
-        BALHelper.psh(ourError);
-        if (myErrorKey!=null) {
-            BALHelper.putData(myErrorKey,ourError,myErrorStoreType,harness);
-        }
+        Exception theException= unmask(pendingThrow.getCause());
+        BALHelper.psh(theException);
+        BALHelper.putData(myError,theException,harness);
     }
 
-    private void popError(Harness harness)
+    private void popError(Harness harness) //NB: we LEAVE myError installed if asked for...
     {
         Exception ourError= pendingThrow.getCause();
         BALHelper.pop(ourError);

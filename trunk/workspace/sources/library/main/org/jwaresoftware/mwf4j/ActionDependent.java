@@ -9,7 +9,7 @@ package org.jwaresoftware.mwf4j;
  * Marker interface of an entity that relies on an action to implement
  * its responsibilities.
  *
- * @since     JWare/MWf4j 1.0.0
+ * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a

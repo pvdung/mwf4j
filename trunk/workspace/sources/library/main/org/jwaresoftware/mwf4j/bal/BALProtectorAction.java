@@ -9,7 +9,7 @@ package org.jwaresoftware.mwf4j.bal;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.Protector;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
@@ -55,10 +55,10 @@ public abstract class BALProtectorAction extends ActionSkeleton implements Prote
         myProtectSupport.setErrorKey(key);
     }
 
-    public final void setErrorStoreType(StoreType storeType)
+    public final void setError(Reference ref)
     {
-        Validate.notNull(storeType,What.TYPE);
-        myProtectSupport.setErrorStoreType(storeType);
+        Validate.notNull(ref,What.REFERENCE);
+        myProtectSupport.setErrorKey(ref.getName(),ref.getStoreType());
     }
 
     protected final ProtectorFields myProtectSupport = new ProtectorFields();

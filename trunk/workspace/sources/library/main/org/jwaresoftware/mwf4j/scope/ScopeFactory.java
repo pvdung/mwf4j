@@ -12,11 +12,12 @@ import  org.jwaresoftware.mwf4j.What;
 
 /**
  * Factory service facade for creation of {@linkplain Scope scopes} and 
- * {@linkplain ScopeKey scope keys}. By default, service uses the implementation
+ * {@linkplain ScopeKey scope keys}. By default, MWf4J uses the implementation
  * that creates our own {@linkplain ScopeKeyBean} and {@linkplain ScopeBean}
  * types. Your application can switch out this default for something more
- * controllable; see the {@linkplain #setProviderInstance(SPI) method}. If
- * you customize the factory, you should do this ONCE and AS SOON AS POSSIBLE.
+ * controllable; see the {@linkplain #setProviderInstance(SPI) SPI method}. If
+ * you customize the factory, you should do this ONCE and AS EARLY AS 
+ * POSSIBLE in your service or application's initialization.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -28,7 +29,8 @@ import  org.jwaresoftware.mwf4j.What;
 public final class ScopeFactory
 {
     /**
-     * The pluggable provider interface. Your application can replace this
+     * The pluggable provider interface for {@linkplain Scope scopes} and 
+     * {@linkplain ScopeKey scope keys}. Your application can replace this
      * interface with its own (for example from a container). See the
      * {@linkplain ScopeFactory#setProviderInstance(SPI)} method.
      *
@@ -67,7 +69,7 @@ public final class ScopeFactory
 
 
         /** 
-         * Our standard provider that returns the builtin  
+         * Our standard provider that returns instances of the builtin  
          * {@linkplain ScopeBean} and {@linkplain ScopeKeyBean}.
          *
          * @since   JWare/MWf4J 1.0.0

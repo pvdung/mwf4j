@@ -13,7 +13,7 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
 
 /**
@@ -58,16 +58,9 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
         myBodyFactory = factory;
     }
 
-    public void setCursorKey(String key)
+    public void setCursor(Reference key)
     {
-        Validate.notNull(key,What.CURSOR);
-        myCursorKey = key;
-    }
-
-    public void setCursorStoreType(StoreType type)
-    {
-        Validate.notNull(type,What.TYPE);
-        myCursorStoreType = type;
+        myCursor.copyFrom(key);
     }
 
     public void setHaltIfMax(boolean flag)
@@ -123,8 +116,7 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
         myBody=null;
         myBodyFactory=null;
         myTest=null;
-        myCursorKey=null;
-        myCursorStoreType= BAL.getCursorStoreType();
+        myCursor.reset();
         myUnwindSupport.reset(this);
         myMaxLoopsSupport.reset();
     }
@@ -138,8 +130,8 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
 
     private void unwindThis(Harness harness)
     {
-        if (myCursorKey!=null && myLoopCount>=0) {
-            BALHelper.clrData(myCursorKey,myCursorStoreType,harness);
+        if (!myCursor.isUndefined() && myLoopCount>=0) {
+            BALHelper.clrData(myCursor,harness);
         }
         resetThis();
     }
@@ -152,8 +144,8 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
     protected ControlFlowStatement getIterationOfBody(Harness harness)
     {
         myLoopCount++;
-        if (myCursorKey!=null) {
-            BALHelper.putData(myCursorKey,Integer.valueOf(myLoopCount),myCursorStoreType,harness);//NB: *before* factory call!
+        if (!myCursor.isUndefined()) {
+            BALHelper.putData(myCursor,Integer.valueOf(myLoopCount),harness);//NB: *before* factory call!
         }
         return BALHelper.makeIterationOfBody(this,harness,myBody,myBodyFactory);
     }
@@ -181,8 +173,7 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
     private ControlFlowStatement myBody;
     private Action myBodyFactory;
     private int myLoopCount;
-    private String myCursorKey;//OPTIONAL; holds 0-based loop count
-    private StoreType myCursorStoreType= BAL.getCursorStoreType();
+    private Reference myCursor = new Reference();//OPTIONAL; holds 0-based loop count
     private LimitSupport myMaxLoopsSupport;
     private ReentrantSupport myUnwindSupport;
 }

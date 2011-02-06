@@ -7,10 +7,11 @@ package org.jwaresoftware.mwf4j.starters;
 
 /**
  * Starting implementation point for extensions that you can clone for use
- * from different threads. A specific extension point is <em>still</em> only 
- * usable from a single thread; however, container actions like sequences
- * can create deep copies of their member actions automagically <em>and run 
- * each of those independent copies</em> from its own thread of execution.
+ * from different threads or as part of a factory of statements. A specific
+ * extension point is <em>still</em> only usable from a single thread; 
+ * however, container actions like sequences can create deep copies of 
+ * their member actions automagically <em>and run each of those independent
+ * copies</em> from its own thread of execution.
  * Implementations can extend the (now) public {@linkplain #clone() clone
  * method} which by default simply calls the inherited Object clone method.
  *

@@ -11,6 +11,7 @@ import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.mwf4j.Variables;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.helpers.NIterations;
 import  org.jwaresoftware.mwf4j.helpers.Once;
@@ -49,6 +50,7 @@ public final class WhileActionTest extends ActionTestSkeleton
         WhileAction out = id==null 
             ? new WhileAction() 
             : new WhileAction(id);
+        out.enableCursor();
         return out;
     }
     
@@ -78,6 +80,16 @@ public final class WhileActionTest extends ActionTestSkeleton
         runTASK(out);
     }
 
+    public void testNoCursorByDefault_1_0_0()
+    {
+        WhileAction out = new WhileAction("L");
+        out.setTest(new Once());
+        out.setBody(new EchoAction("L",true));
+        runTASK(out);
+        assertFalse(wasPerformed("L[0]"),"cursor capture");
+        assertTrue(wasPerformed("L[null]"),"looped once");
+    }
+
     public void testDefaultCursorSetup_1_0_0()
     {
         WhileAction out = newOUT("L");
@@ -104,8 +116,7 @@ public final class WhileActionTest extends ActionTestSkeleton
         LoopCounter counter = (LoopCounter)vars.get("counter");
         WhileAction out = newOUT();
         out.setTest(new Once());
-        out.setCursor("counter.i");
-        out.setCursorStoreType(StoreType.OBJECT);
+        out.setCursor(new Reference("counter.i",StoreType.OBJECT));
         runTASK(out);
         assertEquals(counter.size(),1,"loopcount");
         assertFalse(vars.containsKey(BAL.getCursorKey(out.getId())),"old cursor");
@@ -150,8 +161,7 @@ public final class WhileActionTest extends ActionTestSkeleton
         Map<String,Object> vars= iniDATAMAP();
         WhileAction out = newOUT("over"+MAX);
         out.setTest(new NIterations(MAX));
-        out.setCursor("counter.i");
-        out.setCursorStoreType(StoreType.OBJECT);
+        out.setCursor(new Reference("counter.i",StoreType.OBJECT));
         out.setMaxIterations(MAX);
         out.setHaltIfMax(true);
         out.setBody(new EchoAction("e","counter.i",true,StoreType.OBJECT));

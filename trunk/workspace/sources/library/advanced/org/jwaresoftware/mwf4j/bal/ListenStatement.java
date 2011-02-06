@@ -21,7 +21,7 @@ import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.DependentHarness;
 
 /**
- * Statement that sits-n-waits (blocks) for payloads retrieved by predefined
+ * Statement that sits-n-waits (blocks) for payloads retrieved by a predefined
  * listener (via a Callable interface). Each payload is then matched to an
  * action by a supplied lookup service, a new statement from that action is
  * created then run on this listen harness's parent harness (or a "work harness"
@@ -32,14 +32,14 @@ import  org.jwaresoftware.mwf4j.behaviors.DependentHarness;
  * or interrupt the listening statement's harness (interpreted as a
  * 'graceful request for a continuation to next statement').
  * <p/>
- * Usage note: if you run a listen statement as part of a forked thread,
+ * <b>Usage note 1:</b> if you run a listen statement as part of a forked thread,
  * you must be careful about enabling the "halt-if-error" option. If any
  * errors occur, the listen statement will trigger an abort for its harness,
  * which will <em>NOT</em> run the next statement (the join barrier notify).
  * If the fork does not use a barrier (default one does not) then this break
  * will not be detected.
  * <p/>
- * Usage note: to stop a listening statement you can do one of two things.
+ * <b>Usage note 2:</b> to stop a listening statement you can do one of two things.
  * First you can interrupt the listening statement's harness' thread (recommended).
  * The listen statement interprets an interrupt as a "GRACEFUL" break or
  * a request to stop listening. Alternatively, to stop listening you can
@@ -146,15 +146,11 @@ public class ListenStatement<T> extends BALProtectorStatement implements Unwinda
         BALHelper.runBreakAction(issue,myBreakAction,harness);
 
         final ControlFlowStatement kontinue = new EndStatement();
-        if (myErrorKey!=null) {
-            BALHelper.putData(myErrorKey,issue,myErrorStoreType,harness);
-        }
+        BALHelper.putData(myError,issue,harness);
         ControlFlowStatement next = myTrySupport.handle(kontinue,new ThrowStatement(getOwner(),issue),harness);
         if (next==kontinue) {
             next = this;//NB: keep listening...
-            if (myErrorKey!=null) {
-                BALHelper.clrData(myErrorKey,myErrorStoreType,harness);
-            }
+            BALHelper.clrData(myError,harness);
         }
         return next;
     }

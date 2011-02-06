@@ -26,6 +26,7 @@ import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4JException;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.assign.GivebackValue;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.starters.ClosureSkeleton;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
@@ -128,7 +129,7 @@ public final class ForEachActionTest extends ActionTestSkeleton
 
         ForEachAction out = newOUT("foreach");
         out.setCopy(false);
-        out.setCursor("stooge");
+        out.setCursorKey("stooge");
         out.setDataset(names);
         out.setBody(new EchoAction("echo","stooge"));
         newHARNESS(out).run();
@@ -143,10 +144,9 @@ public final class ForEachActionTest extends ActionTestSkeleton
 
         ForEachAction out = newOUT("foreach-mdc");
         out.setCopy(false);
-        out.setCursor("i");
+        out.setCursor(new Reference("i",StoreType.THREAD));
         out.setDataset(new GivebackValue<Collection<?>>(names));
         out.setBody(new EchoAction("echo","i",StoreType.THREAD));
-        out.setCursorStoreType(StoreType.THREAD);
         newHARNESS(out).run();
 
         assertFalse(MDC.has("i"),"iteration datakey still in MDC");
@@ -249,7 +249,7 @@ public final class ForEachActionTest extends ActionTestSkeleton
         List<String> names = listOfThree();
 
         ForEachAction out = newOUT("foreach-unique");
-        out.setCursor("stooge");
+        out.setCursorKey("stooge");
         out.setDataset(names);
         out.setBody(new EchoUnique("echo","stooge"));
         runTASK(out);
@@ -338,7 +338,7 @@ public final class ForEachActionTest extends ActionTestSkeleton
                             .add(sete("b","wkday","(0+0)"))
                             .add(sete("c","count","(0+0)"));
         ForEachAction out= newOUT();
-        out.setCursor("dayofweek");
+        out.setCursorKey("dayofweek");
         out.setDataset(Arrays.asList(DOW));
         out.setBody(block("d")
             .add(new EchoAction("d.1","dayofweek",true))
@@ -376,7 +376,7 @@ public final class ForEachActionTest extends ActionTestSkeleton
         iniStatementCount();
         
         ForEachAction action2_2= newOUT("foreach-2.2");
-        action2_2.setCursor("k");
+        action2_2.setCursor(new Reference("k"));
         action2_2.setDataset(listOfN("k",3));
         action2_2.setBody(new EchoAction("action-3.0","k",true));
         action2_2.setCopy(false);
@@ -388,10 +388,9 @@ public final class ForEachActionTest extends ActionTestSkeleton
         action1_1Body.add(new EchoAction("action-2.3","j",true));
         
         ForEachAction action1_1= newOUT("foreach-1.1");
-        action1_1.setCursor("j");
+        action1_1.setCursor(new Reference("j"));
         action1_1.setDataset(listOfN("j",2));
         action1_1.setBody(action1_1Body);
-        action1_1.setCursorStoreType(StoreType.DATAMAP);
         
         SequenceAction action0_0Body = block("action0_0.body");
         action0_0Body.add(new EchoAction("action-1.0","i",true));
@@ -399,7 +398,7 @@ public final class ForEachActionTest extends ActionTestSkeleton
         action0_0Body.add(new EchoAction("action-1.2","i",true));
         
         ForEachAction out = newOUT("foreach-0.0");//action-0.0
-        out.setCursor("i");
+        out.setCursorKey("i");
         out.setBody(action0_0Body);
         out.setDataset(listOfN("i",3));
         

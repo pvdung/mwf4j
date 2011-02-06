@@ -14,6 +14,7 @@ import  static org.testng.Assert.*;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.starters.CheckPerformed;
 import  org.jwaresoftware.mwf4j.starters.CheckPerformedInOrder;
+import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
 import  org.jwaresoftware.mwf4j.starters.ExecutableTestSkeleton;
 import  org.jwaresoftware.mwf4j.starters.SleepAction;
@@ -102,6 +103,10 @@ public abstract class ActionTestSkeleton extends ExecutableTestSkeleton
         return new CheckPerformedInOrder("chk."+subid,names);
     }
 
+    protected final static Action echocursor(String id, String cursor)
+    {
+        return new EchoAction(id,cursor);
+    }
 
 //  ---------------------------------------------------------------------------------------
 //  The test cases (1 per method)

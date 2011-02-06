@@ -55,7 +55,6 @@ public abstract class ExecutableSkeleton implements Executable, Identified
 
     public void doEnter(Harness h)
     {
-        Validate.fieldNotNull(h,What.HARNESS);
         Object[] args = new Object[]{typeCN(),getId(),h.typeCN()};
         diagnostics().trace("Enter {} {} [H={}]",args);
     }
@@ -66,9 +65,15 @@ public abstract class ExecutableSkeleton implements Executable, Identified
         diagnostics().trace("Leave {} {} [H={}]",args);
     }
 
+    public void doError(Harness h, Throwable issue)
+    {
+        Object[] args = new Object[]{typeCN(),getId(),h.typeCN()};
+        diagnostics().trace("Error {} {} [H={}]",args);
+    }
+
     protected Logger diagnostics()
     {
-        return Diagnostics.ForBAL;//Most common use for MWf4J
+        return Diagnostics.ForFlow;
     }
 
     protected String typeCN()
