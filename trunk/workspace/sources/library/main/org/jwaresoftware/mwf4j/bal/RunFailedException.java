@@ -19,7 +19,8 @@ import  org.jwaresoftware.mwf4j.MWf4JException;
  * Exception thrown by a protected statement or action on completion
  * and there has been at least one failure. This exception allows client
  * to either lump all captured exceptions together or extract the raw
- * sourced exceptions one-by-one.
+ * sourced exceptions one-by-one. Tightly coupled with the ThrowStatement
+ * BAL statement.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>

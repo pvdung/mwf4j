@@ -22,6 +22,11 @@ import  org.jwaresoftware.mwf4j.starters.StatementSkeleton;
 
 public abstract class BALStatement extends StatementSkeleton
 {
+    protected BALStatement()
+    {
+        super();
+    }
+
     protected BALStatement(ControlFlowStatement next)
     {
         super(next);

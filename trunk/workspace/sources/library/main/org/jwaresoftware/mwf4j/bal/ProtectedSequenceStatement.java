@@ -64,7 +64,7 @@ public class ProtectedSequenceStatement extends SequenceStatement implements Pro
         if (next instanceof ThrowStatement) {
             ThrowStatement lastThrown = (ThrowStatement)next;
             lastThrown.setPosition(index);
-            next = myTrySupport.handle(next(),lastThrown,harness);//NB: abort;move past me... 
+            next = myTrySupport.handle(next(),lastThrown,harness,breadcrumbs());//NB: abort;move past me... 
         }
         return next;
     }

@@ -17,6 +17,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
+import org.jwaresoftware.mwf4j.behaviors.Signal;
 import  org.jwaresoftware.mwf4j.scope.Scope;
 import  org.jwaresoftware.mwf4j.scope.Scopes;
 
@@ -79,8 +80,8 @@ public class TryCatchStatement extends BALProtectorStatement
                 if (myScope==null)
                     myScope= Scopes.enter(this,harness);
                 continuation = harness.runParticipant(protect(bodyContinued));
-                if (continuation instanceof ThrowStatement) {
-                    pendingThrow = (ThrowStatement)continuation;
+                if (continuation instanceof Signal) {
+                    pendingThrow = getPendingThrow((Signal)continuation);
                     Action handler = getCaughtHandler(pendingThrow.getCause());
                     Scopes.unwindUpTo(this,harness);
                     if (handler!=null) {
@@ -156,7 +157,7 @@ public class TryCatchStatement extends BALProtectorStatement
                 assert pendingThrow!=null : "ABORT triggered iff there is a delayed (re)throw";
                 unmaskedAllThrownIfWanted(pendingThrow);
                 Scopes.leave(this,harness);
-                continuation = myTrySupport.handle(next(), pendingThrow, harness);
+                continuation = myTrySupport.handle(next(),pendingThrow,harness,breadcrumbs());
                 break;
             }        
         }
@@ -213,6 +214,17 @@ public class TryCatchStatement extends BALProtectorStatement
         newerThrown.setNextThrown(pendingThrow);
         pendingThrow = newerThrown;
         myTrySupport.setHaltIfError(true);//FORCE-THIS!
+    }
+
+    private ThrowStatement getPendingThrow(Signal continuation) 
+    {
+        ThrowStatement ourthrow = null;
+        if (continuation instanceof ThrowStatement) {
+            ourthrow = (ThrowStatement)continuation;
+        } else {
+            ourthrow = new ThrowStatement(continuation,getOwner());
+        }
+        return ourthrow;
     }
 
     static class ClassHierarchyComparator implements Comparator<Class<? extends Exception>>, java.io.Serializable

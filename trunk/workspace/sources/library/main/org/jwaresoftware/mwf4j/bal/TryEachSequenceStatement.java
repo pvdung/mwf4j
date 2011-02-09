@@ -85,7 +85,7 @@ public class TryEachSequenceStatement extends SequenceStatement implements Prote
     final ControlFlowStatement finishThis(Harness harness, ControlFlowStatement next)
     {
         if (lastThrown!=null) {
-            next = myTrySupport.handle(next,lastThrown,harness);
+            next = myTrySupport.handle(next,lastThrown,harness,breadcrumbs());
         }
         return super.finishThis(harness,next);
     }

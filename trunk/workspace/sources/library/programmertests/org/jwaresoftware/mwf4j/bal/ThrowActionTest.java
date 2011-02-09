@@ -34,6 +34,11 @@ public final class ThrowActionTest extends ActionTestSkeleton
         }
     }
 
+    private void failIfHere()
+    {
+        fail("Should not get past a throw action's activity!");
+    }
+
     @Test(expectedExceptions= {MWf4JException.class})
     public void testThrowNonRuntimeException_1_0_0() 
     {
@@ -47,7 +52,7 @@ public final class ThrowActionTest extends ActionTestSkeleton
             assertEquals(wrap.getCause().getClass(),NotRuntimeException.class,"classof barfage");
             throw wrap;
         }
-        fail("Should not get past a throw action's perform!");
+        failIfHere();
     }
 
     @Test(expectedExceptions= {MWf4JException.class})
@@ -55,7 +60,7 @@ public final class ThrowActionTest extends ActionTestSkeleton
     {
         ThrowAction out = new ThrowAction();
         newHARNESS(out).run();
-        fail("Should not be able to get past any throw activiy!");
+        failIfHere();
     }
 
     public void testThrowStatementBaseline_1_0_0()
@@ -100,6 +105,58 @@ public final class ThrowActionTest extends ActionTestSkeleton
         assertEquals(exceptions.size(),2,"Num.causes");
         assertSame(exceptions.pop(),e1st,"1st exception");
         assertSame(exceptions.pop(),e2nd,"2nd exception");
+    }
+
+    @Test(expectedExceptions= {NumberFormatException.class})
+    public void testCustomExceptionByName_1_0_0()
+    {
+        ThrowAction out = new ThrowAction("tnf");
+        out.setCause(NumberFormatException.class.getName());
+        assertNull(out.getCause());
+        newHARNESS(out).run();
+        failIfHere();
+    }
+
+    public void testCustomExceptionByNameWithMessage_1_0_0()
+    {
+        ThrowAction out = new ThrowAction("trip");
+        out.setCause(UnsupportedOperationException.class.getName());
+        out.setAnnoucement("I've fallen");
+        try {
+            newHARNESS(out).run();
+        } catch(UnsupportedOperationException Xpected) {
+            assertEquals(Xpected.getMessage(),"I've fallen","custom message");
+            return;
+        }
+        failIfHere();
+    }
+
+    @Test(expectedExceptions= {MWf4JException.class})
+    public void testWrapUninstantiatedCustomException_1_0_0()
+    {
+        ThrowAction out= new ThrowAction();
+        out.setCause(TypeNotPresentException.class.getName()); //no void ctor!
+        try {
+            newHARNESS(out).run();
+        } catch(MWf4JException Xpected) {
+            Throwable Xpected2 = Xpected.getCause();
+            assertTrue(Xpected2 instanceof InstantiationException,"is bad ctor Xception");
+            throw Xpected;
+        }
+        failIfHere();
+    }
+
+    public void testDirectExceptionOverByName_1_0_0()
+    {
+        ThrowAction out =  new ThrowAction(new NumberFormatException("JACKPOT"));
+        out.setCause(TypeNotPresentException.class.getName());//Should NOT be triggered
+        try {
+            newHARNESS(out).run();
+        } catch(NumberFormatException Xpected) {
+            assertEquals(Xpected.getMessage(),"JACKPOT","exception message");
+            return;
+        }
+        failIfHere();
     }
 }
 

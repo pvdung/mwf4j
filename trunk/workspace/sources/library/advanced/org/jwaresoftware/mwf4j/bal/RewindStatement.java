@@ -15,6 +15,7 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
+import  org.jwaresoftware.mwf4j.behaviors.Rewinder;
 import  org.jwaresoftware.mwf4j.helpers.ClosureException;
 import  org.jwaresoftware.mwf4j.scope.RewindAdjustment;
 import  org.jwaresoftware.mwf4j.scope.Rewindpoint;
@@ -35,7 +36,7 @@ import  org.jwaresoftware.mwf4j.scope.Rewindpoint;
  * @see       RewindAdjustment
  **/
 
-public class RewindStatement extends BALStatement implements CallBounded
+public class RewindStatement extends BALStatement implements CallBounded, Rewinder
 {
     private static final int UNKNOWN= -1;
 

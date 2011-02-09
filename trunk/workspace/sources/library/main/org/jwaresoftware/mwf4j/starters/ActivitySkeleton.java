@@ -10,6 +10,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Activity;
+import org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -76,6 +77,12 @@ public abstract class ActivitySkeleton extends ExecutableSkeleton implements Act
         return "activity";
     }
 
+
+
+    public void doError(Harness h, Throwable issue)
+    {
+        //silence
+    }
 
 
     private Action myDefinition;

@@ -22,6 +22,7 @@ import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.SavebackException;
 import  org.jwaresoftware.mwf4j.assign.SavebackVar;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.behaviors.Protected;
 import  org.jwaresoftware.mwf4j.harness.NestedIsolatedHarness;
 
 /**
@@ -41,11 +42,13 @@ final class BALHelper
 {
     static final ControlFlowStatement protect(Action owner, ControlFlowStatement statement)
     {
-        if (!(statement instanceof ProtectedStatement)) {
+        if (!(statement instanceof Protected)) {
             statement = new ProtectedStatement(owner,statement);
         }
         return statement;
     }
+
+
 
     static final void runInline(Action action, Harness harness)
     {
@@ -129,6 +132,8 @@ final class BALHelper
         return done;
     }
 
+
+
     static final boolean clrData(String key, StoreType how, Harness harness)
     {
         boolean done=true;
@@ -172,7 +177,8 @@ final class BALHelper
             done = clrData(ref.getName(),ref.getStoreType(),harness);
         return done;
     }
-    
+
+
 
     static final void activate(Condition test)
     {
@@ -203,8 +209,6 @@ final class BALHelper
         }
         return bodyContinuation;
     }
-
-
 
     static final ControlFlowStatement makeInstanceOfBody(ControlFlowStatement source, Harness harness, ControlFlowStatement next, Action bodyFactory)
     {
