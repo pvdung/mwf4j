@@ -28,9 +28,12 @@ import  org.jwaresoftware.mwf4j.assign.Giveback;
 import  org.jwaresoftware.mwf4j.assign.GivebackVar;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.behaviors.Protected;
+import  org.jwaresoftware.mwf4j.behaviors.Signal;
 import  org.jwaresoftware.mwf4j.starters.ExtensionPoint;
 import  org.jwaresoftware.mwf4j.starters.AddTestUnwindAction;
 import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
+import  org.jwaresoftware.mwf4j.starters.StatementSkeleton;
 
 /**
  * Test suite for {@linkplain TryCatchAction} and its related classes.
@@ -491,6 +494,51 @@ public final class TryCatchActionTest extends ActionTestSkeleton
         assertEquals(names.get(3),"always3","4th action was action2's alway's trycatch-always");
         assertEquals(names.get(4),"action3","5th action was out.body sequence[2] 'action3'");
         assertEquals(names.get(5),"always","6th action was out.'always'");
+    }
+
+    static class SignalContinuation extends StatementSkeleton implements Signal {
+        static class LocalBarfage extends RuntimeException {
+            LocalBarfage() {
+                super("Barfing now!");
+            }
+        }
+        SignalContinuation() { 
+        }
+        protected ControlFlowStatement runInner(Harness h) {
+            toBeThrown.fillInStackTrace();
+            throw toBeThrown;
+        }
+        @Override
+        public Exception getCause() {
+            return toBeThrown;
+        }
+        @Override
+        public int getPosition() {
+            return -1;
+        }
+        private RuntimeException toBeThrown= new LocalBarfage();
+    }
+
+    static class SignalThrower extends ExtensionPoint implements Protected {
+        SignalThrower() {
+            super("barfer");
+        }
+        protected ControlFlowStatement runInner(Harness harness) {
+            return new SignalContinuation();
+        }
+    }
+
+    @Test(dependsOnMethods={"testHandleErrorAndAlwaysContinuation_1_0_0"})
+    public void testCatchesCustomSignalStatements_1_0_0()
+    {
+        Sequence body = block("b").add(touch("b.1")).add(new SignalThrower()).add(never());
+        Sequence handler = new SequenceAction("e").add(touch("e.1")).add(touch("e.2"));
+        Sequence always = new SequenceAction("a").add(touch("a.1")).add(touch("a.2"));
+        TryCatchAction out = trycatch("CS",body,always,RuntimeException.class,handler);
+        out.setHaltIfError(false);
+        out.setQuiet(true);
+        runTASK(out);
+        assertTrue(werePerformedInOrder("b.1|e.1|e.2|a.1|a.2"),"ordering is b.1|e.1|e.2|a.1|a.2");
     }
 }
 

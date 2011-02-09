@@ -16,6 +16,7 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
 import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
+import  org.jwaresoftware.mwf4j.starters.TraceSupport;
 
 /**
  * Helper that encapsulates the reusable handling code for protected statements 
@@ -69,10 +70,8 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
         myUseThrowableFlag = !flag;
     }
 
-    public ControlFlowStatement handle(ControlFlowStatement next, ThrowStatement pendingThrow, Harness harness)
+    public ControlFlowStatement handleInner(ControlFlowStatement next, ThrowStatement pendingThrow, Harness harness)
     {
-        Diagnostics.ForBAL.info("Captured exception in statement '{}': {}",getWhatId(),Throwables.getTypedMessage(pendingThrow.getCause()));
-
         if (myHaltIfErrorFlag || !myQuietFlag) {
             RunFailedException rX = new RunFailedException(pendingThrow);
             String summation = rX.getMessage();
@@ -88,6 +87,18 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
             }
         }
         return next;
+    }
+
+    public ControlFlowStatement handle(ControlFlowStatement next, ThrowStatement pendingThrow, Harness harness, TraceSupport bc)
+    {
+        bc.caught(pendingThrow.getCause());
+        return handleInner(next,pendingThrow,harness);
+    }
+
+    public ControlFlowStatement handle(ControlFlowStatement next, ThrowStatement pendingThrow, Harness harness)
+    {
+        Diagnostics.ForFlow.info("** Captured exception in statement '{}': {}",getWhatId(),Throwables.getTypedMessage(pendingThrow.getCause()));
+        return handleInner(next,pendingThrow,harness);
     }
 
     public void reset()

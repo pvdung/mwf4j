@@ -78,8 +78,8 @@ public class TraceSupport
 
     protected final void caughtThis(Throwable detected)
     {
-        Object[] args= new Object[]{currentIndent(),myLink.getId(),Throwables.getTypedMessage(detected)};
-        logger().warn("{} >Detected exception in '{}': {}",args);
+        Object[] args= new Object[]{currentIndent(),myLink.typeCN(),myLink.getId(),Throwables.getTypedMessage(detected)};
+        logger().warn("{} >Detected {} exception in '{}': {}",args);
     }
 
 

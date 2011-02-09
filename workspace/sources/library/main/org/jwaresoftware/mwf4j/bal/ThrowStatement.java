@@ -14,6 +14,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Signal;
 import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
 
 /**
@@ -36,7 +37,7 @@ import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
  * @see       RunFailedException
  **/
 
-public final class ThrowStatement extends BALStatement
+public final class ThrowStatement extends BALStatement implements Signal
 {
     public ThrowStatement(Action owner, Exception cause)
     {
@@ -56,6 +57,17 @@ public final class ThrowStatement extends BALStatement
         myAnnouncement = announcement; 
     }
 
+    public ThrowStatement(Signal other, Action link)
+    {
+        Validate.notNull(other,What.SOURCE);
+        Exception cause = other.getCause();
+        Validate.notNull(cause,What.EXCEPTION);
+        Action owner = other.getOwner();
+        if (other.isAnonymous() && link!=null) owner = link;
+        initOwner(owner);
+        setCause(cause);
+    }
+
     protected ControlFlowStatement runInner(Harness harness)
     {
         if (myAnnouncement!=null) {
@@ -71,6 +83,7 @@ public final class ThrowStatement extends BALStatement
         throw signal;
     }
 
+    @Override
     public final Exception getCause()
     {
         return theCause;
@@ -99,6 +112,7 @@ public final class ThrowStatement extends BALStatement
         myPosition = internalMark;
     }
 
+    @Override
     public final int getPosition()
     {
         return myPosition;
