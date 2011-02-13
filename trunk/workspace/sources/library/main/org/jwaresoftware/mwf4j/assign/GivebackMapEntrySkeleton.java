@@ -10,7 +10,9 @@ import  java.util.Map;
 import  org.apache.commons.jexl2.JexlEngine;
 import  org.apache.commons.jexl2.MapContext;
 
+import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Diagnostics;
+import  org.jwaresoftware.mwf4j.What;
 
 /**
  * Giveback implementation that returns the value of a map entry. The source 
@@ -41,27 +43,29 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
 //  Implementation:
 //  ---------------------------------------------------------------------------------------
 
-    protected GivebackMapEntrySkeleton()
+    protected GivebackMapEntrySkeleton(Class<? extends T> ofType)
     {
-        this(null,true,Mode.EXPRESSION);
+        this(ofType,null,true,Mode.EXPRESSION);
     }
 
-    protected GivebackMapEntrySkeleton(T fallbackValue, boolean failIfError, boolean quiet, Mode mode)
+    protected GivebackMapEntrySkeleton(Class<? extends T> ofType, T fallbackValue, boolean failIfError, boolean quiet, Mode mode)
     {
+        Validate.notNull(ofType,What.CLASS_TYPE);
+        myOfType = ofType;
         myDirectFlag = Mode.DIRECT.equals(mode);
         myFallbackValue = fallbackValue;
         myHaltIfErrorFlag = failIfError;
         myQuietFlag = quiet;
     }
 
-    protected GivebackMapEntrySkeleton(T fallbackValue, boolean failIfError)
+    protected GivebackMapEntrySkeleton(Class<? extends T> ofType, T fallbackValue, boolean failIfError)
     {
-        this(fallbackValue,failIfError,Mode.EXPRESSION);
+        this(ofType,fallbackValue,failIfError,Mode.EXPRESSION);
     }
 
-    protected GivebackMapEntrySkeleton(T fallbackValue, boolean failIfError, Mode mode)
+    protected GivebackMapEntrySkeleton(Class<? extends T> ofType, T fallbackValue, boolean failIfError, Mode mode)
     {
-        this(fallbackValue,failIfError,false,mode);
+        this(ofType,fallbackValue,failIfError,false,mode);
     }
 
     public T call()
@@ -76,12 +80,15 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
         T gotten = null;
         try {
             Map<String,Object> datamap = getDataMap();
+            Object raw=null;
             if (myDirectFlag) {
-                gotten = (T)datamap.get(selector);//NB: no way to check this type-cast here
+                raw = datamap.get(selector);//NB: no way to check this type-cast here
             } else {
                 JexlEngine je = MyJexl.getEngine();
-                gotten = (T)je.createExpression(selector).evaluate(new MapContext(datamap));
+                raw = je.createExpression(selector).evaluate(new MapContext(datamap));
             }
+            Validate.fieldIsAOrNull(raw,myOfType,What.DATA);
+            gotten = (T)raw;
         } catch(RuntimeException getX) {
             if (myHaltIfErrorFlag) {
                 throw new GivebackException(selector,getX);
@@ -114,10 +121,11 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
     }
 
 
+    private T myFallbackValue;
+    private final Class<? extends T> myOfType;
     private final boolean myDirectFlag;
     private final boolean myHaltIfErrorFlag;
     private final boolean myQuietFlag;
-    private T myFallbackValue;
 }
 
 

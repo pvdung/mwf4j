@@ -12,6 +12,7 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.helpers.CalledFuture;
 import  org.jwaresoftware.mwf4j.helpers.CalledRunnable;
@@ -41,10 +42,11 @@ import  org.jwaresoftware.mwf4j.helpers.CalledRunnable;
  * gets an authorization credential from the caller.
  * 
  * <pre>
- *   public class AskAction extends CallAction&lt;String&gt; {
+ *   public class AskAction extends CallAction&lt;String&gt; 
+ *   {
  *     public AskAction(final String message, String updateVar) {
  *       super("ask", 
- *             new Callable<String>() {
+ *             new Callable&lt;String&gt;() {
  *               public String call() {
  *                  return askUser(message);
  *               }
@@ -55,7 +57,8 @@ import  org.jwaresoftware.mwf4j.helpers.CalledRunnable;
  *     protected String askUser(String message) {
  *       ...
  *     }
- *     ...
+ *   ...
+ *   AskAction ask = new AskAction("Override data checks?","data.checkFlag");
  * </pre>
  *
  * @since     JWare/MWf4J 1.0.0
@@ -69,10 +72,15 @@ import  org.jwaresoftware.mwf4j.helpers.CalledRunnable;
 
 public class CallAction<T> extends SavebackAction<T>
 {
-    public CallAction(String id, Callable<T> getmethod, String resultKey, StoreType resultStoreType)
+    public CallAction(String id, Callable<? extends T> getmethod, String resultKey, StoreType resultStoreType)
     {
         super(id,resultKey,resultStoreType);
         setGetter(getmethod);
+    }
+
+    public CallAction(String id, Reference resultKey)
+    {
+        super(id,resultKey);
     }
 
     public CallAction(String id)
@@ -91,7 +99,7 @@ public class CallAction<T> extends SavebackAction<T>
         myGetter = new CalledRunnable<T>(voidmethod);
     }
 
-    public void setGetter(Callable<T> getmethod)
+    public void setGetter(Callable<? extends T> getmethod)
     {
         Validate.notNull(getmethod,What.CALLBACK);
         myGetter = getmethod;
@@ -103,7 +111,13 @@ public class CallAction<T> extends SavebackAction<T>
         myGetter = new CalledFuture<T>(getmethod);
     }
 
-    protected void verifyReady() 
+    public void setGetterRequiredReturnType(Class<? extends T> ofKind)
+    {
+        Validate.notNull(ofKind,What.CLASS_TYPE);
+        myPayloadKind = ofKind;
+    }
+
+    protected void verifyReady()
     {
         super.verifyReady();
         Validate.fieldNotNull(myGetter,What.GET_METHOD);
@@ -120,10 +134,12 @@ public class CallAction<T> extends SavebackAction<T>
         super.configure(statement);
         AssignmentStatement<T> assignment = (AssignmentStatement<T>)statement;
         assignment.setGetter(myGetter);
+        assignment.setGetterRequiredReturnType(myPayloadKind);
     }
 
 
-    private Callable<T> myGetter;//REQUIRED
+    private Callable<? extends T> myGetter;//REQUIRED
+    private Class<? extends T> myPayloadKind;//OPTIONAL
 }
 
 

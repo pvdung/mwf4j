@@ -15,6 +15,7 @@ import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
+import  org.jwaresoftware.mwf4j.behaviors.Signal;
 import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
 import  org.jwaresoftware.mwf4j.starters.TraceSupport;
 
@@ -132,6 +133,17 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
         myHaltIfErrorFlag = from.haltIfErrorFlag;
         myQuietFlag = from.quietFlag;
         myUseThrowableFlag = !from.haltContinuationFlag;
+    }
+
+    public static ThrowStatement convert(Signal continuation, Action forAction) 
+    {
+        ThrowStatement ourthrow = null;
+        if (continuation instanceof ThrowStatement) {
+            ourthrow = (ThrowStatement)continuation;
+        } else {
+            ourthrow = new ThrowStatement(continuation,forAction);
+        }
+        return ourthrow;
     }
 
     private boolean myHaltIfErrorFlag;

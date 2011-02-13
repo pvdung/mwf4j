@@ -11,6 +11,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Markable;
 
 /**
  * Starting implementation for an action. Tracks the action's id
@@ -24,7 +25,7 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    infra,impl
  **/
 
-public abstract class ActionSkeleton implements Action
+public abstract class ActionSkeleton implements Action, Markable
 {
     protected ActionSkeleton()
     {
@@ -41,7 +42,8 @@ public abstract class ActionSkeleton implements Action
         return myId;
     }
 
-    protected void setId(String id)
+    @Override
+    public final void setId(String id)
     {
         Validate.notNull(id,What.ID);
         myId = Strings.trimToEmpty(id);

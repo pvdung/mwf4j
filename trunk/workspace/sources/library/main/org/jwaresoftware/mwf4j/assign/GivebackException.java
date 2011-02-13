@@ -30,6 +30,16 @@ public final class GivebackException extends MWf4JException
     {
         super(cause);
     }
+
+    private GivebackException(String testmessage)
+    {
+        super(testmessage);
+    }
+
+    public static GivebackException from(String message)
+    {
+        return new GivebackException(message);
+    }
 }
 
 

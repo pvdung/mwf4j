@@ -36,61 +36,75 @@ public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
 //  Easy factory methods named for intended lookup (easier than big ctor):
 //  ---------------------------------------------------------------------------------------
 
-    public final static<T> GivebackVar<T> fromGet(String key)
+    public final static<T> GivebackVar<T> fromGet(String key, Class<? extends T> ofType)
     {
-        return new GivebackVar<T>(key,null,true,Mode.DIRECT);
+        return new GivebackVar<T>(key,null,ofType,true,Mode.DIRECT);
     }
 
-    public final static<T> GivebackVar<T> fromGet(String key, T fallbackValue)
+    public final static<T> GivebackVar<T> fromGet(String key, T fallbackValue, Class<? extends T> ofType)
     {
-        return new GivebackVar<T>(key,fallbackValue,true,Mode.DIRECT);
+        return new GivebackVar<T>(key,fallbackValue,ofType,true,Mode.DIRECT);
     }
 
-    public final static<T> GivebackVar<T> fromEval(String keyOrExpr)
+    public final static<T> GivebackVar<T> fromEval(String keyOrExpr, Class<? extends T>ofType)
     {
-        return new GivebackVar<T>(keyOrExpr,null,true,Mode.EXPRESSION);
+        return new GivebackVar<T>(keyOrExpr,null,ofType,true,Mode.EXPRESSION);
     }
 
-    public final static<T> GivebackVar<T> fromEval(String keyOrExpr, T fallbackValue)
+    public final static<T> GivebackVar<T> fromEval(String keyOrExpr, T fallbackValue, Class<? extends T> ofType)
     {
-        return new GivebackVar<T>(keyOrExpr,fallbackValue,true,Mode.EXPRESSION);
+        return new GivebackVar<T>(keyOrExpr,fallbackValue,ofType,true,Mode.EXPRESSION);
     }
 
-    public final static<T> GivebackVar<T> fromEval(String keyOrExpr, boolean failIfError)
+    public final static<T> GivebackVar<T> fromEval(String keyOrExpr, Class<? extends T> ofType, boolean failIfError)
     {
-        return new GivebackVar<T>(keyOrExpr,null,failIfError,Mode.EXPRESSION);
+        return new GivebackVar<T>(keyOrExpr,null,ofType,failIfError,Mode.EXPRESSION);
     }
 
-    public final static<T> GivebackVar<T> fromEval(String keyOrExpr, T fallbackValue, boolean failIfError)
+    public final static<T> GivebackVar<T> fromEval(String keyOrExpr, T fallbackValue, Class<? extends T> ofType, boolean failIfError)
     {
-        return new GivebackVar<T>(keyOrExpr,fallbackValue,failIfError,Mode.EXPRESSION);
+        return new GivebackVar<T>(keyOrExpr,fallbackValue,ofType,failIfError,Mode.EXPRESSION);
     }
     
-    public final static<T> GivebackVar<T> fromEvalOfOptional(String keyOrExpr)
+    public final static<T> GivebackVar<T> fromEvalOfOptional(String keyOrExpr, Class<? extends T> ofType)
     {
-        return new GivebackVar<T>(keyOrExpr,null,false,true,Mode.EXPRESSION);
+        return new GivebackVar<T>(keyOrExpr,null,ofType,false,true,Mode.EXPRESSION);
     }
+
+// --- Eases Testing:
+    
+    public final static GivebackVar<String> fromGetS(String key)
+    {
+        return fromGet(key,String.class);
+    }
+
+    public final static GivebackVar<String> fromEvalS(String keyOrExpr)
+    {
+        return fromEval(keyOrExpr,String.class);
+    }
+
 
 //  ---------------------------------------------------------------------------------------
 //  Implementation:
 //  ---------------------------------------------------------------------------------------
 
-    public GivebackVar(String keyOrExpr) //Ez for testing and IoC defaults
+    public GivebackVar(String keyOrExpr, Class<? extends T> ofType) //Ez for testing and IoC defaults
     {
+        super(ofType);
         Validate.notBlank(keyOrExpr,What.ITEM_ID);
         myKeyOrExpr = keyOrExpr;
     }
 
-    public GivebackVar(String keyOrExpr, T fallbackValue, boolean failIfError, boolean quiet, Mode mode)
+    public GivebackVar(String keyOrExpr, T fallbackValue, Class<? extends T> ofType, boolean failIfError, boolean quiet, Mode mode)
     {
-        super(fallbackValue,failIfError,quiet,mode);
+        super(ofType,fallbackValue,failIfError,quiet,mode);
         Validate.notBlank(keyOrExpr,What.ITEM_ID);
         myKeyOrExpr = keyOrExpr;
     }
 
-    public GivebackVar(String keyOrExpr, T fallbackValue, boolean failIfError, Mode mode)
+    public GivebackVar(String keyOrExpr, T fallbackValue, Class<? extends T> ofType, boolean failIfError, Mode mode)
     {
-        this(keyOrExpr,fallbackValue,failIfError,false,mode);
+        this(keyOrExpr,fallbackValue,ofType,failIfError,false,mode);
     }
 
     protected String getSelector()

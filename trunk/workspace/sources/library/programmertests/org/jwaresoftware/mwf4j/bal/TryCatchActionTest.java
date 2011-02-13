@@ -418,7 +418,7 @@ public final class TryCatchActionTest extends ActionTestSkeleton
         out.setQuiet(false);
         out.setBody(error("BLEECH", new BException("BLEECH")));
         out.setError(new Reference("mydata.lastError",StoreType.OBJECT));
-        Giveback<Exception> getError = GivebackVar.fromEval("mydata.lastError");
+        Giveback<Exception> getError = GivebackVar.fromEval("mydata.lastError",Exception.class);
         out.addIfError(Exception.class, new IfErrorHandler("cleanup",getError));
 
         runTASK(out);

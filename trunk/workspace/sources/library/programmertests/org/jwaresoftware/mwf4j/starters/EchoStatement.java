@@ -70,7 +70,7 @@ public class EchoStatement extends TestStatement
         } else if (StoreType.PROPERTY.equals(myType)) {
             o = harness.getConfiguration().getString(myKey,null);
         } else if (StoreType.OBJECT.equals(myType)) {
-            o = GivebackVar.fromEval(myKey,null,false).call();
+            o = GivebackVar.fromEval(myKey,Object.class,false).call();
         } else if (StoreType.SYSTEM.equals(myType)) {
             o = LocalSystem.getProperty(myKey);
         }

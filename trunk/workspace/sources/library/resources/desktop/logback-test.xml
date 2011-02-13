@@ -9,14 +9,14 @@
   <appender name="OJG" class="ch.qos.logback.core.FileAppender">
     <file>C:\Work\Logs\MWf4J\mwf4j.log</file>
     <encoder>
-      <Pattern>[%d{ISO8601}] [%-5p] %c - %m%n%ex{3}</Pattern>
+      <Pattern>[%d{ISO8601}] [%-5p] %c - %m%n%ex{5}</Pattern>
     </encoder>
   </appender>
 
   <appender name="OJG-DIAGNOSTICS" class="ch.qos.logback.core.FileAppender">
     <file>C:\Work\Logs\MWf4J\mwf4j-debug.log</file>
     <encoder>
-      <Pattern>[%d{ISO8601}] [%-5p] %c - %m%n%ex{3}</Pattern>
+      <Pattern>[%d{ISO8601}] [%-5p] %c - %m%n%ex{5}</Pattern>
     </encoder>
   </appender>
 
@@ -27,7 +27,7 @@
       <maxHistory>15</maxHistory>
     </rollingPolicy>
     <encoder>
-      <Pattern>[%d{ISO8601}] [%-5p] %c{25} - %m  #%t#%n%ex{3}</Pattern>
+      <Pattern>[%d{ISO8601}] [%-5p] %c{25} - %m  #%t#%n%ex{5}</Pattern>
     </encoder>
   </appender>
 

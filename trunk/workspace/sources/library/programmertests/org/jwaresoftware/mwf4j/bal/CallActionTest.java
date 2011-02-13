@@ -73,7 +73,7 @@ public final class CallActionTest extends ActionTestSkeleton
         c2.setGetter(work);
         c2.setToStoreType(StoreType.THREAD);
         assertNotNull(c2.makeStatement(end),"c2.newStatement");
-        CallAction<Map<String,Object>> c3 = new CallAction<Map<String,Object>>("3rd",work,"ctor.results",StoreType.DATAMAP);
+        CallAction<Map<String,Object>> c3 = new CallAction<Map<String,Object>>("3rd",work,"ctor.2.results",StoreType.DATAMAP);
         assertEquals(c3.getId(),"3rd","id[3rd]");
         assertNotNull(c3.makeStatement(end),"c3.newStatement");
         CallAction<NoReturn> c4 = new CallAction<NoReturn>("4th",new Runnable() {
@@ -81,6 +81,9 @@ public final class CallActionTest extends ActionTestSkeleton
         });
         assertEquals(c4.getId(),"4th","id[4th]");
         assertNotNull(c4.makeStatement(end),"c4.newStatement");
+        CallAction<Map<String,Object>> c5 = new CallAction<Map<String,Object>>("5th",ref("ctor.5.results"));
+        c5.setGetter(Worker.asFuture(work));
+        assertNotNull(c5.makeStatement(end),"c5newStatement");
     }
 
     public void testHappyPathNoResult_1_0_0()
@@ -204,7 +207,8 @@ public final class CallActionTest extends ActionTestSkeleton
             Validate.fieldNotNull(getToKey(),"to-key");
             MDC.put(getToKey(), payload);
         }
-        public void setGetter(Callable<Map<String,Object>> g) {
+        @Override
+        public void setGetter(Callable<? extends Map<String,Object>> g) {
             if (g!=null) {
                 super.setGetter(g);
             }
@@ -224,6 +228,41 @@ public final class CallActionTest extends ActionTestSkeleton
         out.setPayload(seekrits);
         out.run(newHARNESS()).run(null);//end|throw
         assertSame(MDC.get(".kb"),seekrits,"results set");
+    }
+
+    public static abstract class NST implements Map<String,Object> {        
+    }
+
+    @Test(expectedExceptions= {IllegalArgumentException.class})
+    public void testFailWrongReturnType_1_0_0()
+    {
+        CallAction<Map<String,Object>> out = newOUT("badset");
+        out.setTo(ref(".output"));
+        out.setGetterRequiredReturnType(NST.class);
+        out.setGetter(new Callable<Map<String,Object>>() {
+            public Map<String,Object> call() {
+                return LocalSystem.newMap();
+            } });
+        try {
+            newHARNESS(out).run();
+            fail("Should not be able to retrieve wrong typed data?!");
+        } catch(IllegalArgumentException Xpected) {
+            assertTrue(Xpected.getMessage().contains("'data' is kindof "),"exception");
+            throw Xpected;
+        }
+    }
+
+    public void testSaveNull_1_0_0()
+    {
+        Map<String,Object> vars= iniDATAMAP();
+        vars.put(".result", "ERROR!");
+        CallAction<String> out = new CallAction<String>("eraser",new Runnable() {
+            public void run() {}
+        });
+        out.setToKey(".result");
+        newHARNESS(out).run();
+        assertNull(vars.get(".result"),".result");
+        assertFalse(vars.containsKey(".result"),"'.result' item exists");
     }
 }
 

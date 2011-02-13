@@ -5,6 +5,7 @@
 
 package org.jwaresoftware.mwf4j.assign;
 
+import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
@@ -63,7 +64,7 @@ public final class SavebackProperty<T> implements PutMethod<T>
     {
         Validate.notBlank(property,What.PROPERTY);
         try {
-            String string = String.valueOf(value);
+            String string = Strings.valueOf(value);
             if (myToSystemFlag) {
                 LocalSystem.setProperty(property,string);
             } else {

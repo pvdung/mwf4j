@@ -39,7 +39,7 @@ public final class Exists implements Condition
 
     public Exists(String keyOrExpr)
     {
-        this(GivebackVar.fromEvalOfOptional(keyOrExpr));
+        this(GivebackVar.fromEvalOfOptional(keyOrExpr,Object.class));
     }
 
     public boolean evaluate(Harness harness)

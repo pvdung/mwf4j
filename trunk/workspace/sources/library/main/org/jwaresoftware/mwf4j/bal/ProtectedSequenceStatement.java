@@ -9,6 +9,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.behaviors.Protector;
+import  org.jwaresoftware.mwf4j.behaviors.Signal;
 
 /**
  * Extension of a normal sequence statement that will capture and ignore <em>any</em>
@@ -61,8 +62,8 @@ public class ProtectedSequenceStatement extends SequenceStatement implements Pro
     ControlFlowStatement runMember(int index, Harness harness, ControlFlowStatement member)
     {
         ControlFlowStatement next = harness.runParticipant(protect(member));
-        if (next instanceof ThrowStatement) {
-            ThrowStatement lastThrown = (ThrowStatement)next;
+        if (next instanceof Signal) {
+            ThrowStatement lastThrown = TrySupport.convert((Signal)next,getOwner());
             lastThrown.setPosition(index);
             next = myTrySupport.handle(next(),lastThrown,harness,breadcrumbs());//NB: abort;move past me... 
         }

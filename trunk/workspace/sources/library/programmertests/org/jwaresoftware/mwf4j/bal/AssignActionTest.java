@@ -8,6 +8,7 @@ package org.jwaresoftware.mwf4j.bal;
 import  java.io.File;
 import  java.util.List;
 import  java.util.Map;
+import  java.util.concurrent.Callable;
 
 import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
@@ -15,7 +16,9 @@ import  static org.testng.Assert.*;
 import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
+import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.MDC;
+import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
 
@@ -41,11 +44,11 @@ public final class AssignActionTest extends ActionTestSkeleton
         return new AssignAction<T>(id,value);
     }
 
-    private <T> AssignAction<T> sete(String id, String expr)
+    private <T> AssignAction<T> sete(String id, String expr, Class<? extends T> ofType)
     {
         AssignAction<T> out = new AssignAction<T>(id);
         out.setTo(id);
-        out.setFrom(expr,StoreType.OBJECT);
+        out.setFrom(expr,StoreType.OBJECT,ofType);
         return out;
     }
 
@@ -105,13 +108,26 @@ public final class AssignActionTest extends ActionTestSkeleton
         assertEquals(MDC.get("messageType",Integer.class),Integer.valueOf(5),"MDC value stored");
     }
 
+    public void testAssignByRef_1_0_0()
+    {
+        Map<String,Object> vars = iniDATAMAP();
+        vars.put("orig",Integer.valueOf(123));
+        AssignAction<Integer> out = new AssignAction<Integer>(ref("copy"),ref("orig",StoreType.OBJECT),Integer.class);
+        runTASK(out);
+        assertSame(vars.get("copy"),vars.get("orig"),"copy");
+        out.setFrom("copy",Integer.class);
+        out.setTo(ref("othercopy"));
+        runTASK(out);
+        assertSame(vars.get("othercopy"),vars.get("orig"),"othercopy");
+    }
+
     public void testCopyVarValue_1_0_0()
     {
         Map<String,Object> vars = iniDATAMAP();
         assertFalse(vars.containsKey("a"));
         Double pi = Math.PI;
         vars.put("pi",pi);
-        runTASK(new AssignAction<Double>("a",StoreType.DATAMAP,"pi",StoreType.DATAMAP));
+        runTASK(new AssignAction<Double>("a",StoreType.DATAMAP,"pi",StoreType.DATAMAP,Double.class));
         assertSame(vars.get("a"),pi,"pi variable copied to 'a'");
     }
     
@@ -125,7 +141,7 @@ public final class AssignActionTest extends ActionTestSkeleton
 
         AssignAction<File> out = new AssignAction<File>("iniroot");
         out.setTo("root.path",StoreType.THREAD);
-        out.setFrom("defaults.root.path",StoreType.OBJECT,JAVA_HOME,false);
+        out.setFrom("defaults.root.path",StoreType.OBJECT,JAVA_HOME,false,File.class);
         runTASK(out);
         assertSame(MDC.get("root.path",File.class),JAVA_HOME,"default to JAVA_HOME");
     }
@@ -133,12 +149,12 @@ public final class AssignActionTest extends ActionTestSkeleton
     public void testCopyPropertyToProperty_1_0_0()
     {
         LocalSystem.setProperty("mwf4j.debug","ERROR");
-        SYSTEM.getConfiguration().getOverrides().setFlag("mwf4j.debug", true);
+        SYSTEM.getConfiguration().getOverrides().setFlag("mwf4j.debug",true);
         assertNull(SYSTEM.getConfiguration().getProperty("DEBUG"));
         
         AssignAction<String> out = new AssignAction<String>();
         out.setTo("DEBUG",StoreType.PROPERTY);
-        out.setFrom("mwf4j.debug",StoreType.PROPERTY);
+        out.setFrom("mwf4j.debug",StoreType.PROPERTY,String.class);
         runTASK(out);
         assertEquals(SYSTEM.getConfiguration().getProperty("DEBUG"),"true");
     }
@@ -155,9 +171,15 @@ public final class AssignActionTest extends ActionTestSkeleton
 
         AssignAction<String> out = new AssignAction<String>();
         out.setTo("config['DEBUG']",StoreType.OBJECT);
-        out.setFrom("mwf4j.debug",StoreType.SYSTEM);
+        out.setFrom("mwf4j.debug",StoreType.SYSTEM,String.class);
         runTASK(out);
         assertEquals(conf.get("DEBUG"),"YeS","'mwf4j.debug' flag set in conf map");
+    }
+
+    @SuppressWarnings("unchecked")
+    static Class<List<String>> LoS() { //Class<? extends List<?>> any | //List.ofStrings.class
+       // Validate.isTrue(List.class.isAssignableFrom(any),"isa List<?>"); Strings.LoS_Type
+        return (Class<List<String>>)(Class<?>)List.class;
     }
 
     public void testCopyLiteralUsingSetFrom_1_0_0()
@@ -165,7 +187,7 @@ public final class AssignActionTest extends ActionTestSkeleton
         Map<String,Object> vars = iniDATAMAP();
         AssignAction<List<String>> out = new AssignAction<List<String>>();
         out.setTo("emptyList");
-        out.setFrom("xxx",StoreType.NONE,Empties.STRING_LIST,true);
+        out.setFrom("xxx",StoreType.NONE,Empties.STRING_LIST,true,LoS());
         runTASK(out);
         assertSame(vars.get("emptyList"),Empties.STRING_LIST,"emptyList assigned");
         List<String> otherEmptyList = LocalSystem.newList();
@@ -180,7 +202,7 @@ public final class AssignActionTest extends ActionTestSkeleton
         MDC.put("defaults.label", "MWf4J v1.0.0");
         AssignAction<String> out = new AssignAction<String>();
         out.setTo("label");
-        out.setFrom("defaults.label",StoreType.THREAD,"UNKNOWN",false);
+        out.setFrom("defaults.label",StoreType.THREAD,"UNKNOWN",false,String.class);
         runTASK(out);
         assertEquals(vars.get("label"),"MWf4J v1.0.0","label copied from MDC");
     }
@@ -211,8 +233,8 @@ public final class AssignActionTest extends ActionTestSkeleton
         Sequence all= new SequenceAction()
            .add(setv("a",1))
            .add(setv("b",4))
-           .add(sete("c","a+b"))
-           .add(sete("d","c+b+10"))
+           .add(sete("c","a+b",Integer.class))
+           .add(sete("d","c+b+10",Integer.class))
            .add(setv("e","ERROR"));
         runTASK(all);
         assertEquals(vars.get("a"),Integer.valueOf(1),"a");
@@ -220,6 +242,31 @@ public final class AssignActionTest extends ActionTestSkeleton
         assertEquals(vars.get("c"),Integer.valueOf(5),"c");
         assertEquals(vars.get("d"),Integer.valueOf(19),"d");
         assertEquals(vars.get("e"),"ERROR","e");
+    }
+
+    /*
+     * Verify we can safely pass sub-types into the assign APIs. 
+     */
+    static class Type1 {
+        Type1() { }
+    }
+    static class Type2 extends Type1 {
+        Type2() { }
+        static class Calr implements Callable<Type2>  {
+            public Type2 call() { return new Type2(); }
+        }
+        static class Putr implements PutMethod<Type1> {
+            public boolean put(String path, Type1 payload) { return false; }
+            public boolean putNull(String path) { return false; }
+        }
+    }
+
+    public void testAssignSubtypes_1_0_0()
+    {
+        AssignmentStatement<Type1> out = new AssignmentStatement<Type1>(Action.anonINSTANCE);
+        out.setGetter(new Type2.Calr());
+        out.setPutter(new Type2.Putr());
+        out.setPayload(new Type2());
     }
 }
 

@@ -30,7 +30,7 @@ import  org.jwaresoftware.mwf4j.behaviors.Resettable;
  **/
 
 public final class Reference extends Pair<String,StoreType> 
-    implements Named, Identified, Resettable
+    implements Named, Identified, Resettable, Cloneable, Comparable<Reference>
 {
     public final static StoreType getDefaultDataType()
     {
@@ -59,9 +59,20 @@ public final class Reference extends Pair<String,StoreType>
         this(key,getDefaultDataType());
     }
 
+    public Reference(StoreType storeType)
+    {
+        Validate.notNull(storeType,What.TYPE);
+        ini(null,storeType);
+    }
+ 
     public boolean isUndefined()
     {
         return Strings.isBlank(getName());
+    }
+
+    public boolean isDefined()
+    {
+        return !isUndefined();
     }
 
     public void reset()
@@ -126,6 +137,12 @@ public final class Reference extends Pair<String,StoreType>
         }
     }
 
+    public final void set(Reference other)
+    {
+        Validate.notNull(other,What.REFERENCE);
+        set(other.get1(),other.get2());
+    }
+
     public static Reference newFrom(Reference from)
     {
         return from==null ? null : new Reference(from);
@@ -136,22 +153,55 @@ public final class Reference extends Pair<String,StoreType>
         ini(null,getDefaultDataType());
     }
 
+    @Override
     public boolean equals(Object other)
     {
-        if (other==this) return true;
-        if (other==null) return false;
-        if (getClass().equals(other.getClass())) {
+        if (other==this)
+            return true;
+        boolean is = false;
+        if (other!=null && getClass().equals(other.getClass())) {
             Reference otherref= (Reference)other;
-            return Strings.equal(getId(),otherref.getId()) &&
+            if (isUndefined() && otherref.isUndefined()) {
+                is= true;//IGNORE storeType!
+            } else { 
+                is= Strings.equal(getId(),otherref.getId()) &&
                     ObjectUtils.equals(getStoreType(),otherref.getStoreType());
-                    
+            }
         }
-        return false;
+        return is;
     }
 
+    @Override
     public int hashCode()
     {
         return ObjectUtils.hashCode(getId());
+    }
+
+    @Override
+    public Object clone()
+    {
+        try {
+            return super.clone();
+        } catch(CloneNotSupportedException clnX) {
+            throw new InternalError();
+        }
+    }
+
+    @Override
+    public int compareTo(Reference other)
+    {
+        int typeCmp = getStoreType().compareTo(other.getStoreType());//groups by type
+        if (other==this)
+            return 0;
+        if (other==null)
+            throw new NullPointerException();//Yik, but per contract!
+        if (isUndefined())
+            return other.isUndefined() ? typeCmp : -1;
+        if (other.isUndefined())
+            return 1;
+        if (typeCmp!=0)
+            return typeCmp;
+        return getName().compareTo(other.getName());
     }
 
     private void initThisFrom(Reference other)

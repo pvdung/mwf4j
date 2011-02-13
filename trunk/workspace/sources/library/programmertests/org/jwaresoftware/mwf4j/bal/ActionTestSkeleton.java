@@ -12,6 +12,8 @@ import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.assign.Reference;
+import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.starters.CheckPerformed;
 import  org.jwaresoftware.mwf4j.starters.CheckPerformedInOrder;
 import  org.jwaresoftware.mwf4j.starters.EchoAction;
@@ -38,6 +40,16 @@ public abstract class ActionTestSkeleton extends ExecutableTestSkeleton
 //  ---------------------------------------------------------------------------------------
 //  Harness preparation and verification methods
 //  ---------------------------------------------------------------------------------------
+
+    protected final Reference ref(String name)
+    {
+        return new Reference(name);
+    }
+
+    protected final Reference ref(String name, StoreType type)
+    {
+        return new Reference(name,type);
+    }
 
     protected final static TouchAction touch(String id)
     {

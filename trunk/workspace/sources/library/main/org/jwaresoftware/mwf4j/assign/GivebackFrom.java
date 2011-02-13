@@ -12,11 +12,11 @@ import  org.jwaresoftware.mwf4j.MDC;
 /**
  * Giveback that returns the value of a predefined harness variable with the
  * name or expression path of that variable stored under the fixed key 
- * {@linkplain #ITEM_NAME &#46;giveback}. Once the actual source variable's
+ * "{@linkplain #ITEM_NAME &#46;giveback}". Once the actual source variable's
  * information is retrieved, this giveback behaves identically to 
  * {@linkplain GivebackVar}.
  * <pre>
- * sequence.add(new CallAction<Order>("getorder",new GivebackFrom(),"order",StoreType.DATAMAP));
+ * sequence.add(new CallAction&lt;Order&gt;("getorder",new GivebackFrom(),"order",DATAMAP));
  * ...
  * vars.put(".giveback","newSingleOrder.internalForm");
  * </pre>
@@ -32,9 +32,9 @@ public final class GivebackFrom<T> extends GivebackMapEntrySkeleton<T>
 {
     public final static String ITEM_NAME = ".giveback";
 
-    public GivebackFrom()
+    public GivebackFrom(Class<? extends T> ofType)
     {
-        super();
+        super(ofType);
     }
 
     protected Map<String,Object> getDataMap()
