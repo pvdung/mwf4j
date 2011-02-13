@@ -35,12 +35,10 @@ import  org.jwaresoftware.mwf4j.What;
 
 public class AsyncCallAction<T> extends SavebackAction<T>
 {
-    public AsyncCallAction(String id, RunnableFuture<T> worker, String resultKey)
+    public AsyncCallAction(String id, RunnableFuture<? extends T> worker, String resultKey)
     {
-        super(id);
+        super(id,resultKey,BAL.getDataStoreType());
         setWorker(worker);
-        setToKey(resultKey);
-        setToStoreType(BAL.getDataStoreType());
     }
 
     public AsyncCallAction()
@@ -53,7 +51,7 @@ public class AsyncCallAction<T> extends SavebackAction<T>
         super(id);
     }
 
-    public void setWorker(final RunnableFuture<T> worker)
+    public void setWorker(final RunnableFuture<? extends T> worker)
     {
         Validate.notNull(worker,What.CALLBACK);
         myWorker = worker;
@@ -85,7 +83,7 @@ public class AsyncCallAction<T> extends SavebackAction<T>
         return assignment;
     }
 
-    private RunnableFuture<T> myWorker;//REQUIRED
+    private RunnableFuture<? extends T> myWorker;//REQUIRED
 }
 
 

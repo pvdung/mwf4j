@@ -49,7 +49,7 @@ import  org.jwaresoftware.mwf4j.behaviors.Protector;
 
 public class SequenceAction extends BALProtectorAction implements Sequence
 {
-    private static final List<Action> NONE= Empties.newList();
+    static final List<Action> NONE= Empties.newList();
 
 
     public enum Mode {
@@ -100,7 +100,7 @@ public class SequenceAction extends BALProtectorAction implements Sequence
     public void configure(ControlFlowStatement statement)
     {
         Validate.isTrue(statement instanceof SequenceStatement,"statement kindof sequence");
-        ((SequenceStatement)statement).setMembers(getActions());
+        ((SequenceStatement)statement).setMembers(getMembers());
         if (statement instanceof Protector) {
             myProtectSupport.copyTo((Protector)statement);
         }
@@ -120,15 +120,19 @@ public class SequenceAction extends BALProtectorAction implements Sequence
         return finish(statement);
     }
 
-    private List<Action> getActions()
+    private List<Action> getMembers()
     {
-        List<Action> actions = myActions;
+        List<Action> actions = getActions();
         if (Mode.MULTIPLE.equals(myUseMode)) {
-            actions = LocalSystem.newListDeepCopy(myActions);
+            actions = LocalSystem.newListDeepCopy(actions);
         }
         return actions;
     }
 
+    final List<Action> getActions()
+    {
+        return myActions;
+    }
 
     private List<Action> myActions = NONE;
     private Mode myUseMode = Mode.SINGLE;

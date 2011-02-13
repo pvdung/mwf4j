@@ -11,6 +11,7 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Feedback;
 import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.SavebackVar;
 import  org.jwaresoftware.mwf4j.assign.SavebackDiscard;
 import  org.jwaresoftware.mwf4j.assign.SavebackMDC;
@@ -19,19 +20,18 @@ import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
 /**
- * Action that either generates or obtains a piece of data that
- * must be assigned to or saved to one of the common MWf4J 
- * {@linkplain StoreType stores}. Typically the data is returned by
- * a closure of some kind like a Callable or Future but just as
- * typical is for the action itself to produce the data. Subclasses
- * must provide an {@linkplain AssignmentStatement assignment statement}
- * or something derived from that class to do the actual data reference
- * assignment.
+ * Action that either generates or obtains a piece of data that must be
+ * assigned to or saved to one of the common MWf4J {@linkplain StoreType stores}.
+ * Typically the data is returned by a closure of some kind like a Callable
+ * or Future but just as typical is for the action itself to produce the
+ * data. Subclasses must provide an {@linkplain AssignmentStatement
+ * assignment statement} or something derived from that class to do the 
+ * actual data reference assignment.
  * <p/>
  * To get this action to store the data, you <em>must</em> specify
- * a {@linkplain #setToKey to key} and a {@linkplain StoreType store
- * type}. Typically data is stored to the controlling harness's variables 
- * or configuration properties; see the precanned MWf4J 
+ * a {@linkplain #setToKey to key} and optionally a {@linkplain StoreType 
+ * store type}. If you do not specify a store type, data is stored to the 
+ * controlling harness's variables; see the precanned MWf4J 
  * {@linkplain PutMethod saving strategies} for more information.
  *
  * @since     JWare/MWf4J 1.0.0
@@ -54,20 +54,28 @@ public abstract class SavebackAction<T> extends ActionSkeleton
     protected SavebackAction(String id, String toKey, StoreType toStoreType)
     {
         this(id);
-        setToKey(toKey);
-        setToStoreType(toStoreType);
+        myToKey.set(toKey,toStoreType);
+    }
+
+    protected SavebackAction(String id, Reference toKey)
+    {
+        this(id);
+        myToKey.copyFrom(toKey);
     }
 
     public void setToKey(String key)
     {
-        Validate.notNull(key,What.KEY);
-        myToKey = key;
+        myToKey.setName(key);
     }
 
     public void setToStoreType(StoreType type)
     {
-        Validate.notNull(type,What.TYPE);
-        myStoreType = type;
+        myToKey.setStoreType(type);
+    }
+
+    public void setTo(Reference toKey)
+    {
+        myToKey.set(toKey);
     }
 
     public ControlFlowStatement makeStatement(ControlFlowStatement next)
@@ -83,9 +91,9 @@ public abstract class SavebackAction<T> extends ActionSkeleton
     {
         Validate.isTrue(statement instanceof AssignmentStatement<?>,"statement kindof assign");
         AssignmentStatement<T> assignment = (AssignmentStatement<T>)statement;
-        assignment.setPutter(newPutMethod(myStoreType));
-        if (myToKey!=null) {
-            assignment.setToKey(myToKey);
+        assignment.setPutter(newPutMethod(myToKey));
+        if (myToKey.isDefined()) {
+            assignment.setToKey(myToKey.getName());
         }
     }
 
@@ -103,14 +111,14 @@ public abstract class SavebackAction<T> extends ActionSkeleton
      * never returns <i>null</i>. Default algorithm assumes if no 'toKey'
      * was defined we can ignore or discard the data. Based on the MWf4J
      * standard saveback helpers.
-     * @param type this action's store type (non-null)
+     * @param to this action's store-to reference (non-null)
      * @return usable put method (non-null)
      **/
-    protected PutMethod<T> newPutMethod(StoreType type)
+    protected PutMethod<T> newPutMethod(Reference to)
     {
         PutMethod<T> target = new SavebackDiscard<T>();
-        if (myToKey!=null) {
-            switch(type) {
+        if (to.isDefined()) {
+            switch(to.getStoreType()) {
                 case DATAMAP: {
                     target = SavebackVar.toMap();          break;
                 }
@@ -135,8 +143,7 @@ public abstract class SavebackAction<T> extends ActionSkeleton
         return target;
     }
 
-    private String myToKey;//OPTIONAL; works with default assignment statement mechanism
-    private StoreType myStoreType=StoreType.NONE;//OPTIONAL; use only if toKey non-null
+    private Reference myToKey= new Reference();//OPTIONAL; works with default assignment statement mechanism
 }
 
 

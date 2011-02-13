@@ -18,7 +18,7 @@ package org.jwaresoftware.mwf4j.assign;
 
 public enum StoreType
 {
-    DATAMAP, THREAD, OBJECT, PROPERTY, SYSTEM, NONE;
+    DATAMAP, THREAD, OBJECT, PROPERTY, SYSTEM, NONE; //Ordering intentional
 
     public static StoreType findOrNull(String name) {
         StoreType t = null;

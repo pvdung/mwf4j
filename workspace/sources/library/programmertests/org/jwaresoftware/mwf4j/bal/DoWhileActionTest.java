@@ -77,6 +77,7 @@ public final class DoWhileActionTest extends ActionTestSkeleton
     public void testDefaultCursorSetup_1_0_0()
     {
         DoWhileAction out = newOUT("L");
+        out.enableCursor();
         out.setTest(new Once());
         out.setBody(new EchoAction("L",true));
         runTASK(out);

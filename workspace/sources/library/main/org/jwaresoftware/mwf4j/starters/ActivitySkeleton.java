@@ -31,11 +31,14 @@ public abstract class ActivitySkeleton extends ExecutableSkeleton implements Act
         super(id);
     }
 
-
-
     protected ActivitySkeleton()
     {
         super();
+    }
+
+    protected String typeCN()
+    {
+        return "activity";
     }
 
 
@@ -46,14 +49,17 @@ public abstract class ActivitySkeleton extends ExecutableSkeleton implements Act
         myDefinition = definition;
     }
 
-
-
     protected Action getDefinition()
     {
         return myDefinition;
     }
 
-
+    protected final <T> T getDefinitionOrFail(Class<T> ofKind)
+    {
+        Action a = getDefinition();
+        Validate.fieldIsA(a,ofKind,What.ACTION);
+        return ofKind.cast(a);
+    }
 
     protected final Action getDefinitionOrFail()
     {
@@ -68,13 +74,6 @@ public abstract class ActivitySkeleton extends ExecutableSkeleton implements Act
     {
         ControlFlowStatement end = new ActivityEndStatement();
         return getDefinitionOrFail().makeStatement(end);
-    }
-
-
-
-    protected String typeCN()
-    {
-        return "activity";
     }
 
 

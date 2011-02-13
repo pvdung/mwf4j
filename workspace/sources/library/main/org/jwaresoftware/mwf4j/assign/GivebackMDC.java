@@ -30,7 +30,7 @@ public final class GivebackMDC<T> implements Giveback<T>
         this(key,ofType,null);
     }
 
-    public GivebackMDC(String key, Class<T> ofType, T fallbackValue)
+    public GivebackMDC(String key, Class<? extends T> ofType, T fallbackValue)
     {
         Validate.notBlank(key,What.ITEM_ID);
         Validate.notNull(ofType,What.CLASS_TYPE);

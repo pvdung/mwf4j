@@ -71,13 +71,13 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
         return myToKey;
     }
 
-    public void setGetter(Callable<T> getmethod)
+    public void setGetter(Callable<? extends T> getmethod)
     {
         Validate.notNull(getmethod,What.GET_METHOD);
         myGetter = getmethod;
     }
 
-    public void setGetter(Future<T> getmethod)
+    public void setGetter(Future<? extends T> getmethod)
     {
         Validate.notNull(getmethod,What.GET_METHOD);
         myGetter = getmethod;
@@ -86,6 +86,11 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
     public final void setPayload(final T payload)
     {
         setGetter(new GivebackValue<T>(payload));
+    }
+
+    public final void setGetterRequiredReturnType(Class<? extends T> ofKind)
+    {
+        myPayloadKind = ofKind;
     }
 
     protected final Object getGetter()
@@ -135,11 +140,16 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
         T payload;
         try {
             MDC.pshHarness(this,harness);
+            Object raw=null;
             if (myGetter instanceof Callable) {
-                payload = ((Callable<T>)myGetter).call();
+                raw = ((Callable<?>)myGetter).call();
             } else {
-                payload = ((Future<T>)myGetter).get();//Blocks!
+                raw = ((Future<?>)myGetter).get();//WILL Block!!
             }
+            if (myPayloadKind!=null) {
+                Validate.isAOrNull(raw,myPayloadKind,What.DATA);
+            }
+            payload = (T)raw;
         } finally {
             MDC.popHarness(this,harness);
         }
@@ -157,9 +167,10 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
 
     private void resetThis()
     {
-        myToKey = null;
+        myToKey  = null;
         myGetter = null;
         mySetter = null;
+        myPayloadKind = null;
     }
 
     public void reset()
@@ -178,6 +189,7 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
     private String myToKey;
     private Object myGetter;//OPTIONAL but MUST override getPayload to ignore!
     private PutMethod<T> mySetter;//OPTIONAL but MUST override consumePayload to ignore!
+    private Class<? extends T> myPayloadKind;//OPTIONAL
 }
 
 

@@ -271,6 +271,7 @@ public final class ScopesTest extends ActionTestSkeleton
 
         Scope old_s2 = s2;
         s2 = Scopes.enter((st2=newStatement("for2")),"for2",h);
+        st2.getOwner();//shutup eclipse
         assertNotSame(s2,old_s2,"new scope allocated per callback");
         Scopes.addUnwind((uw2= new TestUnwinder("for2")));
         Scopes.unwindUpTo(st0,h);

@@ -22,7 +22,7 @@ public class TooManyIterationsException extends MWf4JException
 {
     public TooManyIterationsException(int count, int limit)
     {
-        super("Too many iterations("+count+") detected; max expected is "+limit);
+        super("Too many iterations("+count+") detected; max expected is less than "+limit);
     }
     
     public TooManyIterationsException(String message)

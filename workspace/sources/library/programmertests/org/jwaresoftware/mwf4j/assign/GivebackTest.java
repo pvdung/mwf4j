@@ -85,12 +85,12 @@ public final class GivebackTest extends AssignHelperTestSkeleton
 
     public void testGivebackVarDataFactoryCtors()
     {
-        assertNotNull(GivebackVar.fromGet("fu"));
-        assertNotNull(GivebackVar.fromGet("fu","phffht"));
-        assertNotNull(GivebackVar.fromEval("fu"));
-        assertNotNull(GivebackVar.fromEval("fu","phffht"));
-        assertNotNull(GivebackVar.fromEval("fu",false));
-        assertNotNull(GivebackVar.fromEval("fu","phffht",false));
+        assertNotNull(GivebackVar.fromGet("fu",String.class));
+        assertNotNull(GivebackVar.fromGet("fu","phffht",String.class));
+        assertNotNull(GivebackVar.fromEval("fu",String.class));
+        assertNotNull(GivebackVar.fromEval("fu",Long.valueOf(1L),Long.class));
+        assertNotNull(GivebackVar.fromEval("fu",String.class,false));
+        assertNotNull(GivebackVar.fromEval("fu","phffht",String.class,false));
     }
 
     public void testGivebackVarDatamapObject()
@@ -98,27 +98,27 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         Map<String,Object> loot = iniForGetData();
         Long now = (Long)loot.get("NOW");
         assertNotNull(now,"installed-NOW");
-        assertSame(GivebackVar.fromGet("NOW").call(),now,"get('NOW')");
-        assertEquals(GivebackVar.fromGet("version",null).call(),"1.0.4","get('version')");
-        assertSame(GivebackVar.fromGet("tv.show").call(),loot.get("tv.show"),"get('tv.show')");
-        assertSame(GivebackVar.fromGet("err",null).call(),loot.get("err"),"get('err')");
-        assertTrue(Map.class.isInstance(GivebackVar.fromGet("PC").call()),"get('PC') returned a Map");
+        assertSame(GivebackVar.fromGet("NOW",Long.class).call(),now,"get('NOW')");
+        assertEquals(GivebackVar.fromGet("version",null,String.class).call(),"1.0.4","get('version')");
+        assertSame(GivebackVar.fromGetS("tv.show").call(),loot.get("tv.show"),"get('tv.show')");
+        assertSame(GivebackVar.fromGet("err",null,RollupIssue.class).call(),loot.get("err"),"get('err')");
+        assertTrue(Map.class.isInstance(GivebackVar.fromGet("PC",Map.class).call()),"get('PC') returned a Map");
     }
 
     public void testGivebackVarArrayIndex()
     {
         Map<String,Object> loot = iniForGetData();
         assertEquals(((String[])loot.get("amigos"))[2],"eddy","amigos[2]");
-        GivebackVar<String> out = GivebackVar.fromEval("amigos[2]");
+        GivebackVar<String> out = GivebackVar.fromEval("amigos[2]",String.class);
         assertEquals(out.call(),"eddy","get('amigos[2]')");
-        out = GivebackVar.fromEval("amigos.0");
+        out = GivebackVar.fromEvalS("amigos.0");
         assertEquals(out.call(),"ed","get('amigos.0')");
     }
 
     public void testGivebackDefaultForOutOfBoundsVarArrayIndex()
     {
         iniForGetData();
-        GivebackVar<String> out = GivebackVar.fromEval("amigos[999]","bob",false);
+        GivebackVar<String> out = GivebackVar.fromEval("amigos[999]","bob",String.class,false);
         assertEquals(out.call(),"bob","get('amigos[999]','bob')");
     }
 
@@ -127,12 +127,12 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     {
         Map<String,Object> loot = iniForGetData();
         final Map<String,Object> PC = (Map<String,Object>)loot.get("PC");
-        GivebackVar<String> out = GivebackVar.fromEval("PC['os']",true);
+        GivebackVar<String> out = GivebackVar.fromEval("PC['os']",String.class,true);
         assertEquals(out.call(),PC.get("os"),"get('PC{os}')");
-        out = new GivebackVar<String>("PC.memory");
+        out = new GivebackVar<String>("PC.memory",String.class);
         assertEquals(out.call(),PC.get("memory"),"get('PC.memory')");
-        assertEquals(GivebackVar.fromEval("PC.users.1").call(),"edd","get('PC.users.1')");
-        assertEquals(GivebackVar.fromEval("PC.users[0]").call(),"ed","get('PC.users[0]')");
+        assertEquals(GivebackVar.fromEvalS("PC.users.1").call(),"edd","get('PC.users.1')");
+        assertEquals(GivebackVar.fromEvalS("PC.users[0]").call(),"ed","get('PC.users[0]')");
     }
 
     public void testGivebackVarObjectField()
@@ -140,7 +140,7 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         Map<String,Object> loot = iniForGetData();
         Throwable thr = ((RollupIssue)loot.get("err")).currentIssues().get(1).getCause();
         assertNotNull(thr,"err.issues[1].cause");
-        GivebackVar<Throwable> gv = new GivebackVar<Throwable>("err.issues[1].cause");
+        GivebackVar<Throwable> gv = new GivebackVar<Throwable>("err.issues[1].cause",Throwable.class);
         assertSame(gv.call(),thr,"get('err.issues[1].cause')");
     }
 
@@ -148,7 +148,7 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     public void testFailIfInvalidVarExpr()
     {
         iniForGetData();
-        Object o = GivebackVar.fromEval("amigos[100").call();
+        Object o = GivebackVar.fromEval("amigos[100",Object.class).call();
         System.err.println("IT('amigos[100'): "+o);
         fail("Should not survive a get of invalid expression");
     }
@@ -158,14 +158,14 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     {
         Map<String,Object> loot = iniForGetData();
         assertFalse(loot.containsKey("no-such-element"));
-        GivebackVar.fromEval("no-such-element").call();
+        GivebackVar.fromEval("no-such-element",Object.class).call();
         fail("Should not survive a get of missing bean");
     }
 
     public void testGivebackDefaultIfInvalidVarExprAndNotHaltIfError()
     {
         iniForGetData();
-        GivebackVar<String> out = GivebackVar.fromEval("amigos[100","EDDIE",false);
+        GivebackVar<String> out = GivebackVar.fromEval("amigos[100","EDDIE",String.class,false);
         Object o = out.call();
         System.out.println("IT('amigos[100'): "+o);
         assertEquals(o,"EDDIE","get('amigos[100','EDDIE')");
@@ -176,14 +176,14 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         String key;
         assertFalse(iniForGetData().containsKey("object"));
         key = "object."+rInt();
-        Object b = GivebackVar.fromEval(key,false).call();
+        Object b = GivebackVar.fromEval(key,Object.class,false).call();
         System.out.println("IT("+key+"): "+b);
         assertNull(b,"<no-such-object> is null");
         key = "n"+rInt();
-        Object a = GivebackVar.fromEval(key,false).call();
+        Object a = GivebackVar.fromEval(key,Object.class,false).call();
         System.out.println("IT("+key+"): "+a);
         assertNull(a,"<random> key is null");
-        a = GivebackVar.fromEvalOfOptional(key).call();
+        a = GivebackVar.fromEvalOfOptional(key,Object.class).call();
         assertNull(a,"<random> key is null");
     }
 
@@ -239,7 +239,7 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         Long now = (Long)loot.get("NOW");
         assertNotNull(now,"installed-NOW");
         loot.put(GivebackFrom.ITEM_NAME, "NOW");
-        GivebackFrom<Long> out = new GivebackFrom<Long>();
+        GivebackFrom<Long> out = new GivebackFrom<Long>(Long.class);
         assertSame(out.call(),now,"out.call()");
     }
     
@@ -248,7 +248,7 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     {
         Map<String,Object> loot = iniForGetData();
         assertFalse(loot.containsKey(GivebackFrom.ITEM_NAME));
-        new GivebackFrom<Long>().call();
+        new GivebackFrom<Long>(Long.class).call();
         fail("Should not be able to retrieve unless '"+GivebackFrom.ITEM_NAME+"' defined");
     }
 
@@ -258,15 +258,15 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         Map<String,Object> loot = LocalSystem.newMap();
         addSimple(loot);
         final Map<String,Object> PC = (Map<String,Object>)loot.get("PC");
-        GivebackMapEntry<String> out = new GivebackMapEntry<String>(loot,"PC['os']");
+        GivebackMapEntry<String> out = new GivebackMapEntry<String>(loot,"PC['os']",String.class);
         assertEquals(out.call(),PC.get("os"),"get('PC{os}')");
-        out = new GivebackMapEntry<String>(loot,"PC.memory","ERROR",true);
+        out = new GivebackMapEntry<String>(loot,"PC.memory","ERROR",String.class,true);
         assertEquals(out.call(),PC.get("memory"),"get('PC.memory')");
-        out = new GivebackMapEntry<String>(loot,"version");
+        out = new GivebackMapEntry<String>(loot,"version",String.class);
         assertEquals(out.call(),loot.get("version"),"get('version')");
-        out = new GivebackMapEntry<String>(loot,"no-such-object-there","DEFAULTED",false);
+        out = new GivebackMapEntry<String>(loot,"no-such-object-there","DEFAULTED",String.class,false);
         assertEquals(out.call(),"DEFAULTED","get('<missing-key>')");
-        assertEquals(new GivebackMapEntry<Long>(loot,"NOW").call(),loot.get("NOW"),"get('NOW')");
+        assertEquals(new GivebackMapEntry<Long>(loot,"NOW",Long.class).call(),loot.get("NOW"),"get('NOW')");
     }
 
     public void testGivebackStatement()
@@ -286,14 +286,14 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     @Test(expectedExceptions={GivebackException.class})
     public void testFailGivebackVarIfNoCurrentHarness()
     {
-        new GivebackVar<String>("fubar").call();
+        new GivebackVar<String>("fubar",String.class).call();
         fail("Should not be able to giveback var from no HARNESS");
     }
 
     @Test(expectedExceptions={GivebackException.class})
     public void testFailGivebackFromIfNoCurrentHarness()
     {
-        new GivebackFrom<String>().call();
+        new GivebackFrom<String>(String.class).call();
         fail("Should not be able to giveback from no HARNESS");
     }
 
@@ -301,7 +301,7 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     public void testFailGivebackFromIfNoFromInstalled()
     {
         iniForGetData();
-        new GivebackFrom<String>().call();
+        new GivebackFrom<String>(String.class).call();
         fail("Should not be able to giveback from no VALUE");
     }
 

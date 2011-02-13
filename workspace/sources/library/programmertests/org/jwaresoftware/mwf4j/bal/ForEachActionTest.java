@@ -72,11 +72,11 @@ public final class ForEachActionTest extends ActionTestSkeleton
         return decision;
     }
 
-    private <T> AssignAction<T> sete(String id, String to, String expr)
+    private <T> AssignAction<T> sete(String id, String to, String expr, Class<? extends T> ofType)
     {
         AssignAction<T> out = new AssignAction<T>(id);
         out.setTo(to);
-        out.setFrom(expr,StoreType.OBJECT);
+        out.setFrom(expr,StoreType.OBJECT,ofType);
         return out;
     }
 
@@ -334,9 +334,9 @@ public final class ForEachActionTest extends ActionTestSkeleton
         iniStatementCount();
         Map<String,Object> shared= iniDATAMAP();
         Sequence seq = block("do")
-                            .add(sete("a","wkend","(0+0)"))
-                            .add(sete("b","wkday","(0+0)"))
-                            .add(sete("c","count","(0+0)"));
+                            .add(sete("a","wkend","(0+0)",Integer.class))
+                            .add(sete("b","wkday","(0+0)",Integer.class))
+                            .add(sete("c","count","(0+0)",Integer.class));
         ForEachAction out= newOUT();
         out.setCursorKey("dayofweek");
         out.setDataset(Arrays.asList(DOW));
@@ -344,9 +344,9 @@ public final class ForEachActionTest extends ActionTestSkeleton
             .add(new EchoAction("d.1","dayofweek",true))
             .add(decision("d.2",
                     new IsWeekday(),
-                    sete("d.2.1","wkday","wkday+1"),
-                    sete("d.2.2","wkend","wkend+1")))
-            .add(sete("d.3","count","count+1")));
+                    sete("d.2.1","wkday","wkday+1",Integer.class),
+                    sete("d.2.2","wkend","wkend+1",Integer.class)))
+            .add(sete("d.3","count","count+1",Integer.class)));
         seq.add(out).add(touch("e"));
         runTASK(seq);
         assertEquals(getStatementCount(),8,"calls to test statement");
