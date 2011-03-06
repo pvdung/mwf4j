@@ -8,6 +8,7 @@ package org.jwaresoftware.mwf4j;
 import  java.util.concurrent.ExecutorService;
 
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
+import  org.jwaresoftware.gestalt.fixture.StringResolver;
 
 /**
  * Per root-action invocation wrapper around the incoming fixture that
@@ -26,7 +27,7 @@ import  org.jwaresoftware.gestalt.bootstrap.Fixture;
  * @see       MDC#currentHarness()
  **/
 
-public interface Harness extends Runnable, Fixture.Implementation
+public interface Harness extends Runnable, Fixture.Implementation, StringResolver
 {
     Variables getVariables();
     ExecutorService getExecutorService();

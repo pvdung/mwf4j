@@ -7,7 +7,9 @@ package org.jwaresoftware.mwf4j.harness;
 
 import  java.util.concurrent.ExecutorService;
 
+import  org.jwaresoftware.gestalt.ProblemHandler;
 import  org.jwaresoftware.gestalt.Validate;
+
 import  org.jwaresoftware.mwf4j.Activity;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
@@ -82,7 +84,12 @@ public abstract class SpawnedHarnessSkeleton extends HarnessSkeleton implements 
     {
         return myParent.getVariables();
     }
-    
+
+    public String interpolate(String inputString, ProblemHandler callback)
+    {
+        return myParent.interpolate(inputString,callback);
+    }
+
     public Harness getHarnessDependentOn()
     {
         return myParent;

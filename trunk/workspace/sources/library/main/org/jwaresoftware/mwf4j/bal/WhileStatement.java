@@ -130,7 +130,7 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
 
     private void unwindThis(Harness harness)
     {
-        if (!myCursor.isUndefined() && myLoopCount>=0) {
+        if (myCursor.isDefined() && myLoopCount>=0) {
             BALHelper.clrData(myCursor,harness);
         }
         resetThis();
@@ -144,7 +144,7 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
     protected ControlFlowStatement getIterationOfBody(Harness harness)
     {
         myLoopCount++;
-        if (!myCursor.isUndefined()) {
+        if (myCursor.isDefined()) {
             BALHelper.putData(myCursor,Integer.valueOf(myLoopCount),harness);//NB: *before* factory call!
         }
         return BALHelper.makeIterationOfBody(this,harness,myBody,myBodyFactory);

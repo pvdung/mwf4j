@@ -8,9 +8,11 @@ package org.jwaresoftware.mwf4j.harness;
 import  java.util.concurrent.ExecutorService;
 import  java.util.concurrent.Executors;
 
+import  org.jwaresoftware.gestalt.ProblemHandler;
 import  org.jwaresoftware.gestalt.ServiceProviderException;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
+import  org.jwaresoftware.gestalt.fixture.StringResolver;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
@@ -59,6 +61,7 @@ public class SimpleHarness extends HarnessSkeleton
         myOwner = activity;
         myData = findVariables();
         myExectorService = findExecutorService();
+        myStringResolver = findResolverService();
     }
 
 
@@ -78,11 +81,24 @@ public class SimpleHarness extends HarnessSkeleton
         return myExectorService;
     }
 
+    public StringResolver getStringResolver()
+    {
+        return this;
+    }
+
     public String typeCN()
     {
         return "main";
     }
 
+    public String interpolate(String inputString, ProblemHandler issueHandler)
+    {
+        String output = inputString;
+        if (myStringResolver!=null) {
+            output = myStringResolver.interpolate(inputString,issueHandler);
+        }
+        return output;
+    }
 
 
     protected ControlFlowStatement firstStatement()
@@ -92,41 +108,54 @@ public class SimpleHarness extends HarnessSkeleton
 
 
 
+    private <T> T findService(String id, Class<T> ofType, String what) {
+        T service=null;
+        try {
+            service = getServiceInstanceOrNull(id,ofType,getIssueHandler());
+        } catch(ServiceProviderException spiX) {
+            String typeName = ofType.getSimpleName();
+            Diagnostics.ForCore.warn("Error looking for "+what+" as "+typeName+".class type",spiX);
+        }
+        return service;
+    }
+
     private Variables findVariables()
     {
-        Variables map=null;
-        try {
-            map = getServiceInstanceOrNull(MWf4J.ServiceIds.VARIABLES,Variables.class,getIssueHandler());
-        } catch(ServiceProviderException spiX) {
-            Diagnostics.ForCore.warn("Error looking for datamap as Variables.class type",spiX);
-        }
+        Variables map;
+        map = findService(MWf4J.ServiceIds.VARIABLES,Variables.class,"dataMap");
         if (map==null) {
             map = new VariablesHashMap(23,0.8f);
         }
         return map;
     }
 
- 
- 
     private ExecutorService findExecutorService()
     {
-        ExecutorService service=null;
-        try {
-            service = getServiceInstanceOrNull(MWf4J.ServiceIds.EXECUTOR,ExecutorService.class,getIssueHandler());
-        } catch(ServiceProviderException spiX) {
-            Diagnostics.ForCore.warn("Error looking for executor as Executor.class type",spiX);
-        }
+        ExecutorService service;
+        service = findService(MWf4J.ServiceIds.EXECUTOR,ExecutorService.class,"executor");
         if (service==null) {
             service = Executors.newCachedThreadPool();
         }
         return service;
     }
 
+    private StringResolver findResolverService()
+    {
+        StringResolver service;
+        service = findService(MWf4J.ServiceIds.STRING_RESOLVER,StringResolver.class,"string-resolver");
+        if (service==null) {
+            if (getTarget() instanceof StringResolver) {
+                service = StringResolver.class.cast(getTarget());
+            }
+        }
+        return service;
+    }
 
 
     private final Activity myOwner;
     private final Variables myData;
     private final ExecutorService myExectorService;
+    private final StringResolver myStringResolver;
 }
 
 

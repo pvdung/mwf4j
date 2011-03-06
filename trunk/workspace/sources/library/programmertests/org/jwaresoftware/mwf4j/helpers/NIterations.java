@@ -32,6 +32,7 @@ public final class NIterations implements Condition
             super("Condition has been called at least "+(limit+1)+" times");
         }
     }
+
     public NIterations(final int max) 
     {
         Validate.isFalse(max<0,"max is < 0");

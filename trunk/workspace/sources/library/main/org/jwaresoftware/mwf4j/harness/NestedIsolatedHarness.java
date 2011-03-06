@@ -7,6 +7,7 @@ package org.jwaresoftware.mwf4j.harness;
 
 import  java.util.concurrent.ExecutorService;
 
+import  org.jwaresoftware.gestalt.ProblemHandler;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
@@ -78,6 +79,11 @@ public final class NestedIsolatedHarness extends HarnessSkeleton implements Depe
     public String typeCN()
     {
         return "inner";
+    }
+
+    public String interpolate(String inputString, ProblemHandler callback)
+    {
+        return myParent.interpolate(inputString,callback);
     }
 
     private final Harness myParent;

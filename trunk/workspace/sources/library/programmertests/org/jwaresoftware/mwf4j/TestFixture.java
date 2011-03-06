@@ -12,10 +12,10 @@ import  java.util.List;
 import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
-import  org.jwaresoftware.gestalt.fixture.FixtureProperties;
 import  org.jwaresoftware.gestalt.fixture.standard.FromPropertiesFixture;
 import  org.jwaresoftware.gestalt.helpers.Handle;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
+import  org.jwaresoftware.gestalt.system.NowFactory;
 
 import  static org.testng.Assert.*;
 import  org.jwaresoftware.testng.TestLabel;
@@ -45,12 +45,13 @@ public final class TestFixture
         LocalSystem.setProperty("mwf4j.logger",Feedback.GROUPING_CORE);
         LocalSystem.setProperty("mwf4j.logger.diagnostics",Diagnostics.GROUPING_CORE);
         LocalSystem.setProperty("mwf4j.name","MWf4J_TestBench");
-        return new FromPropertiesFixture(new FixtureProperties.FromLocalSystem());
+        return new FromPropertiesFixture();
     }
 
 
     public static void tearDown()
     {
+        NowFactory.unsetProviderInstance();
         LocalSystem.clrUnderlay();
         LocalSystem.resetProperties();
         MDC.clr();

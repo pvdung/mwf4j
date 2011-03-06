@@ -82,7 +82,7 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
             Map<String,Object> datamap = getDataMap();
             Object raw=null;
             if (myDirectFlag) {
-                raw = datamap.get(selector);//NB: no way to check this type-cast here
+                raw = datamap.get(selector);
             } else {
                 JexlEngine je = MyJexl.getEngine();
                 raw = je.createExpression(selector).evaluate(new MapContext(datamap));

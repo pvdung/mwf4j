@@ -19,7 +19,7 @@ import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
 
 /**
  * Helper that encapsulates the reusable 'do-once' management code for 
- * reentrant statements like the {@linkplain ForEachStateemnt} or 
+ * reentrant statements like the {@linkplain ForEachStatement} or 
  * {@linkplain WhileStatement}.
  *
  * @since     JWare/MWf4J 1.0.0

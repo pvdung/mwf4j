@@ -115,6 +115,12 @@ public final class AssignAction<T> extends CallAction<T>
         setFrom(fromKey,fromStoreType,null,true,ofType);
     }
 
+    public final void setFrom(Reference from, Class<? extends T> ofType)
+    {
+        Validate.notNull(from,What.REFERENCE);
+        setFrom(from.getName(),from.getStoreType(),null,true,ofType);
+    }
+
     @SuppressWarnings("unchecked")
     public final void setFrom(String fromKeyOrExpr, StoreType fromStoreType, T fallbackValue, boolean failIfError, Class<? extends T> ofType)
     {

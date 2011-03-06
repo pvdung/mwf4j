@@ -25,6 +25,7 @@ public class What extends org.jwaresoftware.gestalt.What
     public final static String SCOPE        = "scope";
     public final static String VARIABLE     = "variable";
     public final static String VARIABLES    = "variables";
+    public final static String VARIABLE_NAME= "variable-name";
     public final static String STATEMENT    = "control-flow-statement";
     public final static String STATEMENTS   = "control-flow-statements";
     public final static String CONTINUATION = "continuation statement";
@@ -42,6 +43,9 @@ public class What extends org.jwaresoftware.gestalt.What
     public final static String REFERENCE    = "reference";
     public final static String OWNER        = "owner";
     public final static String ENABLED      = "enabled";
+
+    public final static String INNERBLOCK   = "inner-block";
+    public final static String OUTERBLOCK   = "outer-block";
 
     public static final String getNonBlankId(final Identified object)
     {

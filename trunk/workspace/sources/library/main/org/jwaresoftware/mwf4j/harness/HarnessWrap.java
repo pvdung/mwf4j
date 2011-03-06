@@ -7,6 +7,7 @@ package org.jwaresoftware.mwf4j.harness;
 
 import  java.util.concurrent.ExecutorService;
 
+import  org.jwaresoftware.gestalt.ProblemHandler;
 import  org.jwaresoftware.gestalt.bootstrap.FixtureWrap;
 
 import  org.jwaresoftware.mwf4j.Activity;
@@ -53,6 +54,11 @@ public class HarnessWrap extends FixtureWrap implements Harness
     public ExecutorService getExecutorService()
     {
         return getTargetH().getExecutorService();
+    }
+
+    public String interpolate(String inputString, ProblemHandler callback)
+    {
+        return getTargetH().interpolate(inputString,callback);
     }
 
     public void run()

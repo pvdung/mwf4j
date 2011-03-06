@@ -183,6 +183,11 @@ public abstract class ExecutableTestSkeleton
         return new SlaveHarness(parent,firstStatement);
     }
 
+    protected Harness newHARNESS(Activity work)
+    {
+        return new PlainHarness(work,SYSTEM);
+    }
+
     protected static final List<String> runTASK(Harness h)
     {
         List<String> names;
@@ -197,6 +202,11 @@ public abstract class ExecutableTestSkeleton
     protected final List<String> runTASK(Action main)
     {
         return runTASK(newHARNESS(main));
+    }
+
+    protected final List<String> runTASK(Activity work)
+    {
+        return runTASK(newHARNESS(work));
     }
 
     protected static void runTASK(final Callable<Harness> harnessFactory, long timeout) throws Exception

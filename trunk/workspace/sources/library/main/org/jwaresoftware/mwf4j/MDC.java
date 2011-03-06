@@ -111,6 +111,16 @@ public final class MDC extends PerThreadStash
         return harness;
     }
 
+    public static Harness currentHarnessOrNull()
+    {
+        Harness harness=null;
+        HRef href = get(HREF_STACK,HRef.class);
+        if (href!=null) {
+            harness = href.myPtr.get();
+        }
+        return harness;
+    }
+
     public static String currentHarnessTypeOrEmpty()
     {
         HRef href = get(HREF_STACK,HRef.class);
@@ -125,6 +135,12 @@ public final class MDC extends PerThreadStash
     public static Variables currentVariables()
     {
         return currentHarness().getVariables();
+    }
+
+    public static Variables currentVariablesOrNull()
+    {
+        Harness h = currentHarnessOrNull();
+        return (h==null) ? null : h.getVariables();
     }
 
     public static FixtureProperties currentConfiguration()

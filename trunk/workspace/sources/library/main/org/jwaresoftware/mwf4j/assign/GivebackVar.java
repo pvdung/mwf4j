@@ -7,7 +7,9 @@ package org.jwaresoftware.mwf4j.assign;
 
 import  java.util.Map;
 
+import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.Validate;
+
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
 
@@ -15,7 +17,7 @@ import  org.jwaresoftware.mwf4j.What;
  * Giveback that returns the value of a predefined harness variable. Can support
  * keys as 'expressions' for extracting member data from composite data elements.
  * Expects harness has been set in the current thread's MDC under 
- * {@linkplain MDC#currentHarness()}. If harness not present or requested variable
+ * {@linkplain MDC#currentHarness()}. If a harness is not present or requested variable
  * not present, this giveback returns <i>null</i> when asked for value. The default
  * constructors (no 'mode' specified) assume you want to read
  * data using expression (which also covers simple get-by-key lookups).
@@ -27,7 +29,7 @@ import  org.jwaresoftware.mwf4j.What;
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    impl,helper
- * @see       MDC#currentVariables()
+ * @see       MDC#currentVariablesOrNull()
  **/
 
 public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
@@ -114,7 +116,9 @@ public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
 
     protected Map<String,Object> getDataMap()
     {
-        return MDC.currentVariables();
+        Map<String,Object> mdc = MDC.currentVariablesOrNull();
+        if (mdc==null) return Empties.newMap();
+        return mdc;
     }
 
 
