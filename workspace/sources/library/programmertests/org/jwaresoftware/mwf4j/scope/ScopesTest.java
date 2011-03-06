@@ -63,6 +63,7 @@ public final class ScopesTest extends ActionTestSkeleton
         }
         public void doLeave(Harness harness) {
             harness.getVariables().put(getName()+".leave",Boolean.TRUE);
+            super.doLeave(harness);
         }
         static ScopeFactory.SPI factoryInstance= new ScopeFactory.SPI() {
             public ScopeKey newKey(ControlFlowStatement owner) {

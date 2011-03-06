@@ -71,6 +71,7 @@ public final class SequenceActionTest extends ActionTestSkeleton
         Sequence out = newOUT();
         assertTrue(out.isEmpty(),"isempty");
         assertEquals(out.size(),0,"size");
+        assertNull(out.lastAdded(),"lastAdded");
         newHARNESS(out).run();
     }
 
@@ -90,8 +91,10 @@ public final class SequenceActionTest extends ActionTestSkeleton
         
         out.add(new UnknownAction("1st",TestStatement.class));
         out.add(new EmptyAction("2nd"));
+        assertTrue(out.lastAdded() instanceof EmptyAction,"lastAdded=empty");
         out.add(new EmptyAction("3rd"));
         out.add(new TouchAction("4th"));
+        assertTrue(out.lastAdded() instanceof TouchAction,"lastAdded=touch");
         runTASK(out);
 
         assertEquals(getStatementCount(),2,"calls to test statements");

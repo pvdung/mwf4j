@@ -8,7 +8,7 @@ package org.jwaresoftware.mwf4j.scope;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.helpers.Pair;
 
-import org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;

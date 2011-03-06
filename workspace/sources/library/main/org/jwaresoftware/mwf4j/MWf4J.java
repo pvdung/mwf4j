@@ -40,11 +40,14 @@ public class MWf4J
      **/
     public static final class ServiceIds
     {
-        /** Optional executor service instance for BAL activities. **/
+        /** Optional executor service instance for per-harness activities. **/
         public final static String EXECUTOR   = NS+"_Harness_Executor";
 
-        /** Optional concurrent map for a single BAL activity run. **/
+        /** Optional concurrent map for use during a single harness run. **/
         public final static String VARIABLES  = NS+"_Harness_Variables";
+
+        /** Optional resolver for general-purpose strings (typical RHS). **/
+        public final static String STRING_RESOLVER  = NS+"_Harness_StringResolver";
 
         /** Optional JexlEngine instance for BAL activities. **/
         public final static String JEXLENGINE = NS+"_Harness_JexlEngine";

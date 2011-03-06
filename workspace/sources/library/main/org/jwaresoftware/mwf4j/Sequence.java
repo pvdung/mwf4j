@@ -20,6 +20,7 @@ public interface Sequence extends Action
     Sequence add(Action action);
     int size();
     boolean isEmpty();
+    Action lastAdded();
 }
 
 
