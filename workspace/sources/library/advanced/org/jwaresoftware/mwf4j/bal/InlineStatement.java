@@ -26,16 +26,11 @@ import  org.jwaresoftware.mwf4j.What;
  * @see      org.jwaresoftware.mwf4j.harness.NestedHarnes NestedHarness
  **/
 
-public final class InlineStatement extends BALStatement
+public final class InlineStatement extends BALTransientStatement
 {
-    public InlineStatement(ControlFlowStatement next)
+    public InlineStatement(Action body, ControlFlowStatement next)
     {
         super(next);
-    }
-
-    public InlineStatement(Action owner, Action body, ControlFlowStatement next)
-    {
-        super(owner,next);
         setBody(body);
     }
 
@@ -55,12 +50,6 @@ public final class InlineStatement extends BALStatement
     {
         super.verifyReady();
         Validate.stateNotNull(myBody,What.BODY);
-    }
-
-    public void reconfigure()
-    {
-        super.reconfigure();
-        verifyReady();
     }
 
     private Action myBody;

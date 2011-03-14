@@ -5,7 +5,7 @@
 
 package org.jwaresoftware.mwf4j.behaviors;
 
-import org.jwaresoftware.gestalt.reveal.Identified;
+import  org.jwaresoftware.gestalt.reveal.Identified;
 
 /**
  * Mixin interface for any component that supports a public setter for its

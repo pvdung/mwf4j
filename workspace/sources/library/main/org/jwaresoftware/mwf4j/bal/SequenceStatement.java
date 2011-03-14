@@ -13,6 +13,8 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
@@ -49,12 +51,12 @@ import  org.jwaresoftware.mwf4j.scope.Rewindable;
 public class SequenceStatement extends BALStatement implements Unwindable, Resettable, Rewindable
 {
     private static final List<Action> NO_MEMBERS= Empties.newList();
-    private static final Iterator<ControlFlowStatement> NO_FEED = Empties.newIterator();
+    private static final Iterator<Action> NO_FEED = Empties.newIterator();
     
 
-    public SequenceStatement(Action owner, ControlFlowStatement next)
+    public SequenceStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
         myUnwindSupport = new ReentrantSupport(this,true,this);
     }
 
@@ -62,16 +64,17 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
     {
         Validate.notNull(actions,What.ACTIONS);
         myMembers = actions;
-        myMemberFeed = new StatementIterator(this,actions);
+        myMemberFeed = new StatementIterator(actions);
     }
 
     protected ControlFlowStatement runInner(Harness harness)
     {
         ControlFlowStatement next;
         if (myMemberFeed.hasNext()) {
+            Action nextUp = myMemberFeed.next();
             myUnwindSupport.loop(harness);
             myUnwindSupport.addRewindpoint(newRewindpoint(myCount));
-            next = runMember(myCount++,harness,myMemberFeed.next());
+            next = runMember(myCount++,harness,nextUp.buildStatement(this,harness.staticView()));
         } else {
             next = finishThis(harness,next());
         }
@@ -97,11 +100,10 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
         return harness.runParticipant(member);
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         reset();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
     }
 
     public void unwind(Harness harness)
@@ -132,7 +134,7 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
     void rewindThis(int index, Harness harness)
     {
         myCount = index;
-        myMemberFeed = new StatementIterator(this,myMembers.subList(index, myMembers.size()));
+        myMemberFeed = new StatementIterator(myMembers.subList(index, myMembers.size()));
     }
 
     protected NumberRewindCursor newRewindpoint(int index)
@@ -144,7 +146,7 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
 
     private int myCount;
     private List<Action> myMembers = NO_MEMBERS;
-    private Iterator<ControlFlowStatement> myMemberFeed = NO_FEED;
+    private Iterator<Action> myMemberFeed = NO_FEED;
     ReentrantSupport myUnwindSupport;//NB:visible to BAL subclasses ONLY!
 }
 

@@ -30,7 +30,8 @@ public abstract class LiteLiteStatementSkeleton extends StatementSkeleton
 {
     public LiteLiteStatementSkeleton(Action owner, ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
+        myOwner = owner;
     }
 
     public LiteLiteStatementSkeleton(String id, Action owner, ControlFlowStatement next)
@@ -99,7 +100,12 @@ public abstract class LiteLiteStatementSkeleton extends StatementSkeleton
         return myEnterLeaveFlag;
     }
 
+    public Action getOwner()
+    {
+        return myOwner;
+    }
 
+    private Action myOwner;
     protected String myId=null;
     private boolean myEnterLeaveFlag=true;//notify on enter+leave
 }

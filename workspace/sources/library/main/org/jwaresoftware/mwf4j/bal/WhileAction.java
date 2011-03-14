@@ -10,6 +10,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
@@ -92,15 +93,7 @@ public class WhileAction extends ActionSkeleton implements CallBounded
         myCursor.copyFrom(key);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
-    {
-        verifyReady();
-        WhileStatement statement = newWhileStatement(next);
-        Validate.resultNotNull(statement,What.STATEMENT);
-        return finish(statement);
-    }
-
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,WhileStatement.class,What.STATEMENT);
         WhileStatement loop = (WhileStatement)statement;
@@ -109,7 +102,7 @@ public class WhileAction extends ActionSkeleton implements CallBounded
             if (myCopyFlag) {
                 loop.setBodyFactory(myBody);
             } else {
-                loop.setBody(myBody.makeStatement(loop));
+                loop.setBody(myBody.buildStatement(loop,environ));
             }
         } else {
             loop.setBody(new EmptyStatement(loop)); 
@@ -122,9 +115,9 @@ public class WhileAction extends ActionSkeleton implements CallBounded
         }
     }
 
-    protected WhileStatement newWhileStatement(ControlFlowStatement next)
+    protected WhileStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        return new WhileStatement(this,next);
+        return new WhileStatement(next);
     }
 
 

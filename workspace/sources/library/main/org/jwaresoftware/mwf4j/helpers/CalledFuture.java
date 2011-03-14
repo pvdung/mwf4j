@@ -26,7 +26,7 @@ import  org.jwaresoftware.mwf4j.What;
 
 public final class CalledFuture<T> implements Callable<T>
 {
-    public CalledFuture(Future<T> worker)
+    public CalledFuture(Future<? extends T> worker)
     {
         Validate.notNull(worker,What.CALLBACK);
         myImpl = worker;
@@ -42,7 +42,7 @@ public final class CalledFuture<T> implements Callable<T>
         return Strings.valueOf(myImpl);
     }
 
-    private final Future<T> myImpl;
+    private final Future<? extends T> myImpl;
 }
 
 

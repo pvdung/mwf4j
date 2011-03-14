@@ -10,6 +10,7 @@ import  java.util.concurrent.TimeUnit;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -47,16 +48,15 @@ public final class SleepAction extends ActionSkeleton
         myMillis = millis;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,SleepStatement.class,What.STATEMENT);
         ((SleepStatement)statement).setMillis(myMillis);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        SleepStatement sleep = new SleepStatement(getId(),this,next);
-        return finish(sleep);
+        return new SleepStatement(getId(),this,next);
     }
 
     private long myMillis;

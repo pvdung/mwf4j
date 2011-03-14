@@ -9,7 +9,6 @@ import  java.util.concurrent.Callable;
 import  java.util.concurrent.atomic.AtomicInteger;
 
 import  org.testng.annotations.Test;
-import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Harness;

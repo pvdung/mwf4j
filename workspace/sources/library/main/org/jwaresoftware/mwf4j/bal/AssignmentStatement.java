@@ -10,8 +10,9 @@ import  java.util.concurrent.Future;
 
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.PutMethod;
@@ -50,14 +51,14 @@ import  org.jwaresoftware.mwf4j.helpers.ClosureException;
 
 public class AssignmentStatement<T> extends BALStatement implements Resettable
 {
-    public AssignmentStatement(Action owner, ControlFlowStatement next)
+    public AssignmentStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
     }
 
-    public AssignmentStatement(Action owner)
+    public AssignmentStatement()
     {
-        this(owner,new EndStatement(owner));
+        this(new EndStatement());
     }
 
     public void setToKey(String key)
@@ -75,12 +76,14 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
     {
         Validate.notNull(getmethod,What.GET_METHOD);
         myGetter = getmethod;
+        myIsCallFlag = true;
     }
 
     public void setGetter(Future<? extends T> getmethod)
     {
         Validate.notNull(getmethod,What.GET_METHOD);
         myGetter = getmethod;
+        myIsCallFlag = false;
     }
 
     public final void setPayload(final T payload)
@@ -141,7 +144,7 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
         try {
             MDC.pshHarness(this,harness);
             Object raw=null;
-            if (myGetter instanceof Callable) {
+            if (myIsCallFlag) {
                 raw = ((Callable<?>)myGetter).call();
             } else {
                 raw = ((Future<?>)myGetter).get();//WILL Block!!
@@ -171,6 +174,7 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
         myGetter = null;
         mySetter = null;
         myPayloadKind = null;
+        myIsCallFlag = false;
     }
 
     public void reset()
@@ -178,11 +182,10 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
         resetThis();
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         reset();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
     }
 
 
@@ -190,6 +193,7 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
     private Object myGetter;//OPTIONAL but MUST override getPayload to ignore!
     private PutMethod<T> mySetter;//OPTIONAL but MUST override consumePayload to ignore!
     private Class<? extends T> myPayloadKind;//OPTIONAL
+    private boolean myIsCallFlag;//True=>use Callable method
 }
 
 

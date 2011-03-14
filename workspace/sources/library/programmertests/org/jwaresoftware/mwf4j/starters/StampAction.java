@@ -9,6 +9,8 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.What;
 
 /**
  * Test action that does nothing but increment the MDC-based statement 
@@ -51,16 +53,16 @@ public final class StampAction extends ActionSkeleton
         return myTime;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
-        Validate.isTrue(statement instanceof TestStatement,"statement kindof TestStatement");
+        Validate.isA(statement,TestStatement.class,What.STATEMENT);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
         TestStatement statement = new TestStatement(this,next);
         statement.setId(updateStamp());
-        return finish(statement);
+        return statement;
     }
 
     private String myTime;

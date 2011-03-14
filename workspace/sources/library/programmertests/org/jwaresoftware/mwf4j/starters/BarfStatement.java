@@ -38,24 +38,31 @@ public class BarfStatement extends StatementSkeleton
 
     public BarfStatement(Action owner)
     {
-        super(owner,null);
+        super(null);
+        initOwner(owner);
     }
 
     public BarfStatement(Action owner, String message)
     {
-        super(owner,null);
+        this(owner);
         setMessage(message);
     }
     
     public BarfStatement(Action owner, ControlFlowStatement next)//For use with UnknownAction!
     {
-        super(owner,next);
+        super(next);
+        initOwner(owner);
     }
 
     public BarfStatement(String message)
     {
         this();
         setMessage(message);
+    }
+
+    protected final void initOwner(Action owner)
+    {
+        myOwner = (owner!=null) ? owner : Action.anonINSTANCE;
     }
 
     public void setMessage(String message)
@@ -73,6 +80,18 @@ public class BarfStatement extends StatementSkeleton
         throw new ServiceProviderException(myFeedback);
     }
 
+    public Action getOwner()
+    {
+        return myOwner;
+    }
+
+    public boolean isAnonymous()
+    {
+        Action a = getOwner();
+        return (a==null || a==Action.anonINSTANCE);
+    }
+
+    private Action myOwner= Action.anonINSTANCE;
     private String myFeedback = DEFAULT_MESSAGE;
 }
 

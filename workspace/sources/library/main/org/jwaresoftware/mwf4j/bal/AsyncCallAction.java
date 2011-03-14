@@ -12,6 +12,7 @@ import  java.util.concurrent.RunnableFuture;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -70,20 +71,19 @@ public class AsyncCallAction<T> extends SavebackAction<T>
     }
 
     @SuppressWarnings("unchecked")
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
-        super.configure(statement);
+        super.configureStatement(statement,environ);
         AssignmentStatement<T> assignment = (AssignmentStatement<T>)statement;
         assignment.setGetter(myWorker);
     }
 
-    protected AssignmentStatement<T> newAssignmentStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        DelayedAssignmentStatement<T> assignment = new DelayedAssignmentStatement<T>(this,next);
-        return assignment;
+        return new DelayedAssignmentStatement<T>(next);
     }
 
-    private RunnableFuture<? extends T> myWorker;//REQUIRED
+    private RunnableFuture<? extends T> myWorker;//NB: ofType is REQUIRED
 }
 
 

@@ -5,17 +5,18 @@
 
 package org.jwaresoftware.mwf4j.scope;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 
 /**
- * Harness has started marker statement; does nothing. Never participates
+ * A "harness has started marker statement"; does nothing. Never participates
  * in any real execution flow. This statement needs to differentiate between
  * different harnesses; however, we don't want to keep a reference to the
  * harness itself (and increase chances of leaked references which prevent
  * GC). So, we instead track the linked harness's identity hash code which
- * for most JVM (no guarantees though) does represent a unique memory-based 
+ * for most JVMs (no guarantees though) does represent a unique memory-based
  * reference number which two harnesses will not share. To date, this
  * assumption holds for most of the common JVM implementations.
  *
@@ -35,11 +36,6 @@ final class HarnessRunStatement implements ControlFlowStatement
         myId = harness.typeCN()+":"+System.identityHashCode(harness);
     }
 
-    public Action getOwner()
-    {
-        return null;
-    }
-
     public boolean isTerminal()
     {
         return true;
@@ -55,7 +51,7 @@ final class HarnessRunStatement implements ControlFlowStatement
         throw new UnsupportedOperationException("harnessMark.run");
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         throw new UnsupportedOperationException("harnessMark.reconfigure");
     }
@@ -79,6 +75,11 @@ final class HarnessRunStatement implements ControlFlowStatement
     public int hashCode()
     {
         return myId.hashCode(); 
+    }
+
+    public String getWhatId()
+    {
+        return myId;
     }
 
     private final String myId;

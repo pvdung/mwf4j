@@ -52,7 +52,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
     @Test(groups={"builders-baseline"})
     public void testAnonymousEmptyBuilder_1_0_0()
     {
-        runTASK(action().finish());
+        runTASK(action().build());
     }
 
     @Test(groups={"builders-baseline"})
@@ -60,7 +60,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
     {
         XBALBuilder out = action(me());
         assertEquals(out.getId(),me(),"id");
-        runTASK(out.finish());
+        runTASK(out.build());
     }
 
     @Test(groups={"builders-baseline"})
@@ -72,7 +72,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                        .touch("c")
                        .empty()
                        .touch("e")
-                       .finish();
+                       .build();
         runTASK(out);
 
         assertEquals(getStatementCount(),3,"touch count");
@@ -94,7 +94,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                       .set("I",this)
                       .set(var("id"),me)
                       .set(variable("ID"),me)
-                      .finish();
+                      .build();
         
         runTASK(out);
         
@@ -118,7 +118,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                        .set("oid",get("IDFactory.newOid()"))
                        .set("oid.copy1",var("oid"))
                        .set("oid.copy2",ref("oid"))
-                       .finish();
+                       .build();
         runTASK(out);
         Object oid = vars.get("oid");
         LocalSystem.show("oid=",oid);
@@ -133,7 +133,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                       .set(property("DEBUG"),true)
                       .set(property("name"),"Harry")
                       .set(env("maxwait"),13)
-                      .finish();
+                      .build();
 
         Harness h = newHARNESS(out);
         runTASK(h);
@@ -177,7 +177,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                           .touch("e.2")
                           .end()
                       .touch("f")
-                      .finish();
+                      .build();
         runTASK(out);
         assertEquals(getStatementCount(),6,"touch count");
         assertTrue(werePerformedInOrder("a|c.1|d|e.1|e.2|f"),"ordering");
@@ -225,7 +225,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                            .touch("i.5.1")
                            .end("i.5")
                          .end("i")
-                       .finish();
+                       .build();
         runTASK(out);
         assertEquals(getStatementCount(),5,"touch count");
         assertTrue(werePerformedInOrder("i.1.1|i.2.1|i.3.1|i.4.1|i.5.1"),"ordering");
@@ -293,7 +293,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                              .end("i.6")
                              .touch("i.7")
                          .end("i")
-                       .finish();
+                       .build();
         runTASK(out);
         assertEquals(getStatementCount(),12,"touch count");
         assertTrue(werePerformedInOrder("i.1|i.2|i.3.1|i.4.1|i.4.2|i.4.3.1|i.5|i.6.1|i.6.2.1|i.6.2.2.1|i.6.3|i.7"),"ordering");
@@ -301,7 +301,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
 
     public void testPrototypeFlag_1_0_0()
     {
-        Action out = action("xyz",MULTIUSE).touch("hi").finish();
+        Action out = action("xyz",MULTIUSE).touch("hi").build();
 
         runTASK(out);
         assertEquals(getStatementCount(),1,"touch count @1");
@@ -317,7 +317,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         Action out = action("a",TRYEACH,PROTECT)
                       .error("argh")
                       .touch("after-argh@1")
-                      .finish();
+                      .build();
         runTASK(out);
         assertEquals(getStatementCount(),1,"touch count @outer");
         assertTrue(wasPerformed("after-argh@1"),"touch after throw");
@@ -329,7 +329,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                   .touch("after-argh@2")
                   .end()
                 .touch("cleanup")
-                .finish();
+                .build();
         runTASK(out);
         assertEquals(getStatementCount(),2,"touch count @inner");
         assertTrue(wasPerformed("after-argh@2"),"touch after throw");

@@ -9,6 +9,8 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.Protector;
@@ -37,13 +39,13 @@ public abstract class BALProtectorStatement extends BALStatement implements Prot
     protected BALProtectorStatement(ControlFlowStatement next)
     {
         super(next);
-        myTrySupport = new TrySupport(Action.anonINSTANCE);
+        myTrySupport = new TrySupport(this);
     }
 
     protected BALProtectorStatement(Action owner, ControlFlowStatement next)
     {
         super(owner,next);
-        myTrySupport = new TrySupport(getOwner());
+        myTrySupport = new TrySupport(this);
     }
 
     public final void setHaltIfError(boolean flag)//NB: covers timeout & interruption & retries
@@ -81,11 +83,10 @@ public abstract class BALProtectorStatement extends BALStatement implements Prot
         resetThis();
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         reset();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
     }
 
     public void copyFrom(BALProtectorStatement from)

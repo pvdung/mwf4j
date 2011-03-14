@@ -5,7 +5,6 @@
 
 package org.jwaresoftware.mwf4j.bal;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 
@@ -26,11 +25,6 @@ public final class EmptyStatement extends BALStatement
     public EmptyStatement(ControlFlowStatement next)
     {
         super(next);
-    }
-
-    public EmptyStatement(Action owner, ControlFlowStatement next)
-    {
-        super(owner,next);
     }
 
     protected ControlFlowStatement runInner(Harness harness)

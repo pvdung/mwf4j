@@ -10,6 +10,8 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackStatement;
 
 /**
@@ -22,7 +24,7 @@ import  org.jwaresoftware.mwf4j.assign.GivebackStatement;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   special (multiple after configured for makeStatement)
+ * @.safety   special (multiple after configured for buildStatement)
  * @.group    infra,impl
  * @see       BranchStatement
  * @see       Condition
@@ -45,9 +47,9 @@ public class IfElseAction extends IfAction
         myElseBranch = elseAction;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
-        Validate.isTrue(statement instanceof BranchStatement,"statement kindof branch");
+        Validate.isA(statement,BranchStatement.class,What.STATEMENT);
         BranchStatement decision = (BranchStatement)statement;
         Action kontinue = new GivebackStatement(decision.next());
         if (myThenBranch!=null) {

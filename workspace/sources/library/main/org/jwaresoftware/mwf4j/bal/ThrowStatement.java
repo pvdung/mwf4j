@@ -12,6 +12,8 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Signal;
@@ -21,7 +23,8 @@ import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
  * Flow statement that on execution throws a given exception. Useful
  * for delayed signals (like when a 'tryeach' is in effect for a 
  * sequence). Note that a throw statement is <em>not</em> considered
- * terminal.
+ * terminal eventhough it's continuation is ALWAYS set to a terminal
+ * statement.
  * <p/>
  * Ensures the thrown exception is-a RuntimeException. Next statement
  * (if every queried) is always and {@linkplain EndStatement end
@@ -39,21 +42,21 @@ import  org.jwaresoftware.mwf4j.starters.MWf4JWrapException;
 
 public final class ThrowStatement extends BALStatement implements Signal
 {
-    public ThrowStatement(Action owner, Exception cause)
+    public ThrowStatement(Exception cause)
     {
-        super(owner,null);
+        super();
         Validate.notNull(cause,What.EXCEPTION);
         setCause(cause);
     }
 
-    ThrowStatement(Action owner)
+    ThrowStatement()
     {
-        super(owner,null);
+        super();
     }
 
-    public ThrowStatement(Action owner, Exception cause, String announcement)
+    public ThrowStatement(Exception cause, String announcement)
     {
-        this(owner,cause);
+        this(cause);
         myAnnouncement = announcement; 
     }
 
@@ -62,16 +65,16 @@ public final class ThrowStatement extends BALStatement implements Signal
         Validate.notNull(other,What.SOURCE);
         Exception cause = other.getCause();
         Validate.notNull(cause,What.EXCEPTION);
-        Action owner = other.getOwner();
-        if (other.isAnonymous() && link!=null) owner = link;
-        initOwner(owner);
+        String marker = other.getWhatId();
+        if (other.isAnonymous() && link!=null) marker = link.getId();
+        setWhatId(marker);
         setCause(cause);
     }
 
     protected ControlFlowStatement runInner(Harness harness)
     {
         if (myAnnouncement!=null) {
-            harness.getIssueHandler().problemOccured(myAnnouncement, Effect.ABORT, theCause);
+            harness.getIssueHandler().problemOccured(myAnnouncement,Effect.ABORT,theCause);
         }
         RuntimeException signal;
         if (theCause instanceof RuntimeException) {
@@ -118,12 +121,12 @@ public final class ThrowStatement extends BALStatement implements Signal
         return myPosition;
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         nextThrown = null;
         length = 1;
-        myPosition = -1;
-        super.reconfigure();
+        myPosition = NO_SIGNAL_POSITION;
+        super.reconfigure(environ,overrides);
     }
 
     final void replaceCause(Exception wrapperCause)
@@ -150,14 +153,14 @@ public final class ThrowStatement extends BALStatement implements Signal
 
     public ControlFlowStatement next()
     {
-        return new EndStatement(getOwner());
+        return ControlFlowStatement.nullINSTANCE;
     }
 
     private Exception theCause;
     private ThrowStatement nextThrown;
     private int length=1;
     private String myAnnouncement;//OPTIONAL
-    private int myPosition= -1;//OPTIONAL
+    private int myPosition= NO_SIGNAL_POSITION;//OPTIONAL
 }
 
 

@@ -10,6 +10,7 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -40,19 +41,19 @@ public final class GivebackStatement implements Giveback<ControlFlowStatement>, 
         myId = Strings.trimToEmpty(id);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    public ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture ignored)
     {
         return myStatement;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         //nothing;
     }
 
     public ControlFlowStatement call()
     {
-        return makeStatement(ControlFlowStatement.nullINSTANCE);
+        return buildStatement(ControlFlowStatement.nullINSTANCE,null);
     }
 
     public String getId()

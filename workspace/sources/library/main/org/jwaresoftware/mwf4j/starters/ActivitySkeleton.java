@@ -10,12 +10,14 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Activity;
-import org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
  * Starter implementation for the {@linkplain Activity} interface that  
- * works for many common application build workflows. 
+ * works for many common application build workflows.  The actual workflow
+ * is defined by a action object that the application supplies.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -40,7 +42,6 @@ public abstract class ActivitySkeleton extends ExecutableSkeleton implements Act
     {
         return "activity";
     }
-
 
 
     protected void setDefinition(Action definition)
@@ -69,18 +70,17 @@ public abstract class ActivitySkeleton extends ExecutableSkeleton implements Act
     }
 
 
-
-    public ControlFlowStatement firstStatement()
+    @Override
+    public ControlFlowStatement firstStatement(Fixture environ)
     {
         ControlFlowStatement end = new ActivityEndStatement();
-        return getDefinitionOrFail().makeStatement(end);
+        return getDefinitionOrFail().buildStatement(end,environ);
     }
-
 
 
     public void doError(Harness h, Throwable issue)
     {
-        //silence
+        //silence; harness does the hollerin'
     }
 
 

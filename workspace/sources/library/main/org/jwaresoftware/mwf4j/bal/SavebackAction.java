@@ -9,8 +9,8 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Feedback;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.PutMethod;
-import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.SavebackVar;
 import  org.jwaresoftware.mwf4j.assign.SavebackDiscard;
@@ -78,16 +78,8 @@ public abstract class SavebackAction<T> extends ActionSkeleton
         myToKey.set(toKey);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
-    {
-        verifyReady();
-        AssignmentStatement<T> assignment= newAssignmentStatement(next);
-        Validate.resultNotNull(assignment,What.STATEMENT);
-        return finish(assignment);
-    }
-
     @SuppressWarnings("unchecked")
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isTrue(statement instanceof AssignmentStatement<?>,"statement kindof assign");
         AssignmentStatement<T> assignment = (AssignmentStatement<T>)statement;
@@ -96,14 +88,6 @@ public abstract class SavebackAction<T> extends ActionSkeleton
             assignment.setToKey(myToKey.getName());
         }
     }
-
-    /**
-     * Factory method to create the type of assignment statement
-     * most appropriate for this saveback action. 
-     * @param next continuation (non-null)
-     * @return new assignment statement (non-null)
-     */
-    protected abstract AssignmentStatement<T> newAssignmentStatement(ControlFlowStatement next);
 
 
     /**

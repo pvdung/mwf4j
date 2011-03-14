@@ -272,7 +272,7 @@ public final class ScopesTest extends ActionTestSkeleton
 
         Scope old_s2 = s2;
         s2 = Scopes.enter((st2=newStatement("for2")),"for2",h);
-        st2.getOwner();//shutup eclipse
+        st2.getWhatId();//shutup eclipse
         assertNotSame(s2,old_s2,"new scope allocated per callback");
         Scopes.addUnwind((uw2= new TestUnwinder("for2")));
         Scopes.unwindUpTo(st0,h);
@@ -376,16 +376,14 @@ public final class ScopesTest extends ActionTestSkeleton
     private static class OrphanSequence extends TestExtensionPoint {//ONLY FOR 1 THREAD USE!
         OrphanSequence() {
             super("flow");
-            ControlFlowStatement o4= new BarfStatement("ADIOS CRUEL WORLD!!");
-            ControlFlowStatement o3= new OrphanUnwind("s2").makeStatement(o4);
-            ControlFlowStatement o2= new OrphanUnwind("s1").makeStatement(o3);
-            ControlFlowStatement o1= new AddTestUnwindAction("top").makeStatement(o2);
-            myStatements = o1;
         }
         protected ControlFlowStatement runInner(Harness harness) {
-            return myStatements;
+            ControlFlowStatement o4= new BarfStatement("ADIOS CRUEL WORLD!!");
+            ControlFlowStatement o3= new OrphanUnwind("s2").buildStatement(o4,harness);
+            ControlFlowStatement o2= new OrphanUnwind("s1").buildStatement(o3,harness);
+            ControlFlowStatement o1= new AddTestUnwindAction("top").buildStatement(o2,harness);
+            return o1;
         }
-        private ControlFlowStatement myStatements;
     }
 
     public void testHarnessUnwindForUncaughtError_1_0_0()

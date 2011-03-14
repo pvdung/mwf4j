@@ -24,6 +24,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Activity;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.LocalSystemHarness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
 import  org.jwaresoftware.mwf4j.TestFixture;
@@ -186,6 +187,11 @@ public abstract class ExecutableTestSkeleton
     protected Harness newHARNESS(Activity work)
     {
         return new PlainHarness(work,SYSTEM);
+    }
+
+    protected Harness newENVIRON()
+    {
+        return new LocalSystemHarness();
     }
 
     protected static final List<String> runTASK(Harness h)

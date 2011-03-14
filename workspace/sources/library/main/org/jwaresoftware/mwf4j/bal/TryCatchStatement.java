@@ -15,6 +15,8 @@ import  org.jwaresoftware.gestalt.helpers.Pair;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Signal;
@@ -38,15 +40,15 @@ public class TryCatchStatement extends BALProtectorStatement
 {
     enum Phase {BODY,ONERROR,ALWAYS,NEXT,ABORT};
  
-    public TryCatchStatement(Action owner, ControlFlowStatement next) 
+    public TryCatchStatement(ControlFlowStatement next) 
     {
-        super(owner,next);
+        super(next);
     }
 
     public void setBody(Action body)
     {
         Validate.notNull(body,What.BODY);
-        myBody = body.makeStatement(this);
+        myBody = body;
     }
 
     public void addIfError(Set<Pair<Class<? extends Exception>,Action>> catchers)
@@ -81,11 +83,11 @@ public class TryCatchStatement extends BALProtectorStatement
                     myScope= Scopes.enter(this,harness);
                 continuation = harness.runParticipant(protect(bodyContinued));
                 if (continuation instanceof Signal) {
-                    pendingThrow = TrySupport.convert((Signal)continuation,getOwner());
+                    pendingThrow = TrySupport.convert((Signal)continuation);
                     Action handler = getCaughtHandler(pendingThrow.getCause());
                     Scopes.unwindUpTo(this,harness);
                     if (handler!=null) {
-                        bestCatch = handler.makeStatement(this);
+                        bestCatch = handler.buildStatement(this,harness.staticView());
                         myPhase = Phase.ONERROR;
                         continuation = this;
                     } else {
@@ -136,7 +138,7 @@ public class TryCatchStatement extends BALProtectorStatement
                 assert myAlways!=null : "ALWAYS triggered iff there is an always";
                 ControlFlowStatement always = alwaysContinued;
                 if (always==null) {
-                    always = myAlways.makeStatement(this);
+                    always = myAlways.buildStatement(this,harness.staticView());
                 }
                 continuation = harness.runParticipant(protect(always));
                 if (continuation instanceof ThrowStatement) {
@@ -167,7 +169,7 @@ public class TryCatchStatement extends BALProtectorStatement
 
     private ControlFlowStatement protect(ControlFlowStatement statement)
     {
-        return BALHelper.protect(getOwner(),statement);
+        return BALHelper.protect(statement);
     }
 
     final void resetThis()
@@ -182,10 +184,10 @@ public class TryCatchStatement extends BALProtectorStatement
         super.resetThis();
     }
 
-    public void reconfigure() 
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides) 
     {
-        super.reconfigure();
-        bodyContinued = myBody;
+        super.reconfigure(environ,overrides);
+        bodyContinued = myBody.buildStatement(this,environ);
     }
 
     public void verifyReady()
@@ -294,7 +296,7 @@ public class TryCatchStatement extends BALProtectorStatement
     }
 
 
-    private ControlFlowStatement myBody;//REQUIRED
+    private Action myBody;//REQUIRED
     private Set<Pair<Class<? extends Exception>,Action>> myCatchers;//OPTIONAL
     private Action myAlways;//OPTIONAL
     private Action myOnlyCatcher;//NB:shortcut for common case of just one catch action!

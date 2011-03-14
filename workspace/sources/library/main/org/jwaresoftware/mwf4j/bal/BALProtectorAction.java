@@ -5,7 +5,6 @@
 
 package org.jwaresoftware.mwf4j.bal;
 
-
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.What;

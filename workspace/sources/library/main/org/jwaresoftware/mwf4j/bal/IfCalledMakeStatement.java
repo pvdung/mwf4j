@@ -50,7 +50,7 @@ public final class IfCalledMakeStatement extends BALTransientStatement
     protected ControlFlowStatement runInner(Harness harness)
     {
         Validate.stateNotNull(myTarget,What.ACTION);//Do here in case anonymous
-        return myTarget.makeStatement(next());
+        return myTarget.buildStatement(next(),harness.staticView());
     }
 
     private Action myTarget;

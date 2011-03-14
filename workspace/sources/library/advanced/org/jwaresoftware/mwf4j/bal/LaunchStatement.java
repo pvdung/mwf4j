@@ -15,6 +15,8 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
@@ -56,9 +58,9 @@ import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 public class LaunchStatement extends BALStatement
 {
-    public LaunchStatement(Action owner, ControlFlowStatement next)
+    public LaunchStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
         resetThis();
     }
 
@@ -87,7 +89,7 @@ public class LaunchStatement extends BALStatement
     public void verifyReady()
     {
         super.verifyReady();
-        Validate.stateNotEmpty(myActions,"actions");
+        Validate.stateNotEmpty(myActions,What.ACTIONS);
     }
 
     protected boolean isForever()
@@ -119,11 +121,10 @@ public class LaunchStatement extends BALStatement
         myFuturesRef = null;
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         resetThis();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
         initHarnessFactory();
     }
 

@@ -9,14 +9,13 @@ import  org.jwaresoftware.gestalt.Effect;
 import  org.jwaresoftware.gestalt.Throwables;
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
 import  org.jwaresoftware.mwf4j.behaviors.Signal;
-import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
+import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
 import  org.jwaresoftware.mwf4j.starters.TraceSupport;
 
 /**
@@ -32,20 +31,20 @@ import  org.jwaresoftware.mwf4j.starters.TraceSupport;
  * @.group    infra,impl,helper
  **/
 
-public final class TrySupport extends ActionDependentSkeleton implements Resettable
+public final class TrySupport extends StatementDependentSkeleton implements Resettable
 {
-    public TrySupport(Action owner)
+    public TrySupport(ControlFlowStatement owner)
     {
         super(owner);
         this.reset();
     }
 
-    public TrySupport(Action owner, boolean failIfError, boolean quiet)
+    public TrySupport(ControlFlowStatement owner, boolean failIfError, boolean quiet)
     {
         this(owner,failIfError,quiet,true);
     }
 
-    public TrySupport(Action owner, boolean failIfError, boolean quiet, boolean useContinuation)
+    public TrySupport(ControlFlowStatement owner, boolean failIfError, boolean quiet, boolean useContinuation)
     {
         super(owner);
         reset(failIfError,quiet,useContinuation);
@@ -84,7 +83,7 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
             if (myHaltIfErrorFlag) {
                 if (myUseThrowableFlag)
                     throw rX;//Forced-Unwind!
-                next = new ThrowStatement(getOwner(),rX,summation);
+                next = new ThrowStatement(rX,summation);
             }
         }
         return next;
@@ -135,13 +134,13 @@ public final class TrySupport extends ActionDependentSkeleton implements Resetta
         myUseThrowableFlag = !from.haltContinuationFlag;
     }
 
-    public static ThrowStatement convert(Signal continuation, Action forAction) 
+    public static ThrowStatement convert(Signal continuation) 
     {
         ThrowStatement ourthrow = null;
         if (continuation instanceof ThrowStatement) {
             ourthrow = (ThrowStatement)continuation;
         } else {
-            ourthrow = new ThrowStatement(continuation,forAction);
+            ourthrow = new ThrowStatement(continuation,null);
         }
         return ourthrow;
     }

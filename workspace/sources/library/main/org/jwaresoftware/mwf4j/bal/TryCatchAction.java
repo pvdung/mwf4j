@@ -13,6 +13,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -74,9 +75,9 @@ public class TryCatchAction extends BALProtectorAction
         myUnmaskWrappersFlag = flag;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
-        Validate.isTrue(statement instanceof TryCatchStatement,"statement kindof trycatch");
+        Validate.isA(statement,TryCatchStatement.class,What.STATEMENT);
         TryCatchStatement trycatch = (TryCatchStatement)statement;
         if (myBody!=null) {
             trycatch.setBody(myBody);
@@ -95,11 +96,9 @@ public class TryCatchAction extends BALProtectorAction
         }
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        verifyReady();
-        TryCatchStatement trycatch = new TryCatchStatement(this,next);
-        return finish(trycatch);
+        return new TryCatchStatement(next);
     }
 
     private Action myBody;

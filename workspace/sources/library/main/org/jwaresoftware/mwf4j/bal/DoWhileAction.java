@@ -6,6 +6,7 @@
 package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 
 /**
  * Variation of the regular {@linkplain WhileAction while action} that works
@@ -33,9 +34,9 @@ public class DoWhileAction extends WhileAction
         super(id);
     }
 
-    protected WhileStatement newWhileStatement(ControlFlowStatement next)
+    protected WhileStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        return new DoWhileStatement(this,next);
+        return new DoWhileStatement(next);
     }
 }
 

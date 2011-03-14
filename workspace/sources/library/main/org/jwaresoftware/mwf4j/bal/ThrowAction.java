@@ -10,6 +10,7 @@ import  org.jwaresoftware.gestalt.helpers.Handle;
 import  org.jwaresoftware.gestalt.helpers.Quietly;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.MWf4JException;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
@@ -71,16 +72,15 @@ public final class ThrowAction extends ActionSkeleton
         myAnnouncement = announcement;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,ThrowStatement.class,What.STATEMENT);
         ((ThrowStatement)statement).setCause(getCauseNoNull());
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        ThrowStatement statement = new ThrowStatement(this);
-        return finish(statement);
+        return new ThrowStatement();
     }
 
     private Exception getCauseNoNull()

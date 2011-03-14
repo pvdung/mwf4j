@@ -10,7 +10,6 @@ import  java.util.concurrent.atomic.AtomicInteger;
 
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
@@ -40,15 +39,15 @@ public class RewindStatement extends BALStatement implements CallBounded, Rewind
 {
     private static final int UNKNOWN= -1;
 
-    public RewindStatement(Action owner, ControlFlowStatement next)
+    public RewindStatement(ControlFlowStatement next)
     {
-        super(owner,next);
-        myMaxCallsSupport = new LimitSupport(getOwner());
+        super(next);
+        myMaxCallsSupport = new LimitSupport(this);
     }
 
-    public RewindStatement(Action owner, int retryCount, ControlFlowStatement next)
+    public RewindStatement(int retryCount, ControlFlowStatement next)
     {
-        this(owner,next);
+        this(next);
         myMaxCallsSupport.setMaxIterations(retryCount);
     }
 
@@ -113,12 +112,6 @@ public class RewindStatement extends BALStatement implements CallBounded, Rewind
     {
         myCallCount = UNKNOWN;
         super.doLeave(harness);
-    }
-
-    public void reconfigure()
-    {
-        super.reconfigure();
-        verifyReady();
     }
 
     private Rewindpoint getRewindpoint()

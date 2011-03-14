@@ -15,7 +15,7 @@ import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
-import  org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.PutMethod;
@@ -63,27 +63,28 @@ public final class CallActionTest extends ActionTestSkeleton
     public void testTriggerAllConstructors_1_0_0()
     {
         EndStatement end = new EndStatement();
+        Fixture environ = newENVIRON();
         CallAction<Map<String,Object>> c1 = new CallAction<Map<String,Object>>();
         assertFalse(Strings.isWhitespace(c1.getId()),"id is whitespace");
         Worker work = new Worker("ctor",c1);
         c1.setGetter(work);
-        assertNotNull(c1.makeStatement(end),"c1.newStatement");
+        assertNotNull(c1.buildStatement(end,environ),"c1.newStatement");
         CallAction<Map<String,Object>> c2 = new CallAction<Map<String,Object>>("2nd");
         assertEquals(c2.getId(),"2nd","id[2nd]");
         c2.setGetter(work);
         c2.setToStoreType(StoreType.THREAD);
-        assertNotNull(c2.makeStatement(end),"c2.newStatement");
+        assertNotNull(c2.buildStatement(end,environ),"c2.newStatement");
         CallAction<Map<String,Object>> c3 = new CallAction<Map<String,Object>>("3rd",work,"ctor.2.results",StoreType.DATAMAP);
         assertEquals(c3.getId(),"3rd","id[3rd]");
-        assertNotNull(c3.makeStatement(end),"c3.newStatement");
+        assertNotNull(c3.buildStatement(end,environ),"c3.newStatement");
         CallAction<NoReturn> c4 = new CallAction<NoReturn>("4th",new Runnable() {
             public void run() { System.out.println("burp"); }
         });
         assertEquals(c4.getId(),"4th","id[4th]");
-        assertNotNull(c4.makeStatement(end),"c4.newStatement");
+        assertNotNull(c4.buildStatement(end,environ),"c4.newStatement");
         CallAction<Map<String,Object>> c5 = new CallAction<Map<String,Object>>("5th",ref("ctor.5.results"));
         c5.setGetter(Worker.asFuture(work));
-        assertNotNull(c5.makeStatement(end),"c5newStatement");
+        assertNotNull(c5.buildStatement(end,environ),"c5newStatement");
     }
 
     public void testHappyPathNoResult_1_0_0()
@@ -175,7 +176,7 @@ public final class CallActionTest extends ActionTestSkeleton
         call.setToKey(".deadbeef");
         call.setToStoreType(StoreType.THREAD);
         call.setGetter(new GivebackValue<NoReturn>(NoReturn.INSTANCE));
-        AssignmentStatement<NoReturn> assignment = (AssignmentStatement<NoReturn>)call.makeStatement(new EndStatement());
+        AssignmentStatement<NoReturn> assignment = (AssignmentStatement<NoReturn>)call.buildStatement(new EndStatement(),newENVIRON());
         assignment.setPutter(new Failer());
         try {
             runTASK(new GivebackStatement("barfola",assignment));
@@ -199,8 +200,7 @@ public final class CallActionTest extends ActionTestSkeleton
 
     static class Putter extends AssignmentStatement<Map<String,Object>>
     {
-        Putter(Action owner) {
-            super(owner);
+        Putter() {
         }
         @Override
         protected void consumePayload(Map<String,Object> payload, Harness harness) {
@@ -221,12 +221,13 @@ public final class CallActionTest extends ActionTestSkeleton
         seekrits.put("who","Kick Buttowski");
         seekrits.put("what","Suburban Daredevil!");
         seekrits.put("home","http://en.wikipedia.org/wiki/Kick_Buttowski");
+        Harness harness = newHARNESS();
         CallAction<Map<String,Object>> action = newOUT("assign");
         action.setToKey(".kb");
-        Putter out = new Putter(action);
-        out.reconfigure();//Uses 'action' to trigger callback to 'configure'
+        Putter out = new Putter();
+        out.reconfigure(harness,action);//Uses 'action' to trigger callback to 'configure'
         out.setPayload(seekrits);
-        out.run(newHARNESS()).run(null);//end|throw
+        out.run(harness).run(null);//end|throw
         assertSame(MDC.get(".kb"),seekrits,"results set");
     }
 

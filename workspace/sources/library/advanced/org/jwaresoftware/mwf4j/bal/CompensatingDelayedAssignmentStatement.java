@@ -10,6 +10,8 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackStatement;
@@ -32,9 +34,9 @@ import  org.jwaresoftware.mwf4j.assign.GivebackStatement;
 
 public class CompensatingDelayedAssignmentStatement<T> extends DelayedAssignmentStatement<T>
 {
-    public CompensatingDelayedAssignmentStatement(Action owner, ControlFlowStatement next)
+    public CompensatingDelayedAssignmentStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
     }
 
     public void setCompensate(Condition test, Action compensateAction)
@@ -57,10 +59,10 @@ public class CompensatingDelayedAssignmentStatement<T> extends DelayedAssignment
         return testStatement;
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         testStatement=null;
-        super.reconfigure();
+        super.reconfigure(environ,overrides);
     }
 
     public void verifyReady()

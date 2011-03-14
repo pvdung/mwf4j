@@ -8,7 +8,6 @@ package org.jwaresoftware.mwf4j.starters;
 import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.TestFixture;
@@ -62,35 +61,28 @@ public final class ExtensionPointTest extends ExecutableTestSkeleton
     public void testFlowStatementApi_1_0_0()
     {
         CustomAction out = newOUT("void");
-        assertSame(out.getOwner(),out,"owner");
-        assertFalse(out.isAnonymous(),"anonymous");
+        Harness environ = newENVIRON();
+        assertTrue(out.isAnonymous(),"anonymous");
         assertFalse(out.isTerminal(),"terminal");
         assertSame(out.next(),ControlFlowStatement.nullINSTANCE,"initial-next");
         ControlFlowStatement myEnd = new FailStatement();
-        assertSame(out.makeStatement(myEnd),out,"makeStatement('end')");
-        assertSame(out.next(),myEnd,"next-after-made");
-        out.configure(out);
-        assertSame(out.next(),myEnd,"next-after-made-and-configured");
+        assertSame(out.buildStatement(myEnd,environ),out,"buildStatement('end')");
+        assertSame(out.next(),myEnd,"next-after-build");
+        out.reconfigure(environ,out);
+        assertSame(out.next(),myEnd,"next-after-build-and-configured");
+        assertFalse(out.isAnonymous(),"anonymous-after-reconfigured");
     }
-    
+
     @Test(expectedExceptions={IllegalStateException.class})
     public void testFailIfConfigureOtherStatement_1_0_0()
     {
-        newOUT("nada").configure(ControlFlowStatement.nullINSTANCE);
+        newOUT("nada").configureStatement(ControlFlowStatement.nullINSTANCE,newENVIRON());
         fail("Should not be able to configure arbitrary statements");
     }
     
-    @Test(expectedExceptions={IllegalStateException.class})
-    public void testFailIfSetOwnerToOtherThanSelf_1_0_0()
-    {
-        newOUT("setOwned").setOwner(Action.anonINSTANCE);
-        fail("Should not be able to configure different owner action");
-    }
-
     public void testConfigureAttrAfterVoidCtor_1_0_0()
     {
         CustomAction out = newOUT("void");
-        out.setOwner(out);//weird but allowed due to public API-ed-ness
         assertEquals(out.getId(),"void");
         out.setId("diff");
         assertEquals(out.getId(),"diff","getId[after]");

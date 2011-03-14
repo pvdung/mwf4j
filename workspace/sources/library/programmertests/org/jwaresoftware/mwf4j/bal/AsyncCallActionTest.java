@@ -14,8 +14,9 @@ import  static org.testng.Assert.*;
 
 import  org.jwaresoftware.gestalt.Strings;
 
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.MDC;
-import org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.assign.StoreType;
 
 /**
  * Test suite for {@linkplain AsyncCallAction} and its associated statements.
@@ -55,19 +56,20 @@ public final class AsyncCallActionTest extends ActionTestSkeleton
     public void testTriggerAllConstructors_1_0_0()
     {
         EndStatement end = new EndStatement();
+        Fixture environ = newENVIRON();
         AsyncCallAction<Map<String,Object>> c1 = new AsyncCallAction<Map<String,Object>>();
         assertFalse(Strings.isWhitespace(c1.getId()),"id is whitespace");
         Waiter work = new Waiter("ctor",c1);
         RunnableFuture<Map<String,Object>> workf = Worker.asFuture(work); 
         c1.setWorker(workf);
-        assertNotNull(c1.makeStatement(end),"c1.newStatement");
+        assertNotNull(c1.buildStatement(end,environ),"c1.newStatement");
         AsyncCallAction<Map<String,Object>> c2 = new AsyncCallAction<Map<String,Object>>("2nd");
         assertEquals(c2.getId(),"2nd","id[2nd]");
         c2.setWorker(work);
-        assertNotNull(c2.makeStatement(end),"c2.newStatement");
+        assertNotNull(c2.buildStatement(end,environ),"c2.newStatement");
         AsyncCallAction<Map<String,Object>> c3 = new AsyncCallAction<Map<String,Object>>("3rd",workf,"ctor.results");
         assertEquals(c3.getId(),"3rd","id[3rd]");
-        assertNotNull(c3.makeStatement(end),"c3.newStatement");
+        assertNotNull(c3.buildStatement(end,environ),"c3.newStatement");
     }
 
     public void testHappyPathNoResult_1_0_0()

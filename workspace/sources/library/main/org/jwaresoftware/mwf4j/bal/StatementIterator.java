@@ -12,7 +12,6 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.helpers.EmptyIterator;
 
 import  org.jwaresoftware.mwf4j.Action;
-import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -26,17 +25,16 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    infra,impl,helper
  **/
 
-class StatementIterator extends EmptyIterator<ControlFlowStatement>
+class StatementIterator extends EmptyIterator<Action>
 {
     /**
      * @param barrier the control point where we return 'back' to until iteration done
      * @param actions set of actions to iterate over (non-null)
      **/
-    StatementIterator(ControlFlowStatement barrier, Collection<Action> actions)
+    StatementIterator(Collection<Action> actions)
     {
-        Validate.neitherNull(actions,What.ACTIONS,barrier,What.STATEMENT);
+        Validate.notNull(actions,What.ACTIONS);
         myActions = actions.iterator();
-        myBarrier = barrier;
     }
 
     public boolean hasNext()
@@ -44,14 +42,14 @@ class StatementIterator extends EmptyIterator<ControlFlowStatement>
         return myActions.hasNext();
     }
 
-    public ControlFlowStatement next()
+    public Action next()
     {
-        return myActions.next().makeStatement(myBarrier);
+        Action action = myActions.next();
+        Validate.resultNotNull(action, What.ACTION);
+        return action;
     }
 
-
     private Iterator<Action> myActions;
-    private final ControlFlowStatement myBarrier;
 }
 
 

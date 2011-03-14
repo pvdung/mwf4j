@@ -8,6 +8,7 @@ package org.jwaresoftware.mwf4j.starters;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 
 /**
  * Test action that does nothing but return a fail statement. Used
@@ -27,16 +28,14 @@ public final class EpicFail extends ActionSkeleton
         super("epicfail");
     }
 
-    public void configure(ControlFlowStatement own)
+    public void configureStatement(ControlFlowStatement own, Fixture environ)
     {
         Validate.isTrue(own instanceof FailStatement,"statement kindof FailStatement");
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        FailStatement thrower = new FailStatement();
-        thrower.reconfigure();
-        return thrower;
+        return new FailStatement();
     }
 }
 

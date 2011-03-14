@@ -12,6 +12,7 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackValue;
 import  org.jwaresoftware.mwf4j.assign.Reference;
@@ -84,14 +85,12 @@ public class ForEachAction extends ActionSkeleton
         myCopyFlag = flag;
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        verifyReady();
-        ForEachStatement statement = new ForEachStatement(this,next);
-        return finish(statement);
+        return new ForEachStatement(next);
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,ForEachStatement.class,What.STATEMENT);
         ForEachStatement foreach = (ForEachStatement)statement;
@@ -101,7 +100,7 @@ public class ForEachAction extends ActionSkeleton
             if (myCopyFlag) {
                 foreach.setBodyFactory(myBody);
             } else {
-                foreach.setBody(myBody.makeStatement(foreach));
+                foreach.setBody(myBody.buildStatement(foreach,environ));
             }
         } else {
             foreach.setBody(new EmptyStatement(foreach));

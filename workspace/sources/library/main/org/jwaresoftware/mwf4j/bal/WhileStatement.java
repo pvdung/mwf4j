@@ -10,6 +10,8 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
@@ -33,10 +35,10 @@ import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
 
 public class WhileStatement extends BALStatement implements CallBounded, Unwindable
 {
-    public WhileStatement(Action owner, ControlFlowStatement next) 
+    public WhileStatement(ControlFlowStatement next) 
     {
-        super(owner,next);
-        myMaxLoopsSupport = new LimitSupport(getOwner());
+        super(next);
+        myMaxLoopsSupport = new LimitSupport(this);
         myUnwindSupport = new ReentrantSupport(this,true,this);
     }
 
@@ -121,11 +123,10 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
         myMaxLoopsSupport.reset();
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         resetThis();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
     }
 
     private void unwindThis(Harness harness)

@@ -32,10 +32,9 @@ public abstract class BALStatement extends StatementSkeleton
         super(next);
     }
 
-
-    protected BALStatement(Action owner, ControlFlowStatement next)
+    protected BALStatement(Action action, ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
     }
 }
 

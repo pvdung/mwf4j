@@ -10,6 +10,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackStatement;
 import  org.jwaresoftware.mwf4j.helpers.True;
@@ -26,7 +27,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   special (multiple after configured for makeStatement)
+ * @.safety   special (multiple after configured for buildStatement)
  * @.group    infra,impl
  * @see       BranchStatement
  * @see       Condition
@@ -55,15 +56,14 @@ public class IfAction extends ActionSkeleton
         myThenBranch = thenAction;
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        verifyReady();
-        BranchStatement statement= new BranchStatement(this,next);
+        BranchStatement statement= new BranchStatement(next);
         statement.setTest(myTest);
-        return finish(statement);
+        return statement;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isTrue(statement instanceof BranchStatement,"statement kindof branch");
         BranchStatement decision = (BranchStatement)statement;

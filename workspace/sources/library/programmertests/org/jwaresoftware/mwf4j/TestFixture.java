@@ -40,11 +40,13 @@ public final class TestFixture
 
     public static Fixture.Implementation setUp()
     {
-        LocalSystem.setProperty("ojg.ns", "mwf4j");
-        LocalSystem.setProperty("mwf4j.environment.type","DEV");
-        LocalSystem.setProperty("mwf4j.logger",Feedback.GROUPING_CORE);
-        LocalSystem.setProperty("mwf4j.logger.diagnostics",Diagnostics.GROUPING_CORE);
-        LocalSystem.setProperty("mwf4j.name","MWf4J_TestBench");
+        if (LocalSystem.getProperty("mwf4j.name")==null) {
+            LocalSystem.setProperty("ojg.ns", "mwf4j");
+            LocalSystem.setProperty("mwf4j.environment.type","DEV");
+            LocalSystem.setProperty("mwf4j.logger",Feedback.GROUPING_CORE);
+            LocalSystem.setProperty("mwf4j.logger.diagnostics",Diagnostics.GROUPING_CORE);
+            LocalSystem.setProperty("mwf4j.name","MWf4J_TestBench");
+        }
         return new FromPropertiesFixture();
     }
 

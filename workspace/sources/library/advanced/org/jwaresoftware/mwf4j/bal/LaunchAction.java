@@ -12,6 +12,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
@@ -83,15 +84,14 @@ public class LaunchAction extends ActionSkeleton
         myForeverFlag = flag;
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next,Fixture environ)
     {
-        verifyReady();
-        return finish(new LaunchStatement(this,next));
+        return new LaunchStatement(next);
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement,Fixture environ)
     {
-        Validate.isTrue(statement instanceof LaunchStatement,"statement kindof launch");
+        Validate.isA(statement,LaunchStatement.class,What.STATEMENT);
         LaunchStatement launch = (LaunchStatement)statement;
         launch.setActions(myActions);
         if (myMdcClipboard!=null) launch.setMDCPropagator(myMdcClipboard);

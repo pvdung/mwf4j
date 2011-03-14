@@ -16,14 +16,15 @@ package org.jwaresoftware.mwf4j;
  * org.jwaresoftware.mwf4j.starters.ExtensionPoint extension point}.)
  * <p/> 
  * A control statement is typically created by an {@linkplain Action action}
- * to which it is linked for the rest of its lifetime. However, a control 
- * statement can spawn completely independent continuation statements which
- * it passes to its execution {@linkplain Harness harness} for queuing and 
- * <em>eventual</em> execution. (The statement should never assume the 
- * continuation will occur immediately on return from its own execution 
- * unless that is a contract established by the statement type with all 
- * harnesses. Also, a control statement should never assume it is the 
- * <em>only</em> running statement associated with its action or harness!)
+ * to which it can be linked for the rest of its lifetime or not (typically
+ * not). Note however, that a control statement can spawn completely 
+ * independent continuation statements which it passes to its execution 
+ * {@linkplain Harness harness} for queuing and <em>eventual</em> execution. 
+ * (The statement should never assume the continuation will occur immediately
+ * on return from its own execution unless that is a contract established by
+ * the statement type with all harnesses. Also, a control statement should
+ * never assume it is the <em>only</em> running statement associated with
+ * its action or harness!)
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -32,32 +33,31 @@ package org.jwaresoftware.mwf4j;
  * @.group    api,infra
  **/
 
-public interface ControlFlowStatement extends ActionDependent
+public interface ControlFlowStatement
 {
     boolean isTerminal();
     boolean isAnonymous();
+    void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides);
     ControlFlowStatement run(Harness harness);
-    void reconfigure();
-    Action getOwner();
     ControlFlowStatement next();
+    String getWhatId();
 
     /** Null proxy for a control flow statement (terminal and anonymous
-     *  attributes are true always). Does not  have a owning action; 
-     *  {@linkplain #getOwner} returns <i>null</i> always. **/
+     *  attributes are true always). **/
     public static final ControlFlowStatement nullINSTANCE= new ControlFlowStatement() 
     {
-        public Action getOwner() 
-            { return null; }
         public boolean isTerminal()
             { return true; }
         public boolean isAnonymous() 
             { return true; }
         public ControlFlowStatement run(Harness harness) 
             { return this; }
-        public void reconfigure()
+        public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
             { }
         public ControlFlowStatement next()
             { return this; }
+        public String getWhatId()
+            { return ""; }
         public String toString()
             { return ""; }
     };

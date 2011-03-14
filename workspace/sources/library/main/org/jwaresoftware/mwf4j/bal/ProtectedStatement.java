@@ -7,7 +7,6 @@ package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
@@ -26,11 +25,11 @@ import  org.jwaresoftware.mwf4j.behaviors.Protected;
  * @see       TryCatchStatement
  **/
 
-public final class ProtectedStatement extends BALStatement implements Protected
+public final class ProtectedStatement extends BALTransientStatement implements Protected
 {
-    public ProtectedStatement(Action owner, ControlFlowStatement body)
+    public ProtectedStatement(ControlFlowStatement body)
     {
-        super(owner,null);
+        super();
         Validate.notNull(body,What.BODY);
         myBody = body;
     }
@@ -41,7 +40,7 @@ public final class ProtectedStatement extends BALStatement implements Protected
         try {
             continuation = harness.runParticipant(myBody);
         } catch(RuntimeException rtX) {
-            continuation = new ThrowStatement(getOwner(),rtX);
+            continuation = new ThrowStatement(rtX);
         }
         return continuation;
     }

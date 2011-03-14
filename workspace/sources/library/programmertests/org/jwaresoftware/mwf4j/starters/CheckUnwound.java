@@ -8,6 +8,7 @@ package org.jwaresoftware.mwf4j.starters;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -32,16 +33,14 @@ public final class CheckUnwound extends ActionSkeleton
         this.unwinderName = unwinderNam;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,CheckUnwoundStatement.class,What.STATEMENT);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        CheckUnwoundStatement check = 
-            new CheckUnwoundStatement(getId(),unwinderName,this,next);
-        return finish(check);
+        return new CheckUnwoundStatement(getId(),unwinderName,this,next);
     }
 
     private final String unwinderName;

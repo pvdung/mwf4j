@@ -10,8 +10,9 @@ import  java.util.concurrent.CountDownLatch;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 
@@ -30,15 +31,14 @@ import  org.jwaresoftware.mwf4j.What;
 
 public class NotifyJoinStatement extends BALStatement
 {
-    protected NotifyJoinStatement(Action owner, ControlFlowStatement next)
+    protected NotifyJoinStatement(ControlFlowStatement next)
     {
-        super(owner,next);
-        //resetThis();
+        super(next);
     }
 
-    public NotifyJoinStatement(Action owner, String forkId, CountDownLatch barrier)
+    public NotifyJoinStatement(String forkId, CountDownLatch barrier)
     {
-        this(owner,new EndStatement(owner));
+        this(new EndStatement());
         setForkId(forkId);
         setBarrier(barrier);
     }
@@ -77,11 +77,10 @@ public class NotifyJoinStatement extends BALStatement
         myForkId = Strings.UNKNOWN;
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         resetThis();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
     }
 
     public void verifyReady()

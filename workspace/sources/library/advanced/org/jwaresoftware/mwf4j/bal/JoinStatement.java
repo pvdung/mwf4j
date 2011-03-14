@@ -40,9 +40,9 @@ import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 public class JoinStatement extends BALProtectorStatement implements Unwindable
 {
-    public JoinStatement(Action owner, ControlFlowStatement next)
+    public JoinStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
         myUnwindSupport = new ReentrantSupport(this,false,this);
     }
 
@@ -110,7 +110,7 @@ public class JoinStatement extends BALProtectorStatement implements Unwindable
         } else {
             final ControlFlowStatement kontinue = new EndStatement();
             BALHelper.putData(myError,issue,harness);
-            next = myTrySupport.handle(kontinue,new ThrowStatement(getOwner(),issue),harness);
+            next = myTrySupport.handle(kontinue,new ThrowStatement(issue),harness);
             if (next==kontinue) {
                 next= BALHelper.makeInstanceOfBody(this,harness,next(),myBody);
             }
