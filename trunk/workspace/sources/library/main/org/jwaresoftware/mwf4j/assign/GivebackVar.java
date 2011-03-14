@@ -48,6 +48,11 @@ public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
         return new GivebackVar<T>(key,fallbackValue,ofType,true,Mode.DIRECT);
     }
 
+    public final static<T> GivebackVar<T> fromGet(String key, T fallbackValue, Class<? extends T> ofType, boolean failIfError)
+    {
+        return new GivebackVar<T>(key,fallbackValue,ofType,failIfError,Mode.DIRECT);
+    }
+
     public final static<T> GivebackVar<T> fromEval(String keyOrExpr, Class<? extends T>ofType)
     {
         return new GivebackVar<T>(keyOrExpr,null,ofType,true,Mode.EXPRESSION);

@@ -8,6 +8,8 @@ package org.jwaresoftware.mwf4j.starters;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.What;
 
 /**
  * Test action that does nothing but return a finish later statement (which
@@ -32,15 +34,14 @@ public final class FinishLaterAction extends ActionSkeleton
         super(id);
     }
 
-    public void configure(ControlFlowStatement own)
+    public void configureStatement(ControlFlowStatement owned, Fixture environ)
     {
-        Validate.isTrue(own instanceof FinishLaterStatement,"statement kindof FinishLaterStatement");
+        Validate.isA(owned,FinishLaterStatement.class,What.STATEMENT);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        FinishLaterStatement statement = new FinishLaterStatement(this, next);
-        return finish(statement);
+        return new FinishLaterStatement(this, next);
     }
 }
 

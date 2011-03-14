@@ -7,7 +7,9 @@ package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatementException;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 
 /**
@@ -47,15 +49,19 @@ public final class EndStatement extends BALTransientStatement
 
     protected ControlFlowStatement runInner(Harness harness)
     {
-        if (myLoops++ > 5)
+        if (myLoops++ > BAL.MAX_END_LOOPS)
             throw new ControlFlowStatementException
-                ("Potential infinite loop calling END statement from "+getWhatId());
+                ("Potential infinite loop calling END statement '"+getWhatId()+"'");
         return this;
     }
 
-    public void reconfigure()
+    @Override
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         myLoops = 0;
+        if (overrides!=null) {
+            setWhatId(overrides);
+        }
     }
 
     private int myLoops;

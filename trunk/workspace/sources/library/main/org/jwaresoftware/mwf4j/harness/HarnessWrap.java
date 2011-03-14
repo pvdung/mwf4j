@@ -13,6 +13,7 @@ import  org.jwaresoftware.gestalt.bootstrap.FixtureWrap;
 import  org.jwaresoftware.mwf4j.Activity;
 import  org.jwaresoftware.mwf4j.Adjustment;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.Variables;
@@ -56,9 +57,19 @@ public class HarnessWrap extends FixtureWrap implements Harness
         return getTargetH().getExecutorService();
     }
 
+    public Fixture staticView()
+    {
+        return getTargetH().staticView();
+    }
+
     public String interpolate(String inputString, ProblemHandler callback)
     {
         return getTargetH().interpolate(inputString,callback);
+    }
+
+    public String interpolate(String inputString)
+    {
+        return getTargetH().interpolate(inputString);
     }
 
     public void run()

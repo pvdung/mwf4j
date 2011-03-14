@@ -10,8 +10,9 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 /**
  * Mixin interface for a control flow statement (or other participant) that
  * will throw an exception when run. Allows your BAL extensions to plug into
- * the {@linkplain TryCatchAction try-catch} handling like the standard
- * {@linkplain ThrowStatement}.
+ * the {@linkplain org.jwaresoftware.mwf4j.bal.TryCatchAction try-catch action} 
+ * handling like the standard {@linkplain org.jwaresoftware.mwf4j.bal.ThrowStatement
+ * throw statement}.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -22,6 +23,7 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 
 public interface Signal extends ControlFlowStatement
 {
+    public static final int NO_SIGNAL_POSITION= -1;
     Exception getCause();
     int getPosition();
 }

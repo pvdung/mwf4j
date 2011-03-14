@@ -7,22 +7,29 @@ package org.jwaresoftware.mwf4j.starters;
 
 import  org.slf4j.Logger;
 
+import  org.jwaresoftware.gestalt.reveal.Identified;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
+import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
 import  org.jwaresoftware.mwf4j.Diagnostics;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
+import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Executable;
 import  org.jwaresoftware.mwf4j.behaviors.Traceable;
 
 /**
- * Starting implementation for control flow statements. Tracks the statement's
- * linked action and next statement attributes and provides a template method
- * for {@linkplain #run(Harness) run()} that logs (at 'finest' trace level)
- * entry and exit. Subclasses must implement the abstract 
+ * Starting implementation for control flow statements. Tracks the 
+ * statement's next statement attribute and provides template methods
+ * for both {@linkplain #reconfigure} and {@linkplain #run(Harness) run()}.
+ * The template reconfigure method will ask any supplied override definition
+ * to apply itself and then call this statement's {@linkplain #verifyReady} 
+ * method. The template run method will log (at 'finest' trace level) entry,
+ * exit, and abnormal error events. Subclasses must implement the abstract 
  * {@linkplain #runInner(Harness) runInner} method and optionally the
  * {@linkplain #verifyReady()} and {@linkplain #doError doError()} methods. 
  * Note that this skeleton DOES define the {@linkplain #isTerminal()} method
@@ -33,15 +40,14 @@ import  org.jwaresoftware.mwf4j.behaviors.Traceable;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    impl,helper
+ * @.group    infra,impl
  **/
 
-public abstract class StatementSkeleton extends ActionDependentSkeleton
-    implements Executable, ControlFlowStatement
+public abstract class StatementSkeleton implements Executable, ControlFlowStatement
 {
     /** 
-     * Link that permits any subclasses some control over trace feedback.
-     * @since JWare/MWf4J 1.0.0
+     * Link that permits statement subclasses some control over trace feedback.
+     * @since   JWare/MWf4J 1.0.0
      * @author  ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
      * @version @Module_VERSION@
      * @.safety single
@@ -80,25 +86,19 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     }
 
 
-    protected StatementSkeleton(Action owner, ControlFlowStatement next)
-    {
-        super(owner);
-        initNextStatement(next);
-    }
-
-
     public ControlFlowStatement next()
     {
         return nextStatement;
     }
 
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
-        Action action = getOwner();
-        if (action!=null) {
-            action.configure(this);
+        if (overrides!=null) {
+            setWhatId(overrides);
+            overrides.configureStatement(this,environ);
         }
+        verifyReady();
     }
 
 
@@ -110,8 +110,7 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
 
     public boolean isAnonymous()
     {
-        Action action = getOwner();
-        return action==null || action==Action.anonINSTANCE;
+        return myWhatId==null;
     }
 
 
@@ -121,7 +120,17 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     }
 
 
-    
+    protected final void setWhatId(String what)
+    {
+        myWhatId = what;
+    }
+
+    protected final void setWhatId(final Identified from)
+    {
+        setWhatId(What.getNonBlankId(from));
+    }
+
+
     /**
      * Validate that this statement is ready for execution. Made public to ensure
      * secondary use of statements (as continuation outside of formal action-&gt;statement)
@@ -129,7 +138,13 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
      **/
     public void verifyReady()
     {
-        //nothing by default
+        //nothing by default; extend to ensure all required attributes defined!
+    }
+
+
+    public String getWhatId()
+    {
+        return myWhatId!=null ? myWhatId : Strings.EMPTY;
     }
 
 
@@ -145,7 +160,7 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
         StringBuilder sb = LocalSystem.newSmallStringBuilder();
         sb.append(getClass().getSimpleName()).append('@').append(System.identityHashCode(this));
         sb.append("[H=").append(MDC.currentHarnessTypeOrEmpty());
-        sb.append("|A=");
+        sb.append("|S=");
         try { addToString(sb); } catch(Exception e) {sb.append("toString.ERROR!");}
         sb.append("]");
         return sb.toString();
@@ -204,6 +219,7 @@ public abstract class StatementSkeleton extends ActionDependentSkeleton
     }
 
 
+    private String myWhatId;
     private ControlFlowStatement nextStatement;//NB: can be NULL
     private TraceSupport breadcrumbs = new TraceSupport(new TraceLink());
 }

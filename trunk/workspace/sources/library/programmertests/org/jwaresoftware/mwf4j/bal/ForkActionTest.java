@@ -18,6 +18,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.Sequence;
@@ -107,12 +108,12 @@ public final class ForkActionTest extends ActionTestSkeleton
         Checkpoint() { 
             super("checkpoint"); 
         }
-        public ControlFlowStatement makeStatement(ControlFlowStatement next) {
+        public ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ) {
             assertTrue(werePerformedAndExited("W1|W2|W3"),"all branches done before join-body called");
             TestStatement statement= new TestStatement(this,next);
             return statement;
         }
-        public void configure(ControlFlowStatement statement) {
+        public void configureStatement(ControlFlowStatement statement, Fixture environ) {
             assertTrue(statement instanceof TestStatement);
         }
     }
@@ -221,7 +222,7 @@ public final class ForkActionTest extends ActionTestSkeleton
         Sequence mainflow = new SequenceAction("main");
         Harness mainHarness = newHARNESS("main",mainflow);
 
-        JoinStatement join = new JoinStatement(Action.anonINSTANCE, new EndStatement());
+        JoinStatement join = new JoinStatement(new EndStatement());
         join.setBarrier(new CountDownLatch(1));//NB: *never* tripped => wait forever w/o interrupt!
         join.setUseHaltContinuation(false);
         join.verifyReady();

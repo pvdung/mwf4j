@@ -39,7 +39,7 @@ package org.jwaresoftware.mwf4j;
 
 public interface Activity extends Entity
 {
-    ControlFlowStatement firstStatement();
+    ControlFlowStatement firstStatement(Fixture environ);
 }
 
 

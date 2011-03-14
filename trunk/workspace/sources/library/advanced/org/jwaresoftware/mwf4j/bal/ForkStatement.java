@@ -44,9 +44,9 @@ import  org.jwaresoftware.mwf4j.helpers.RetryDef;
 
 public class ForkStatement extends BALProtectorStatement
 {
-    public ForkStatement(Action owner, ControlFlowStatement next)
+    public ForkStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
     }
 
     public void setBranches(Collection<Action> branches)
@@ -92,7 +92,7 @@ public class ForkStatement extends BALProtectorStatement
             myMdcClipboard.copy();
         }
         for (Action branch:myBranches) {
-            NotifyJoinStatement notifyJoin = new NotifyJoinStatement(branch,myId,barrier);
+            NotifyJoinStatement notifyJoin = new NotifyJoinStatement(myId,barrier);
             notifyJoin.verifyReady();
 
             ControlFlowStatement first = new IfCalledMakeStatement(branch,notifyJoin);
@@ -133,7 +133,7 @@ public class ForkStatement extends BALProtectorStatement
         if (isNoWait()) {
             return BALHelper.makeInstanceOfBody(this,harness,postJoinContinuation,myJoinBody);
         }
-        JoinStatement join = new JoinStatement(getOwner(),postJoinContinuation);
+        JoinStatement join = new JoinStatement(postJoinContinuation);
         join.copyFrom(this);
         join.setBarrier(barrier);
         if (myTimeoutRetries!=null) join.setBreakSupport(myTimeoutRetries,myBreakNotify);

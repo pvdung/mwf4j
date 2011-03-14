@@ -130,7 +130,7 @@ public final class AssignAction<T> extends CallAction<T>
         Callable<T> getter = null;
         switch(fromStoreType) {
             case DATAMAP: {
-                getter = GivebackVar.fromGet(fromKeyOrExpr,fallbackValue,ofType);
+                getter = GivebackVar.fromGet(fromKeyOrExpr,fallbackValue,ofType,failIfError);
                 break;
             }
             case OBJECT: {

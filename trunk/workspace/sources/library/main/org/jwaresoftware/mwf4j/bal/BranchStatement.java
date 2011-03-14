@@ -30,12 +30,7 @@ import  org.jwaresoftware.mwf4j.What;
 
 public class BranchStatement extends BALStatement
 {
-    public BranchStatement(Action owner, ControlFlowStatement next) 
-    {
-        super(owner,next);
-    }
-
-    public BranchStatement(ControlFlowStatement next) //NB: 'anonymous condition'
+    public BranchStatement(ControlFlowStatement next)
     {
         super(next);
     }
@@ -64,19 +59,13 @@ public class BranchStatement extends BALStatement
         if (myTest.evaluate(harness)) {
             if (breadcrumbs().isEnabled())
                 breadcrumbs().write("Branching 'Y' for action {}",getWhatId());
-            next = myThen.makeStatement(next);
+            next = myThen.buildStatement(next,harness.staticView());
         } else {
             if (breadcrumbs().isEnabled())
                 breadcrumbs().write("Branching 'N' for action {}",getWhatId());
-            next = myElse.makeStatement(next);
+            next = myElse.buildStatement(next,harness.staticView());
         }
         return next;
-    }
-
-    public void reconfigure()
-    {
-        super.reconfigure();
-        verifyReady();
     }
 
     public void verifyReady()

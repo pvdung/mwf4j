@@ -11,6 +11,7 @@ import  java.util.concurrent.atomic.AtomicInteger;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackValue;
 import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
@@ -98,14 +99,12 @@ public class RewindAction extends ActionSkeleton implements CallBounded
         setCallCounter(new VariableCreator<AtomicInteger>(key, AtomicInteger.class));
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        verifyReady();
-        RewindStatement rewind = new RewindStatement(this,next);
-        return finish(rewind);
+        return new RewindStatement(next);
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,RewindStatement.class,What.STATEMENT);
         RewindStatement rewind = (RewindStatement)statement;

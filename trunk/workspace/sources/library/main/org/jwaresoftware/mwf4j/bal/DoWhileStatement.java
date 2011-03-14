@@ -9,7 +9,6 @@ import  java.util.concurrent.atomic.AtomicBoolean;
 
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
@@ -60,9 +59,9 @@ public final class DoWhileStatement extends WhileStatement
         private AtomicBoolean myIgnoreFlag=new AtomicBoolean(true);//LATCH 
     }
 
-    public DoWhileStatement(Action owner, ControlFlowStatement next)
+    public DoWhileStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
     }
 
     public void setTest(Condition test)

@@ -8,7 +8,8 @@ package org.jwaresoftware.mwf4j.starters;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
-import org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.assign.StoreType;
 import  org.jwaresoftware.mwf4j.bal.BAL;
 
 /**
@@ -66,12 +67,12 @@ public class EchoAction extends ActionSkeleton
         myInclFlag = Boolean.valueOf(inclFlag);
     }
 
-    public void configure(ControlFlowStatement gen)
+    public void configureStatement(ControlFlowStatement gen, Fixture environ)
     {
         Validate.isTrue(gen instanceof EchoStatement,"statement kindof EchoStatement");
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
         EchoStatement statement = newEchoStatementInstance(next);
         statement.setCursor(myCursor);
@@ -81,7 +82,7 @@ public class EchoAction extends ActionSkeleton
         if (myInclFlag!=null) {
             statement.setIncludeActionName(myInclFlag);
         }
-        return finish(statement);
+        return statement;
     }
 
     protected EchoStatement newEchoStatementInstance(ControlFlowStatement next)

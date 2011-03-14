@@ -13,6 +13,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Protector;
@@ -103,7 +104,7 @@ public class SequenceAction extends BALProtectorAction implements Sequence
         myTryEachFlag = flag;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isTrue(statement instanceof SequenceStatement,"statement kindof sequence");
         ((SequenceStatement)statement).setMembers(getMembers());
@@ -112,18 +113,17 @@ public class SequenceAction extends BALProtectorAction implements Sequence
         }
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        verifyReady();
         SequenceStatement statement;
         if (myTryEachFlag) {
-            statement = new TryEachSequenceStatement(this,next);
+            statement = new TryEachSequenceStatement(next);
         } else if (!myProtectSupport.haltIfErrorFlag) {
-            statement = new ProtectedSequenceStatement(this,next);
+            statement = new ProtectedSequenceStatement(next);
         } else {
-            statement = new SequenceStatement(this,next);
+            statement = new SequenceStatement(next);
         }        
-        return finish(statement);
+        return statement;
     }
 
     private List<Action> getMembers()

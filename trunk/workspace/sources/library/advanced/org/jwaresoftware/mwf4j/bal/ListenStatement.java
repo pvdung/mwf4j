@@ -63,9 +63,9 @@ import  org.jwaresoftware.mwf4j.behaviors.DependentHarness;
 
 public class ListenStatement<T> extends BALProtectorStatement implements Unwindable
 {
-    public ListenStatement(Action owner, ControlFlowStatement next)
+    public ListenStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
         myUnwindSupport = new ReentrantSupport(this,false,this);
     }
 
@@ -113,7 +113,7 @@ public class ListenStatement<T> extends BALProtectorStatement implements Unwinda
             if (payload!=null) {
                 Action action = myFactory.create(payload, harness);
                 Validate.responseNotNull(action,What.ACTION);
-                ControlFlowStatement continuation = action.makeStatement(new EndStatement(action));
+                ControlFlowStatement continuation = action.buildStatement(new EndStatement(), harness.staticView());
                 getExecutorHarness(harness).addContinuation(continuation);
             } else {
                 long roughTimeoutDuration = LocalSystem.currentTimeMillis()-enteredAt;
@@ -147,7 +147,7 @@ public class ListenStatement<T> extends BALProtectorStatement implements Unwinda
 
         final ControlFlowStatement kontinue = new EndStatement();
         BALHelper.putData(myError,issue,harness);
-        ControlFlowStatement next = myTrySupport.handle(kontinue,new ThrowStatement(getOwner(),issue),harness);
+        ControlFlowStatement next = myTrySupport.handle(kontinue,new ThrowStatement(issue),harness);
         if (next==kontinue) {
             next = this;//NB: keep listening...
             BALHelper.clrData(myError,harness);

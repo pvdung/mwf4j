@@ -5,7 +5,6 @@
 
 package org.jwaresoftware.mwf4j.bal;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.behaviors.Protector;
@@ -32,10 +31,10 @@ import  org.jwaresoftware.mwf4j.behaviors.Signal;
 
 public class ProtectedSequenceStatement extends SequenceStatement implements Protector
 {
-    public ProtectedSequenceStatement(Action owner, ControlFlowStatement next)
+    public ProtectedSequenceStatement(ControlFlowStatement next)
     {
-        super(owner,next);
-        myTrySupport = new TrySupport(getOwner(),false,false);
+        super(next);
+        myTrySupport = new TrySupport(this,false,false);
     }
 
     public final void setHaltIfError(boolean flag)
@@ -55,7 +54,7 @@ public class ProtectedSequenceStatement extends SequenceStatement implements Pro
 
     private ControlFlowStatement protect(ControlFlowStatement statement)
     {
-        return BALHelper.protect(getOwner(),statement);
+        return BALHelper.protect(statement);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class ProtectedSequenceStatement extends SequenceStatement implements Pro
     {
         ControlFlowStatement next = harness.runParticipant(protect(member));
         if (next instanceof Signal) {
-            ThrowStatement lastThrown = TrySupport.convert((Signal)next,getOwner());
+            ThrowStatement lastThrown = TrySupport.convert((Signal)next);
             lastThrown.setPosition(index);
             next = myTrySupport.handle(next(),lastThrown,harness,breadcrumbs());//NB: abort;move past me... 
         }

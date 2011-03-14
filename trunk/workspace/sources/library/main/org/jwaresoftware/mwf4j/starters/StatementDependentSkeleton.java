@@ -52,12 +52,12 @@ public abstract class StatementDependentSkeleton implements ControlFlowStatement
         myOwner = statement;
     }
 
-    protected final String getWhatId()
+    public final String getWhatId()
     {
-        String what = Strings.UNDEFINED;
+        String what = Strings.EMPTY;
         ControlFlowStatement owner = getOwner();
         if (owner!=null) {
-            what = What.getNonBlankId(owner.getOwner());
+            what = owner.getWhatId();
         }
         return what;
     }

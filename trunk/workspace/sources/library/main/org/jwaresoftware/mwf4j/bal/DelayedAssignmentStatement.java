@@ -9,8 +9,9 @@ import  java.util.concurrent.RunnableFuture;
 
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.starters.LongLivedTraceSupport;
 
@@ -31,9 +32,9 @@ import  org.jwaresoftware.mwf4j.starters.LongLivedTraceSupport;
 
 public class DelayedAssignmentStatement<T> extends AssignmentStatement<T>
 {
-    public DelayedAssignmentStatement(Action owner, ControlFlowStatement next)
+    public DelayedAssignmentStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
         initBreadcrumbs(new LongLivedTraceSupport(new TraceLink()));
     }
 
@@ -61,7 +62,7 @@ public class DelayedAssignmentStatement<T> extends AssignmentStatement<T>
             }
         } catch(Exception anyX) {
             breadcrumbs().caught(anyX);
-            next = new ThrowStatement(getOwner(),anyX);
+            next = new ThrowStatement(anyX);
         }
         return next;
     }
@@ -73,11 +74,10 @@ public class DelayedAssignmentStatement<T> extends AssignmentStatement<T>
     }
 
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         resetThis();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
     }
 
 

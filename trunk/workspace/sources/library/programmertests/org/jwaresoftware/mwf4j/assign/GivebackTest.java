@@ -18,6 +18,8 @@ import  org.jwaresoftware.gestalt.system.GetPropertyMethod;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.LocalSystemHarness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
 import  org.jwaresoftware.mwf4j.MWf4JException;
@@ -87,6 +89,7 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     {
         assertNotNull(GivebackVar.fromGet("fu",String.class));
         assertNotNull(GivebackVar.fromGet("fu","phffht",String.class));
+        assertNotNull(GivebackVar.fromGet("fu","zoink!",String.class,true));
         assertNotNull(GivebackVar.fromEval("fu",String.class));
         assertNotNull(GivebackVar.fromEval("fu",Long.valueOf(1L),Long.class));
         assertNotNull(GivebackVar.fromEval("fu",String.class,false));
@@ -271,15 +274,16 @@ public final class GivebackTest extends AssignHelperTestSkeleton
 
     public void testGivebackStatement()
     {
+        Fixture environ = new LocalSystemHarness();
         GivebackStatement out = new GivebackStatement(ControlFlowStatement.nullINSTANCE);
         assertSame(out.call(),ControlFlowStatement.nullINSTANCE);//once
         assertSame(out.call(),ControlFlowStatement.nullINSTANCE);//twice, same obj
         assertNotNull(out.getId());
-        assertSame(out.makeStatement(null),ControlFlowStatement.nullINSTANCE);
+        assertSame(out.buildStatement(null,environ),ControlFlowStatement.nullINSTANCE);
         out = new GivebackStatement("PHFFHT",ControlFlowStatement.nullINSTANCE);
         assertSame(out.call(),ControlFlowStatement.nullINSTANCE);//once
         assertSame(out.call(),ControlFlowStatement.nullINSTANCE);//twice, same obj
-        assertSame(out.makeStatement(null),ControlFlowStatement.nullINSTANCE);
+        assertSame(out.buildStatement(null,environ),ControlFlowStatement.nullINSTANCE);
         assertEquals(out.getId(),"PHFFHT");
     }
 

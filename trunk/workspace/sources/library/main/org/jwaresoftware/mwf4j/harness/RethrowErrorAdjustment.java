@@ -7,6 +7,7 @@ package org.jwaresoftware.mwf4j.harness;
 
 import  org.jwaresoftware.mwf4j.Adjustment;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
@@ -20,7 +21,9 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * @version   @Module_VERSION@
  * @.safety   single
  * @.group    infra,impl,helper
+ * @see       RethrowStatement
  **/
+
 public final class RethrowErrorAdjustment extends ActionSkeleton implements Adjustment
 {
     public RethrowErrorAdjustment(RuntimeException issue, Harness harness)
@@ -29,19 +32,19 @@ public final class RethrowErrorAdjustment extends ActionSkeleton implements Adju
         myRethrowStatement = new RethrowStatement(issue,harness);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
-    {
-        return myRethrowStatement;
-    }
-
     public boolean isTerminal() 
     {
         return true;
     }
 
-    public void configure(ControlFlowStatement statement) 
+    public ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ)
     {
-        //nothing to configure (done at construction)
+        return myRethrowStatement;
+    }
+
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
+    {
+        throw new UnsupportedOperationException("rethrowAdjustment.configure");
     }
 
     private final ControlFlowStatement myRethrowStatement;

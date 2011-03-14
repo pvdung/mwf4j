@@ -43,9 +43,9 @@ public final class EndAdjustment extends ExtensionPoint implements Adjustment
 
     protected ControlFlowStatement runInner(Harness harness)
     {
-        if (myLoops++ > 5)
+        if (myLoops++ > BAL.MAX_END_LOOPS)
             throw new ControlFlowStatementException
-                ("Potential infinite loop calling END adjustment '"+getId()+"'");
+                ("Potential infinite loop calling END adjustment '"+getWhatId()+"'");
         return this;
     }
 

@@ -7,12 +7,11 @@ package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.gestalt.Effect;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
-import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
+import  org.jwaresoftware.mwf4j.starters.StatementDependentSkeleton;
 
 /**
  * Helper that encapsulates the reusable handling code for looping or
@@ -25,9 +24,9 @@ import  org.jwaresoftware.mwf4j.starters.ActionDependentSkeleton;
  * @.group    infra,impl,helper
  **/
 
-public final class LimitSupport extends ActionDependentSkeleton implements Resettable
+public final class LimitSupport extends StatementDependentSkeleton implements Resettable
 {
-    public LimitSupport(Action owner)
+    public LimitSupport(ControlFlowStatement owner)
     {
         super(owner);
         this.reset();
@@ -63,7 +62,7 @@ public final class LimitSupport extends ActionDependentSkeleton implements Reset
         ControlFlowStatement next=null;
 
         if (loopCount>=myLimit) {
-            Diagnostics.ForBAL.info("Max iterations ({}) break triggered for action='{}'",String.valueOf(loopCount),getOwner());
+            Diagnostics.ForFlow.info("Max iterations ({}) break triggered for action='{}'",String.valueOf(loopCount),getOwner());
             next = new EndStatement();//NB: just a marker to caller unless haltIfMax
  
             if (myHaltIfMaxFlag || !myQuietFlag) {
@@ -77,7 +76,7 @@ public final class LimitSupport extends ActionDependentSkeleton implements Reset
                 if (myHaltIfMaxFlag) {
                     if (myUseThrowableFlag)
                         throw overflowX;//Forced-Unwind!
-                    next = new ThrowStatement(getOwner(),overflowX,summation);
+                    next = new ThrowStatement(overflowX,summation);
                 }
             }
         }

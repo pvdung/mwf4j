@@ -25,7 +25,7 @@ public final class FinishLaterStatement extends StatementSkeleton
 {
     public FinishLaterStatement(Action owner, ControlFlowStatement next) 
     {
-        super(owner,next);
+        super(next);
     }
 
     protected ControlFlowStatement runInner(Harness harness)

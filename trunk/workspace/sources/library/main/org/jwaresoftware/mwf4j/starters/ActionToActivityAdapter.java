@@ -5,11 +5,13 @@
 
 package org.jwaresoftware.mwf4j.starters;
 
+import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Activity;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -39,14 +41,19 @@ public final class ActionToActivityAdapter implements Activity
         myEnd = end;
     }
 
-    public String getId()
+    public ActionToActivityAdapter()//Effectively a no-op stub activity!
     {
-        return myDefinition.getId();
+        myDefinition = null;
     }
 
-    public ControlFlowStatement firstStatement()
+    public String getId()
     {
-        return myDefinition.makeStatement(myEnd);
+        return myDefinition!=null ? myDefinition.getId() : Strings.EMPTY;
+    }
+
+    public ControlFlowStatement firstStatement(Fixture environ)
+    {
+        return myDefinition!=null ? myDefinition.buildStatement(myEnd,environ) : myEnd;
     }
 
     private Action myDefinition;

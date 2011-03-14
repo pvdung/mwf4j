@@ -9,9 +9,9 @@ package org.jwaresoftware.mwf4j;
  * The definition of one or more related steps (a single conceptual action) 
  * in some {@linkplain Activity activity}.  
  * Actions can be atomic (indivisible) or composite (sub-actions); synchronous
- * or asynchrous. Technically, actions are not "the thing what gets executed"
+ * or asynchrous. Technically, actions are not "the thing that gets executed"
  * when an activity is run; instead, every action functions as a 
- * {@linkplain #makeStatement factory} for the runnable {@linkplain
+ * {@linkplain #makeStatement builder} of the runnable {@linkplain
  * ControlFlowStatement control statement(s)} that actually do the work 
  * when the action is "run" as part of an activity by a {@linkplain Harness
  * harness}. You use actions as a way to <em>define the piece of work  
@@ -42,7 +42,7 @@ package org.jwaresoftware.mwf4j;
  * @.group    api,infra
  **/
 
-public interface Action extends Entity
+public interface Action extends Entity, ControlFlowStatementDefinition
 {
     /**
      * Factory method to create a new control flow statement that implements
@@ -52,11 +52,12 @@ public interface Action extends Entity
      * return, this action is free to change its definition (or have it
      * changed for it) <em>without impacting</em> the returned statement.
      * @param next flow statement that comes <em>after</em> action (non-null)
+     * @param environ fixture from which can retrieve configuration if needed (non-null)
      * @return independent control flow statement that implements this 
      *         action's current definition.
      * @see #configure
      **/
-    ControlFlowStatement makeStatement(ControlFlowStatement next);
+    ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ);
 
 
 
@@ -69,10 +70,11 @@ public interface Action extends Entity
      * this method lets the statement coordinate with the action to apply 
      * those settings when best appropriate.
      * @param statement action-generated statement to configure (non-null)
+     * @param environ fixture from which can retrieve configuration if needed (non-null)
      * @throws java.lang.IllegalArgumentException if the action does not
      *         recognize the incoming statement's type.
      **/
-    void configure(ControlFlowStatement statement);
+    void configureStatement(ControlFlowStatement statement, Fixture environ);
 
 
 
@@ -85,9 +87,9 @@ public interface Action extends Entity
     {
         public String getId()
             { return ""; }
-        public ControlFlowStatement makeStatement(ControlFlowStatement next) 
+        public ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ) 
             { return ControlFlowStatement.nullINSTANCE; }
-        public void configure(ControlFlowStatement statement) 
+        public void configureStatement(ControlFlowStatement statement, Fixture environ) 
             { }
         public String toString()
             { return "anon"; }

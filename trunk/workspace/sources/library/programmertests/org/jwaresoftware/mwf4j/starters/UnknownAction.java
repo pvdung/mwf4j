@@ -11,6 +11,7 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 
 /**
  * Test action that unconditionally returns an instance of a user-supplied 
@@ -39,17 +40,15 @@ public final class UnknownAction extends ActionSkeleton
         }
     }
 
-    public void configure(ControlFlowStatement gen)
+    public void configureStatement(ControlFlowStatement gen, Fixture environ)
     {
         Validate.isTrue(myStatementClass.isInstance(gen), "statement kindof "+myStatementClass.getSimpleName());
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
         try {
-            ControlFlowStatement unknown = myCtor.newInstance(this,next);
-            unknown.reconfigure();
-            return unknown;
+            return myCtor.newInstance(this,next);
         } catch(Exception ctorX) {
             throw new Error("Unable to create new instance of "+myStatementClass.getSimpleName(),ctorX);
         }

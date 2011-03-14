@@ -40,10 +40,10 @@ import  org.jwaresoftware.mwf4j.harness.NestedIsolatedHarness;
 
 final class BALHelper
 {
-    static final ControlFlowStatement protect(Action owner, ControlFlowStatement statement)
+    static final ControlFlowStatement protect(ControlFlowStatement statement)
     {
         if (!(statement instanceof Protected)) {
-            statement = new ProtectedStatement(owner,statement);
+            statement = new ProtectedStatement(statement);
         }
         return statement;
     }
@@ -202,7 +202,7 @@ final class BALHelper
         if (bodyFactory!=null) {
             try {
                 MDC.pshHarness(parent,harness);
-                bodyContinuation = bodyFactory.makeStatement(parent);
+                bodyContinuation = bodyFactory.buildStatement(parent,harness.staticView());
             } finally {
                 MDC.popHarness(parent,harness);
             }
@@ -216,7 +216,7 @@ final class BALHelper
         if (bodyFactory!=null) {
             try {
                 MDC.pshHarness(source,harness);
-                bodyContinuation = bodyFactory.makeStatement(next);
+                bodyContinuation = bodyFactory.buildStatement(next,harness.staticView());
             } finally {
                 MDC.popHarness(source,harness);
             }

@@ -81,15 +81,12 @@ public class SimpleHarness extends HarnessSkeleton
         return myExectorService;
     }
 
-    public StringResolver getStringResolver()
-    {
-        return this;
-    }
-
     public String typeCN()
     {
         return "main";
     }
+
+
 
     public String interpolate(String inputString, ProblemHandler issueHandler)
     {
@@ -101,9 +98,10 @@ public class SimpleHarness extends HarnessSkeleton
     }
 
 
+
     protected ControlFlowStatement firstStatement()
     {
-        return getOwner().firstStatement();
+        return getOwner().firstStatement(staticView());
     }
 
 

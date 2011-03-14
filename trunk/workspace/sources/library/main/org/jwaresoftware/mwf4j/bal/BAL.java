@@ -23,6 +23,12 @@ import  org.jwaresoftware.mwf4j.assign.StoreType;
 
 public final class BAL
 {
+    /** Maximum number of times in-a-row that you can call and End statement
+     *  or adjustment before it signals a potential infinite loop error
+     *  condition. Equals {@value}.*/
+    public static final int MAX_END_LOOPS = 5;
+
+
     public interface ConfigSPI
     {
         StoreType getDataStoreType();

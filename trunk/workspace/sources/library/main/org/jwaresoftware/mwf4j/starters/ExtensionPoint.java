@@ -10,7 +10,9 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Markable;
  
 /**
  * Starting implementation for custom application work adapted to MWf4J
@@ -45,12 +47,11 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    infra,impl
  **/
 
-public abstract class ExtensionPoint extends StatementSkeleton implements Action
+public abstract class ExtensionPoint extends StatementSkeleton implements Action, Markable
 {
     protected ExtensionPoint()
     {
         super(ControlFlowStatement.nullINSTANCE);
-        initOwner(this);
     }
 
     protected ExtensionPoint(String id)
@@ -66,34 +67,39 @@ public abstract class ExtensionPoint extends StatementSkeleton implements Action
         setId(other.getId());
     }
 
+
     public String getId()
     {
         return myId;
     }
 
-    protected void setId(String id)
+    @Override
+    public void setId(String id)
     {
         Validate.notNull(id,What.ID);
         myId = Strings.trimToEmpty(id);
     }
 
-    public void setOwner(Action owner)
+    public String getWhatId()
     {
-        Validate.stateIsTrue(owner==this, "owner==this");
-        super.setOwner(owner);
+        String wid = super.getWhatId();
+        return Strings.isEmpty(wid) ? getId() : getId()+"/"+wid;
     }
 
-    public final ControlFlowStatement makeStatement(ControlFlowStatement next)
+
+    public final ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ)
     {
         initNextStatement(next);
         verifyReady();
         return this;
     }
 
-    public final void configure(ControlFlowStatement statement)//DON'T USE!
+
+    public final void configureStatement(ControlFlowStatement statement, Fixture environ)//DON'T USE!
     {
         Validate.stateIsTrue(statement==this,"statement==this");
     }
+
 
     protected StringBuilder addToString(StringBuilder sb) 
     {

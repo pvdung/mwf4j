@@ -7,11 +7,10 @@ package org.jwaresoftware.mwf4j.scope;
 
 import  org.jwaresoftware.gestalt.Validate;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
-import  org.jwaresoftware.mwf4j.starters.StatementSkeleton;
+import  org.jwaresoftware.mwf4j.starters.TransientStatementSkeleton;
 
 /**
  * Transient helper statement that you can use to <em>complete</em> a more
@@ -25,11 +24,11 @@ import  org.jwaresoftware.mwf4j.starters.StatementSkeleton;
  * @see       RewindAdjustment
  **/
 
-public final class RewindStatement extends StatementSkeleton
+public final class RewindStatement extends TransientStatementSkeleton
 {
-    public RewindStatement(Action owner, Rewindpoint mark)
+    public RewindStatement(Rewindpoint mark)
     {
-        super(owner,ControlFlowStatement.nullINSTANCE);
+        super(ControlFlowStatement.nullINSTANCE);
         setCursor(mark);
     }
 

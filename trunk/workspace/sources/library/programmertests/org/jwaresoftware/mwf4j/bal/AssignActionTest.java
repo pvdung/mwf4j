@@ -16,7 +16,6 @@ import  static org.testng.Assert.*;
 import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.Sequence;
@@ -263,7 +262,7 @@ public final class AssignActionTest extends ActionTestSkeleton
 
     public void testAssignSubtypes_1_0_0()
     {
-        AssignmentStatement<Type1> out = new AssignmentStatement<Type1>(Action.anonINSTANCE);
+        AssignmentStatement<Type1> out = new AssignmentStatement<Type1>();
         out.setGetter(new Type2.Calr());
         out.setPutter(new Type2.Putr());
         out.setPayload(new Type2());

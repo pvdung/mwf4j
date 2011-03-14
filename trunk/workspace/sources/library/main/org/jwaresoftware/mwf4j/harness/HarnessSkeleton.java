@@ -12,13 +12,14 @@ import  java.util.concurrent.atomic.AtomicBoolean;
 import  org.jwaresoftware.gestalt.Effect;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
-import  org.jwaresoftware.gestalt.bootstrap.Fixture;
+import  org.jwaresoftware.gestalt.bootstrap.Fixture.Implementation;
 import  org.jwaresoftware.gestalt.bootstrap.FixtureWrap;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Adjustment;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
@@ -29,7 +30,7 @@ import  org.jwaresoftware.mwf4j.scope.Scopes;
 import  org.jwaresoftware.mwf4j.starters.ExecutableSupport;
 
 /**
- * Common implementation of the {@linkplain Harness harness} interface for
+ * Common implementation of the {@linkplain Harness Harness} interface for
  * a simple primary and a couple special-purpose secondary harnesses. Actions,
  * statements, conditions and other components must use a harness to access 
  * various services like the continuation and unwind queues during execution. 
@@ -79,9 +80,10 @@ import  org.jwaresoftware.mwf4j.starters.ExecutableSupport;
 
 public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Runnable
 {
-    protected HarnessSkeleton(Fixture.Implementation fixture)
+    protected HarnessSkeleton(Implementation fixture)
     {
         super(fixture);
+        myViewWrap = newStaticView();
     }
 
 
@@ -130,6 +132,18 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
 
 
+    public final Fixture staticView()
+    {
+        return myViewWrap;
+    }
+
+    protected Fixture newStaticView()
+    {
+        return new HarnessStaticView(this);
+    }
+
+
+
     private ControlFlowStatement perform(ControlFlowStatement statement)
     {
         ControlFlowStatement continuation = null;
@@ -144,7 +158,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
 
     protected ControlFlowStatement firstStatement()
     {
-        return getOwner().firstStatement();
+        return getOwner().firstStatement(staticView());
     }
 
 
@@ -297,7 +311,7 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
             Diagnostics.ForCore.warn("Received terminal adjustment for {}",getName());
             doUnwind();
         }
-        ControlFlowStatement adjustment = myAdjustmentAction.makeStatement(next);
+        ControlFlowStatement adjustment = myAdjustmentAction.buildStatement(next,staticView());
         myAdjustmentAction = null;
         return adjustment;
     }
@@ -310,11 +324,19 @@ public abstract class HarnessSkeleton extends FixtureWrap implements Harness, Ru
     }
 
 
+
+    public final String interpolate(String inputString)
+    {
+        return interpolate(inputString,getIssueHandler());
+    }
+
+
     private AtomicBoolean myRunningFlag= new AtomicBoolean();
     private boolean myAbortedFlag;//NB:kept valid for querying after run returns!
     final List<ControlFlowStatement> myContinuations = LocalSystem.newList();
     final Queue<ControlFlowStatement> myQueue = LocalSystem.newLinkedList();
     private Scope myScope;
+    private Fixture myViewWrap;
 
     private Boolean myAdjustFlag;//NB:can be null so need guard
     private final Object myAdjustFlagGuard = new int[0];

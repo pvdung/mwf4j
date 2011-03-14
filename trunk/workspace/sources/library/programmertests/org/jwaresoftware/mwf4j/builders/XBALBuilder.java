@@ -12,7 +12,7 @@ import  org.jwaresoftware.mwf4j.starters.TouchAction;
 
 /**
  * Local extension of a {@linkplain BALBuilder} that enables testing for
- * entensibility and test-specific DSL features.
+ * extensibility and test-specific DSL features.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>

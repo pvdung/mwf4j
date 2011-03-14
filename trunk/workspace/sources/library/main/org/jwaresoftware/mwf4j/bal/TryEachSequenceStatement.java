@@ -5,10 +5,10 @@
 
 package org.jwaresoftware.mwf4j.bal;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.behaviors.Protector;
+import  org.jwaresoftware.mwf4j.behaviors.Signal;
 
 /**
  * Extension of a normal sequence statement that will run each nested action
@@ -33,10 +33,10 @@ import  org.jwaresoftware.mwf4j.behaviors.Protector;
 
 public class TryEachSequenceStatement extends SequenceStatement implements Protector
 {
-    public TryEachSequenceStatement(Action owner, ControlFlowStatement next)
+    public TryEachSequenceStatement(ControlFlowStatement next)
     {
-        super(owner,next);
-        myTrySupport = new TrySupport(getOwner());
+        super(next);
+        myTrySupport = new TrySupport(this);
     }
 
     public final void setHaltIfError(boolean flag)
@@ -56,15 +56,15 @@ public class TryEachSequenceStatement extends SequenceStatement implements Prote
 
     private ControlFlowStatement protect(ControlFlowStatement statement)
     {
-        return BALHelper.protect(getOwner(),statement);
+        return BALHelper.protect(statement);
     }
 
     @Override
     ControlFlowStatement runMember(int index, Harness harness, ControlFlowStatement member)
     {
         ControlFlowStatement next = harness.runParticipant(protect(member));
-        if (next instanceof ThrowStatement) {
-            ThrowStatement signal = (ThrowStatement)next;
+        if (next instanceof Signal) {
+            ThrowStatement signal = TrySupport.convert((Signal)next);
             signal.setNextThrown(lastThrown);
             signal.setPosition(index);
             lastThrown = signal;

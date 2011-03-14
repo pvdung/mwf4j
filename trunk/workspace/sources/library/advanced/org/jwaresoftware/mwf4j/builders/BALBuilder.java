@@ -15,19 +15,22 @@ import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.bal.*;
 
 /**
- * ---- (( INSERT DOCUMENTATION )) ----
+ * Builder for BAL specific actions. Subclasses are expected to provide the
+ * final public "action" or "activity" static factory method. See BAL programmer
+ * test suites for examples. Note that once a builder's {@linkplain #build}
+ * method is called it is no longer active (one output per builder for now).
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    api,infra
+ * @.group    infra,impl
+ * @see       BALFactory
  **/
 
 public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkeleton
 {
-
-    public Action finish()
+    public Action build()
     {
         Validate.stateNotNull(myDefinition,What.ACTION);
         Action mydef = myDefinition;
@@ -161,7 +164,7 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
     {
         Validate.stateIsTrue(child!=null && myInner==child,"end child is top");
         Validate.stateIsTrue(id==null || Strings.equal(id,myInner.getId()),"child.id is "+id);
-        myDefinition.add(myInner.finish());
+        myDefinition.add(myInner.build());
         myInner.setOuterBlock(null);
         myInner = null;
         return (BB)this;

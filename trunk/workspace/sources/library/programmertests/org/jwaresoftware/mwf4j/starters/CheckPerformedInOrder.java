@@ -8,6 +8,7 @@ package org.jwaresoftware.mwf4j.starters;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -31,17 +32,14 @@ public final class CheckPerformedInOrder extends ActionSkeleton
         this.statementNames = statementNameList;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,CheckPerformedInOrderStatement.class,What.STATEMENT);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        CheckPerformedInOrderStatement check = 
-            new CheckPerformedInOrderStatement(getId(),statementNames,
-                                               this,next);
-        return finish(check);
+        return new CheckPerformedInOrderStatement(getId(),statementNames,this,next);
     }
 
     private final String statementNames;

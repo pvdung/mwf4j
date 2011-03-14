@@ -7,6 +7,8 @@ package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 
 /**
  * Starting implementation for a statement that is transient in nature-- 
@@ -26,6 +28,11 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 
 public abstract class BALTransientStatement extends BALStatement
 {
+    protected BALTransientStatement()
+    {
+        super();
+    }
+
     protected BALTransientStatement(Action action, ControlFlowStatement next)
     {
         super(action,next);
@@ -36,9 +43,9 @@ public abstract class BALTransientStatement extends BALStatement
         super(next);
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
-        //nothing (do NOT call action to configure even if one linked)
+        verifyReady();
     }
 }
 

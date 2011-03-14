@@ -12,6 +12,7 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackNext;
@@ -73,14 +74,13 @@ public class ListenAction<T> extends BALProtectorAction
         myBreakAction = breakAction;
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        verifyReady();
-        return finish(new ListenStatement<T>(this,next));
+        return new ListenStatement<T>(next);
     }
 
     @SuppressWarnings("unchecked")
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isTrue(statement instanceof ListenStatement<?>,"statement kindof listen");
         ListenStatement<T> listen = (ListenStatement<T>)statement;

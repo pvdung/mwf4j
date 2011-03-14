@@ -11,6 +11,7 @@ import  java.util.concurrent.Future;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
@@ -64,7 +65,7 @@ import  org.jwaresoftware.mwf4j.helpers.CalledRunnable;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   special (multiple after configured for makeStatement)
+ * @.safety   special (multiple after configured for buildStatement)
  * @.group    infra,impl
  * @see       AsyncCallAction
  * @see       org.jwaresoftware.mwf4j.assign.Giveback Givebacks
@@ -123,15 +124,15 @@ public class CallAction<T> extends SavebackAction<T>
         Validate.fieldNotNull(myGetter,What.GET_METHOD);
     }
 
-    protected AssignmentStatement<T> newAssignmentStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        return new AssignmentStatement<T>(this,next);
+        return new AssignmentStatement<T>(next);
     }
 
     @SuppressWarnings("unchecked")
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
-        super.configure(statement);
+        super.configureStatement(statement,environ);
         AssignmentStatement<T> assignment = (AssignmentStatement<T>)statement;
         assignment.setGetter(myGetter);
         assignment.setGetterRequiredReturnType(myPayloadKind);

@@ -5,7 +5,6 @@
 
 package org.jwaresoftware.mwf4j.bal;
 
-import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 
@@ -23,11 +22,6 @@ import  org.jwaresoftware.mwf4j.Harness;
 
 public final class BranchImmediateStatement extends BranchStatement
 {
-    public BranchImmediateStatement(Action owner, ControlFlowStatement next)
-    {
-        super(owner,next);
-    }
-
     public BranchImmediateStatement(ControlFlowStatement next)
     {
         super(next);

@@ -65,7 +65,7 @@ public final class ThrowActionTest extends ActionTestSkeleton
 
     public void testThrowStatementBaseline_1_0_0()
     {
-        ThrowStatement out = new ThrowStatement(new ThrowAction());
+        ThrowStatement out = new ThrowStatement();
         assertEquals(out.getLength(),1,"initial length");
         assertNull(out.nextThrown(),"nextThrown");
         assertNull(out.getCause(),"cause");
@@ -79,11 +79,11 @@ public final class ThrowActionTest extends ActionTestSkeleton
     public void testChainedThrowStatements_1_0_0()
     {
         Exception e1st = new RuntimeException("EERROOOOR: 1st convulsion");
-        ThrowStatement t1st = new ThrowStatement(new ThrowAction("1st"),e1st);
+        ThrowStatement t1st = new ThrowStatement(e1st);
         System.out.println("T1st(unchained): "+t1st);
         
         Exception e2nd = new NotRuntimeException("EEEEIIIKK: 2nd convulsion");
-        ThrowStatement t2nd = new ThrowStatement(new ThrowAction("2nd"),e2nd);
+        ThrowStatement t2nd = new ThrowStatement(e2nd);
         assertEquals(t2nd.getLength(),1,"2nd's initial length");
         assertNull(t2nd.nextThrown(),"2nd's nextThrown");
         System.out.println("T2nd(unchained): "+t2nd);

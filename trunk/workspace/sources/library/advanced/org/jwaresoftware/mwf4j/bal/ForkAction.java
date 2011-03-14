@@ -12,6 +12,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.helpers.RetryDef;
@@ -87,14 +88,7 @@ public class ForkAction extends BALProtectorAction
         myBreakNotify = notifyAction;
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
-    {
-        verifyReady();
-        ForkStatement fork = new ForkStatement(this,next);
-        return finish(fork);
-    }
-
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         if (statement instanceof JoinStatement) return;//I am owner for these too!
         Validate.isTrue(statement instanceof ForkStatement,"statement kindof fork");
@@ -105,6 +99,11 @@ public class ForkAction extends BALProtectorAction
         if (myJoinBody!=null) fork.setJoinBody(myJoinBody);
         if (myMdcClipboard!=null) fork.setMDCPropagtor(myMdcClipboard);
         fork.copyFrom(myProtectSupport);
+    }
+
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
+    {
+        return new ForkStatement(next);
     }
 
     protected void verifyReady()

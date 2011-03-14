@@ -18,6 +18,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Adjustment;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
@@ -237,10 +238,10 @@ public final class SimpleHarnessTest extends ExecutableTestSkeleton
         private CountDownLatch newLatch() {
             return new CountDownLatch(1);
         }
-        public ControlFlowStatement makeStatement(ControlFlowStatement next) {
+        public ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ) {
             return new Adjust(cancelFlag,cancelledFlag);
         }
-        public void configure(ControlFlowStatement statement) {
+        public void configureStatement(ControlFlowStatement statement, Fixture environ) {
             Validate.isTrue(statement instanceof Adjust,"kindof adjust statement");
         }
         final CountDownLatch cancelFlag, cancelledFlag;

@@ -6,6 +6,7 @@
 package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
 /**
@@ -30,13 +31,12 @@ public final class EmptyAction extends ActionSkeleton
         super(id);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        ControlFlowStatement empty = new EmptyStatement(this,next);
-        return finish(empty);
+        return new EmptyStatement(next);
     }
 
-    public void configure(ControlFlowStatement owned)
+    public void configureStatement(ControlFlowStatement owned, Fixture environ)
     {
         //nothing
     }

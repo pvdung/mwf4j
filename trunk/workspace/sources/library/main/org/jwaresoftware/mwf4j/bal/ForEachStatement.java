@@ -14,6 +14,8 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.Unwindable;
@@ -58,9 +60,9 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
         }
     };
 
-    public ForEachStatement(Action owner, ControlFlowStatement next)
+    public ForEachStatement(ControlFlowStatement next)
     {
-        super(owner,next);
+        super(next);
         myUnwindSupport = new ReentrantSupport(this,true,this);
     }
 
@@ -96,7 +98,7 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
                 MDC.pshHarness(this,harness);
                 myWorker = myGetter.call().iterator();
             } catch(Exception getX) {
-                next= new ThrowStatement(getOwner(),getX,"Unable to get foreach data iterator");
+                next= new ThrowStatement(getX,"Unable to get foreach data iterator");
                 resetThis();
             } finally {
                 MDC.popHarness(this,harness);
@@ -127,11 +129,10 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
         myUnwindSupport.reset(this);
     }
 
-    public void reconfigure()
+    public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
         reset();
-        super.reconfigure();
-        verifyReady();
+        super.reconfigure(environ,overrides);
     }
 
     private void unwindThis(Harness harness, boolean clrData)

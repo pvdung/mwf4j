@@ -10,6 +10,7 @@ import  org.jwaresoftware.gestalt.helpers.Pair;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 import  org.jwaresoftware.mwf4j.starters.TestStatement;
@@ -59,16 +60,14 @@ public final class EnterLeaveScopeAction extends ActionSkeleton
         return myLink;
     }
 
-    public void configure(ControlFlowStatement statement)
+    public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,EnterLeaveScopeStatement.class,What.STATEMENT);
     }
 
-    public ControlFlowStatement makeStatement(ControlFlowStatement next)
+    protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
-        EnterLeaveScopeStatement enterleave= 
-            new EnterLeaveScopeStatement(getId(),myEnterFlag,myLink,this,next);
-        return finish(enterleave);
+        return new EnterLeaveScopeStatement(getId(),myEnterFlag,myLink,this,next);
     }
 
     private final ControlFlowStatement myLink;

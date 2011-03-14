@@ -7,9 +7,6 @@ package org.jwaresoftware.mwf4j;
 
 import  java.util.concurrent.ExecutorService;
 
-import  org.jwaresoftware.gestalt.bootstrap.Fixture;
-import  org.jwaresoftware.gestalt.fixture.StringResolver;
-
 /**
  * Per root-action invocation wrapper around the incoming fixture that
  * control statements and other actions can use to post dynamic
@@ -27,7 +24,7 @@ import  org.jwaresoftware.gestalt.fixture.StringResolver;
  * @see       MDC#currentHarness()
  **/
 
-public interface Harness extends Runnable, Fixture.Implementation, StringResolver
+public interface Harness extends Runnable, Fixture
 {
     Variables getVariables();
     ExecutorService getExecutorService();
@@ -39,8 +36,10 @@ public interface Harness extends Runnable, Fixture.Implementation, StringResolve
     void removeUnwind(Unwindable participant);
     ControlFlowStatement runParticipant(ControlFlowStatement participant);
     void applyAdjustment(Adjustment action);
+    String interpolate(String inputString);
     Activity getOwner();
     String typeCN();
+    Fixture staticView();
 }
 
 
