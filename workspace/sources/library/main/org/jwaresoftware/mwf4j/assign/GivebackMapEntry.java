@@ -9,7 +9,9 @@ import  java.util.Map;
 
 import  org.jwaresoftware.gestalt.Validate;
 
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Giveback implementation that just returns the value of a predefined 
@@ -21,8 +23,8 @@ import  org.jwaresoftware.mwf4j.What;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   single
- * @.group    impl,helper
+ * @.safety   special (multiple after frozen)
+ * @.group    impl,extras,helper
  **/
 
 public final class GivebackMapEntry<T> extends GivebackMapEntrySkeleton<T>
@@ -55,6 +57,13 @@ public final class GivebackMapEntry<T> extends GivebackMapEntrySkeleton<T>
         myDatamap = params;
         Validate.notBlank(key,What.ITEM_ID);
         myKey = key;
+    }
+
+    @Override
+    public void freeze(Fixture environ)
+    {
+        super.freeze(environ);
+        myKey = Declarables.freeze(environ,myKey);
     }
 
     private String myKey;

@@ -8,6 +8,7 @@ package org.jwaresoftware.mwf4j.helpers;
 import  java.util.concurrent.TimeUnit;
 
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
 
 import  org.jwaresoftware.mwf4j.What;
 
@@ -24,7 +25,7 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    impl,helper
  **/
 
-public final class RetryDef
+public final class RetryDef extends CloneableSkeleton
 {
     /**
      * Initializes a new retry definition that will retry ONCE 

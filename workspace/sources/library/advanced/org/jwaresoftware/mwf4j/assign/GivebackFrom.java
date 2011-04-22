@@ -25,7 +25,7 @@ import  org.jwaresoftware.mwf4j.MDC;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    impl,extras,helper
  **/
 
 public final class GivebackFrom<T> extends GivebackMapEntrySkeleton<T>

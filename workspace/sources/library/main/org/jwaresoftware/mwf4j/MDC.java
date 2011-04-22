@@ -20,14 +20,18 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 /**
  * MWf4J specific per-thread mapped diagnostic context (MDC). All MWf4J 
- * closures should rely on this variation of the per-thread stash 
- * to obtain active execution context including harness, configuration,
- * and datamap information. Note that we expect mostly callbacks and
- * closures to use the MDC to obtain activity related harness information.
- * Other components like statements and actions have the relevant harness
- * <em>given</em> to them via the appropriate methods, so there should be
- * no need to rely on the thread context generally.
+ * closures can rely on this variation of the per-thread stash to obtain
+ * active execution context including harness, configuration, and datamap
+ * information. 
  * <p/>
+ * We expect mostly standard callbacks and closures to use the MDC to obtain
+ * activity related harness information as their JDK signatures have almost
+ * no support for passed in context (think Runnable, Callable, Futures, etc.)
+ * Our MWf4J components, like statements and actions, have the relevant 
+ * harness <em>given</em> to them via the appropriate methods, so there 
+ * should be no need for them to rely on the thread context to work.
+ * <p/>
+ * <b>Usage note 1:</b>
  * While our BAL activities will ensure the root harness is installed
  * in the MDC, statements that call closures explicitly or create dynamic
  * helper statements should explicitly psh/pop their harnesses if that
@@ -88,7 +92,7 @@ public final class MDC extends PerThreadStash
     }
 
     // --------------------------------------------------------------------
-    // Managing harness references for helpers, closures, etc.
+    // Managing harness and its data references for helpers, closures, etc.
     // --------------------------------------------------------------------
 
     public static void pshHarness(Object from, Harness harness)
@@ -106,7 +110,7 @@ public final class MDC extends PerThreadStash
         HRef href = getOrFail(HREF_STACK,HRef.class);
         Harness harness = href.myPtr.get();
         if (harness==null) {
-            throw new MWf4JUnknownStateException("MWf4J harness has been purged by JVM!");
+            throw new IllegalMDCStateException("MWf4J harness has been purged by JVM!");
         }
         return harness;
     }
@@ -221,7 +225,7 @@ public final class MDC extends PerThreadStash
 
 
     // --------------------------------------------------------------------
-    // Managing selective copy of bits between master and slave harnesses
+    // Managing selective copy of bits between master and dependent harnesses
     // --------------------------------------------------------------------
 
     /**

@@ -11,7 +11,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Harness;
-import  org.jwaresoftware.mwf4j.LongLivedCondition;
+import org.jwaresoftware.mwf4j.behaviors.LongLivedCondition;
 
 /**
  * Test condition that always returns <i>false</i> after being started

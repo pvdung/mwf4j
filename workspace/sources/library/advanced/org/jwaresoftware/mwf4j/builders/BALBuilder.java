@@ -9,6 +9,7 @@ import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
+import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
@@ -18,28 +19,29 @@ import  org.jwaresoftware.mwf4j.bal.*;
  * Builder for BAL specific actions. Subclasses are expected to provide the
  * final public "action" or "activity" static factory method. See BAL programmer
  * test suites for examples. Note that once a builder's {@linkplain #build}
- * method is called it is no longer active (one output per builder for now).
+ * method is called it is no longer active (for now: one output per builder 
+ * instance in its lifetime).
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    infra,impl
+ * @.group    impl,extras
  * @see       BALFactory
  **/
 
+@SuppressWarnings("unchecked")
 public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkeleton
 {
     public Action build()
     {
         Validate.stateNotNull(myDefinition,What.ACTION);
-        Action mydef = myDefinition;
-        myDefinition = null;
-        return mydef;
+        Validate.stateIsTrue(getFinishers().isFlat(),"is outermost builder");
+        Action theOutput = myDefinition;
+        uninitThis();
+        return theOutput;
     }
 
-
-    @SuppressWarnings("unchecked")
     protected final BB add(Action step)
     {
         myDefinition.add(step);
@@ -61,71 +63,40 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
 //  Fluent API for AssignAction: set("a","value"), set("b",true), nil("c")
 //  ---------------------------------------------------------------------------------------
 
-
-    public BB set(String variable, String value)
+    public BB set(String flag)
     {
-        Validate.notNull(variable,What.VARIABLE_NAME);
-        return add(new AssignAction<String>(variable,VARIABLE,value));
+        Validate.notNull(flag,What.VARIABLE_NAME);
+        return add(BAL().newSet(flag,VARIABLE,Boolean.TRUE));
     }
 
-    public BB set(String variable, boolean value)
+    public <T> BB set(String variable, T value)
     {
         Validate.notNull(variable,What.VARIABLE_NAME);
-        return add(new AssignAction<Boolean>(variable,VARIABLE,value));
+        return add(BAL().newSet(variable,VARIABLE,value));
     }
 
-    public BB set(String variable, Object value)
-    {
-        Validate.notNull(variable,What.VARIABLE_NAME);
-        return add(new AssignAction<Object>(variable,VARIABLE,value));
-    }
-
-    public BB set(String variable, int value)
-    {
-        Validate.notNull(variable,What.VARIABLE_NAME);
-        return add(new AssignAction<Integer>(variable,VARIABLE,value));
-    }
-
-    public BB set(String variable, long value)
-    {
-        Validate.notNull(variable,What.VARIABLE_NAME);
-        return add(new AssignAction<Long>(variable,VARIABLE,value));
-    }
-
-    public BB set(String variable, double value)
-    {
-        Validate.notNull(variable,What.VARIABLE_NAME);
-        return add(new AssignAction<Double>(variable,VARIABLE,value));
-    }
-
-    public final BB set(Variable variable, Object value)
+    public final <T> BB set(Variable variable, T value)
     {
         validateNotNull(variable,What.VARIABLE_NAME);
         return set(variable.value(),value);
     }
 
-    public BB set(Property property, String value)
+    public <T> BB set(Property property, T value)
     {
         validateNotNull(property,What.PROPERTY_NAME);
-        return add(new AssignAction<String>(property.value(),PROPERTY,value));
+        return add(BAL().newSet(property.value(),PROPERTY,value));
     }
 
-    public BB set(Property property, boolean value)
+    public <T> BB set(MDCID threadvar, T value)
     {
-        validateNotNull(property,What.PROPERTY_NAME);
-        return add(new AssignAction<Boolean>(property.value(),PROPERTY,value));
-    }
-
-    public BB set(Property property, int value)
-    {
-        validateNotNull(property,What.PROPERTY_NAME);
-        return add(new AssignAction<Integer>(property.value(),PROPERTY,value));
+        validateNotNull(threadvar,What.VARIABLE_NAME);
+        return add(BAL().newSet(threadvar.value(),ONTHREAD,value));
     }
 
     public BB set(String variable, Reference from)
     {
         Validate.neitherNull(variable,What.VARIABLE_NAME,from,What.REFERENCE);
-        AssignAction<Object> set = new AssignAction<Object>();
+        AssignAction<Object> set = BAL().newSet();
         set.setFrom(from,Object.class);
         set.setTo(variable);
         return add(set);
@@ -137,44 +108,72 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
         return set(variable, new Reference(from.value()));
     }
 
+    public BB nil(String variable)
+    {
+        Validate.notNull(variable,What.VARIABLE_NAME);
+        return add(BAL().newSet(variable,VARIABLE,null));
+    }
+
 //  ---------------------------------------------------------------------------------------
-//  Fluent API for SequenceAction: block(), block("init",TRYEACH), endblock()
+//  Fluent API for SequenceAction: block(), block("init",TRYEACH), end()
 //  ---------------------------------------------------------------------------------------
 
-    protected final void validateNotBuildingBlock()
+    protected final void validateNotBuildingInner()
     {
         Validate.stateIsNull(myInner,What.INNERBLOCK);
     }
 
-    protected final void setOuterBlock(BB parent)
+    protected final void validateIsInner()
     {
-        myOuter = parent;
+        Validate.stateNotNull(myOuter,What.OUTERBLOCK);
     }
 
-    @SuppressWarnings("unchecked")
-    protected final BB enterBlock(BB child)
+    protected final Finisher getFinisher()
     {
-        child.setOuterBlock((BB)this);
-        myInner = child;
+        return myFinisher;
+    }
+
+    protected void open(BB outer)
+    {
+        myOuter = outer;
+    }
+
+    protected BB close(BB trigger)
+    {
+        Validate.stateIsTrue(trigger!=null && myOuter==trigger,"leaving builder is my outerblock");
+        Validate.stateNotNull(myDefinition,What.ACTION);
+        validateNotBuildingInner();
+        BALBuilder<?> next = getFinisher().finish(myOuter,myDefinition);//Can trigger outer.close
+        uninitThis();
+        Validate.responseNotNull(next,What.BUILDER);
+        return (BB)next;
+    }
+
+    protected final BB enterInner(BB inner)
+    {
+        inner.open((BB)this);
+        getFinishers().push(inner.getFinisher());
+        myInner = inner;
         return myInner;
     }
 
-    @SuppressWarnings("unchecked")
-    protected BB leaveBlock(BB child, String id)
+    protected final BB leaveInner(BB trigger, String id)
     {
-        Validate.stateIsTrue(child!=null && myInner==child,"end child is top");
-        Validate.stateIsTrue(id==null || Strings.equal(id,myInner.getId()),"child.id is "+id);
-        myDefinition.add(myInner.build());
-        myInner.setOuterBlock(null);
-        myInner = null;
-        return (BB)this;
+        Validate.stateIsTrue(trigger!=null && myInner==trigger,"leaving builder is my innerblock");
+        Validate.stateIsTrue(id==null || Strings.equal(id,myInner.getId()),"innerblock.id is "+id);
+        trigger = myInner;//Shutup Findbugs
+        myInner = null;//Do here in case of loop back to my 'close' from inner.close
+        getFinishers().popIfTop(trigger.getFinisher());
+        return trigger.close((BB)this);
     }
 
     protected static void configureBlock(SequenceAction body, Flag flag)
     {
-        if (TRYEACH==flag) {
+        if (DECLARABLES==flag || NO_DECLARABLES==flag) {
+            body.setCheckDeclarables(flag.value());
+        } else if (TRYEACH==flag) {
             body.setTryEach(TRYEACH.on());
-        } else if (PROTECT==flag) {
+        } else if (PROTECTED==flag) {
             body.setHaltIfError(false);
         } else if (MULTIUSE==flag) {
             body.setMode(SequenceAction.Mode.MULTIPLE);
@@ -194,30 +193,75 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
 
     public BB block()
     {
-        Validate.stateIsNull(myInner,What.INNERBLOCK);
-        return enterBlock(newChildBuilder(BAL().newSequence()));
+        validateNotBuildingInner();
+        return enterInner(newChildBuilder(new BALFinishers.ForBlock()));
+    }
+
+    public BB block(String id)
+    {
+        validateNotBuildingInner();
+        BB bb = enterInner(newChildBuilder(BAL(),BAL().newSequence(id),new BALFinishers.ForBlock()));
+        bb.setId(id);
+        return bb;
     }
 
     public BB block(Flag...flags)
     {
-        Validate.stateIsNull(myInner,What.INNERBLOCK);
-        SequenceAction body = newSequence(null,BAL(),flags);
-        return enterBlock(newChildBuilder(body));
+        validateNotBuildingInner();
+        BALFactory balFactory = newBALFactory(BAL(),flags);
+        SequenceAction body = newSequence(null,balFactory,flags);
+        return enterInner(newChildBuilder(balFactory, body, new BALFinishers.ForBlock()));
     }
 
-    @SuppressWarnings("unchecked")
+    protected BB autoblock(Finisher wrapUp)
+    {
+        validateNotBuildingInner();
+        return enterInner(newChildBuilder(wrapUp));
+    }
+
     public final BB end()
     {
-        Validate.stateNotNull(myOuter,What.OUTERBLOCK);
-        return myOuter.leaveBlock((BB)this,null);
+        validateIsInner();
+        return myOuter.leaveInner((BB)this,null);
     }
 
-    @SuppressWarnings("unchecked")
     public final BB end(String id)
     {
-        Validate.stateNotNull(myOuter,What.OUTERBLOCK);
-        return myOuter.leaveBlock((BB)this,id);
+        validateIsInner();
+        return myOuter.leaveInner((BB)this,id);
         
+    }
+
+//  ---------------------------------------------------------------------------------------
+//  Fluent API for If[Else]Action: iff(YES), iff("order.category is NEW")
+//  ---------------------------------------------------------------------------------------
+
+    public final BB iff(Condition test)
+    {
+        Validate.notNull(test,What.CRITERIA);
+        IfAction branch = BAL().newIf();
+        branch.setTest(test);
+        return autoblock(new BALFinishers.ForIf(branch));
+    }
+
+    public final BB endif()
+    {
+        return end();
+    }
+
+    public final BB ife(Condition test)
+    {
+        Validate.notNull(test,What.CRITERIA);
+        IfElseAction branch = BAL().newIfElse();
+        branch.setTest(test);
+        return autoblock(new BALFinishers.ForIf(branch));
+    }
+
+    public final BB otherwise()
+    {
+        IfElseAction branch = getFinishers().getUnderConstruction(IfElseAction.class);
+        Validate.stateNotNull(branch,"inner-ifelse");
+        return autoblock(new BALFinishers.ForIfOtherwise(branch));
     }
 
 //  ---------------------------------------------------------------------------------------
@@ -229,65 +273,100 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
         return BALFactory.Standard;
     }
 
+    private static BALFactory newBALFactory(BALFactory fallbackFactory, Flag... flags)
+    {
+        BALFactory factory = fallbackFactory;
+        for (Flag flag:flags) {
+            if (DECLARABLES==flag || NO_DECLARABLES==flag) {
+                factory = fallbackFactory.newFactory();
+                factory.setCheckDeclarables(flag.value());
+                break;
+            }
+        }
+        return factory;
+    }
+
     protected final BALFactory BAL()
     {
         return myFactory;
     }
 
-    private void init(BALFactory newHelper, Sequence newBody)
+    protected final Finishers getFinishers()
     {
-        Validate.neitherNull(newHelper,What.FACTORY,newBody,What.BODY);
+        return myFinisherStack;
+    }
+
+    private void init(BALFactory newHelper, Sequence newBody, Finishers finisherStack, Finisher finisher)
+    {
         myFactory = newHelper;
         myDefinition = newBody;
+        myFinisherStack = finisherStack;
+        myFinisher = finisher;
+        if (finisherStack.isEmpty() && (finisher instanceof RootFinisher)) {
+            finisherStack.push(finisher);
+        }
     }
 
-    protected BALBuilder(BALFactory newHelper, Sequence newBody)
+    protected BALBuilder(BALFactory newHelper, Sequence newBody, Finishers finisherStack, Finisher finisher)//3
     {
-        init(newHelper,newBody);
+        Validate.noneNull(newHelper,What.FACTORY,newBody,What.BODY,finisherStack,"finishers",finisher,What.FINISHER);
+        init(newHelper,newBody,finisherStack,finisher);
     }
 
-    protected BALBuilder(BALFactory newHelper)
+    protected BALBuilder(BALFactory newHelper, Finishers finisherStack, Finisher finisher)//1
     {
-        Validate.notNull(newHelper,What.FACTORY);
-        init(newHelper,newHelper.newSequence());
+        Validate.noneNull(newHelper,What.FACTORY,finisherStack,"finishers",finisher,What.FINISHER);
+        init(newHelper,newHelper.newSequence(),finisherStack,finisher);
     }
 
-    protected BALBuilder(String id, BALFactory newHelper)
+    protected BALBuilder(String id, BALFactory newHelper, Finishers finisherStack, Finisher finisher)//2
     {
         super(id);
-        Validate.notNull(newHelper,What.FACTORY);
-        init(newHelper,newHelper.newSequence(id));
+        Validate.noneNull(newHelper,What.FACTORY,finisherStack,"finishers",finisher,What.FINISHER);
+        init(newHelper,newHelper.newSequence(id),finisherStack,finisher);
     }
 
     protected BALBuilder()
     {
-        this(getDefaultFactory());
+        this(getDefaultFactory(),new Finishers(),new BALFinishers.ForRoot());//1
     }
 
     protected BALBuilder(String id)
     {
-        this(id,getDefaultFactory());
+        this(id,getDefaultFactory(),new Finishers(),new BALFinishers.ForRoot());//2
     }
 
     protected BALBuilder(String id, Flag...flags)
     {
         super(id);
-        init(getDefaultFactory(),newSequence(id,getDefaultFactory(),flags));
+        BALFactory factory = newBALFactory(getDefaultFactory(),flags);
+        init(factory,newSequence(id,factory,flags),new Finishers(),new BALFinishers.ForRoot());
     }
 
-    protected abstract BB newChildBuilder(BALFactory newHelper, Sequence newBody);
+    protected abstract BB newChildBuilder(BALFactory childHelper, Sequence childBody, Finisher childFinisher);
 
-    protected final BB newChildBuilder(Sequence newBody)
+    protected final BB newChildBuilder(Finisher childFinisher)
     {
-        return newChildBuilder(BAL(),newBody);
+        return newChildBuilder(BAL(),BAL().newSequence(),childFinisher);
     }
 
+    private void uninitThis()
+    {
+        myDefinition = null;
+        myOuter = null;
+        myInner = null;
+        myFinisher = null;
+        myFinisherStack = null;
+        myFactory = null;
+    }
 
     private Sequence myDefinition;
     private BB myOuter;
     private BB myInner;
+    private Finishers myFinisherStack;//NB: created by root builder ONLY; otherwise passed via ctor!
+    private Finisher myFinisher;//my finisher for myDefinition
     private BALFactory myFactory;
 }
 
 
-/* end-of-ActivityBuilder.java */
+/* end-of-BALBuilder.java */

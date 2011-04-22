@@ -14,7 +14,6 @@ import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.MDC;
-import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackMapEntrySkeleton.Mode;
 
@@ -38,7 +37,7 @@ import  org.jwaresoftware.mwf4j.assign.GivebackMapEntrySkeleton.Mode;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  **/
 
 public final class SavebackVar<T> implements PutMethod<T>

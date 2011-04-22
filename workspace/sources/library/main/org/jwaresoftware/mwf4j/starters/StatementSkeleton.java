@@ -23,16 +23,26 @@ import  org.jwaresoftware.mwf4j.behaviors.Executable;
 import  org.jwaresoftware.mwf4j.behaviors.Traceable;
 
 /**
- * Starting implementation for control flow statements. Tracks the 
- * statement's next statement attribute and provides template methods
- * for both {@linkplain #reconfigure} and {@linkplain #run(Harness) run()}.
- * The template reconfigure method will ask any supplied override definition
+ * Starting implementation for most MWf4J control flow statements. Tracks
+ * the statement's next statement attribute and provides template methods
+ * for {@linkplain #reconfigure}, {@linkplain #run(Harness) run}, and 
+ * {@linkplain #toString() toString}.
+ * <p/>
+ * The template reconfigure method will ask the supplied override definition
  * to apply itself and then call this statement's {@linkplain #verifyReady} 
- * method. The template run method will log (at 'finest' trace level) entry,
+ * method. Note that the statement will do a lite "reset" of its current
+ * configuration <em>before</em> is calls the definition to apply itself.
+ * This means that factories that build statements that also use definition
+ * overrides, should be careful what attributes they set in the construction
+ * vs the configuration phase. Some settings (like declarable checks) will 
+ * be <em>reset</em> before any (re)configuration to ensure a predictable 
+ * baseline for the statement.
+ * <p/>
+ * The template run method will log (at 'finest' trace level) entry,
  * exit, and abnormal error events. Subclasses must implement the abstract 
  * {@linkplain #runInner(Harness) runInner} method and optionally the
- * {@linkplain #verifyReady()} and {@linkplain #doError doError()} methods. 
- * Note that this skeleton DOES define the {@linkplain #isTerminal()} method
+ * {@linkplain #verifyReady} and {@linkplain #doError doError} methods. 
+ * Note that this skeleton DOES define the {@linkplain #isTerminal} method
  * to return <i>false</i> (the usual for all types of statements except 
  * end ones).
  *
@@ -43,7 +53,8 @@ import  org.jwaresoftware.mwf4j.behaviors.Traceable;
  * @.group    infra,impl
  **/
 
-public abstract class StatementSkeleton implements Executable, ControlFlowStatement
+public abstract class StatementSkeleton extends DeclarableSupportSkeleton 
+    implements Executable, ControlFlowStatement
 {
     /** 
      * Link that permits statement subclasses some control over trace feedback.
@@ -94,11 +105,26 @@ public abstract class StatementSkeleton implements Executable, ControlFlowStatem
 
     public void reconfigure(Fixture environ, ControlFlowStatementDefinition overrides)
     {
+        applyDefinition(overrides,environ);
+        if (isCheckDeclarables()) {
+            doFreeze(environ);
+        }
+        verifyReady();
+    }
+
+
+    protected void applyDefinition(ControlFlowStatementDefinition overrides, Fixture environ)
+    {
         if (overrides!=null) {
+            initCheckDeclarables();
             setWhatId(overrides);
             overrides.configureStatement(this,environ);
         }
-        verifyReady();
+    }
+
+    protected boolean doFreeze(Fixture environ)
+    {
+        return isCheckDeclarables();
     }
 
 

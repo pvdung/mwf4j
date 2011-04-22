@@ -6,7 +6,7 @@
 package org.jwaresoftware.mwf4j;
 
 /**
- * Exception thrown when a critical MWf4J context has been altered and
+ * Exception thrown when the MWf4J MDC has been altered inappropriately and
  * the application needs to either abort and/or restart the current 
  * MWf4J activity (whether that's actually an '{@linkplain Activity}'
  * is undefined). 
@@ -25,13 +25,13 @@ package org.jwaresoftware.mwf4j;
  * @.group    api,infra
  **/
 
-public final class MWf4JUnknownStateException extends MWf4JException
+public final class IllegalMDCStateException extends IllegalStateException
 {
-    public MWf4JUnknownStateException(String message)
+    IllegalMDCStateException(String message)
     {
         super(message);
     }
 }
 
 
-/* end-of-MWf4JUnknownStateException.java */
+/* end-of-IllegalMDCStateException.java */

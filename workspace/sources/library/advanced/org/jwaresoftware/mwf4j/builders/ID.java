@@ -14,7 +14,7 @@ import  org.jwaresoftware.gestalt.Strings;
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,infra
+ * @.group    impl,extras
  **/
 
 public class ID

@@ -15,13 +15,13 @@ import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Diagnostics;
 import  org.jwaresoftware.mwf4j.Harness;
-import  org.jwaresoftware.mwf4j.LongLivedCondition;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.SavebackException;
 import  org.jwaresoftware.mwf4j.assign.SavebackVar;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.behaviors.LongLivedCondition;
 import  org.jwaresoftware.mwf4j.behaviors.Protected;
 import  org.jwaresoftware.mwf4j.harness.NestedIsolatedHarness;
 
@@ -200,12 +200,7 @@ final class BALHelper
     {
         ControlFlowStatement bodyContinuation = bodyInstance;
         if (bodyFactory!=null) {
-            try {
-                MDC.pshHarness(parent,harness);
-                bodyContinuation = bodyFactory.buildStatement(parent,harness.staticView());
-            } finally {
-                MDC.popHarness(parent,harness);
-            }
+            bodyContinuation = bodyFactory.buildStatement(parent,harness.staticView());
         }
         return bodyContinuation;
     }
@@ -214,12 +209,7 @@ final class BALHelper
     {
         ControlFlowStatement bodyContinuation = next;
         if (bodyFactory!=null) {
-            try {
-                MDC.pshHarness(source,harness);
-                bodyContinuation = bodyFactory.buildStatement(next,harness.staticView());
-            } finally {
-                MDC.popHarness(source,harness);
-            }
+            bodyContinuation = bodyFactory.buildStatement(next,harness.staticView());
         }
         return bodyContinuation;
     }

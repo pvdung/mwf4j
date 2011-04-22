@@ -3,7 +3,9 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j;
+package org.jwaresoftware.mwf4j.bal;
+
+import org.jwaresoftware.mwf4j.MWf4JException;
 
 /**
  * Exception generated when there is an issue with MWf4J statement
@@ -17,14 +19,14 @@ package org.jwaresoftware.mwf4j;
  * @.group    api,infra
  **/
 
-public class ControlFlowStatementException extends MWf4JException
+public class PossibleInfiniteLoopException extends MWf4JException
 {
-    public ControlFlowStatementException(String message)
+    public PossibleInfiniteLoopException(String message)
     {
         super(message);
     }
 
-    public ControlFlowStatementException(Throwable cause)
+    public PossibleInfiniteLoopException(Throwable cause)
     {
         super(cause);
     }

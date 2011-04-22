@@ -22,21 +22,21 @@ import  org.jwaresoftware.mwf4j.behaviors.Markable;
  * are an alternative to callables and futures if you prefer to integrate 
  * your service logic directly into the MWf4J framework.
  * <p/>
- * Extension points are actions that return themselves ({@code this}) from 
- * the standard {@code makeStatement} factory method. To create a usable
+ * Extension points are actions that return themselves ("this") from 
+ * the standard {@code buildStatement} factory method. To create a usable
  * extension point, you must implement the inherited abstract method 
  * {@code runInner} with your functionality. The inherited statement
- * {@code configure} method for extension points are a no-op as the action 
+ * {@code reconfigure} method for extension points are a no-op as the action 
  * itself contains all configuration details (nothing is passed on to an 
  * independent statement). 
  * <p/>
  * <b>WARNING:</b> By definition, extension points are <em>single use</em>
  * actions. Because a continuation statement is <em>supplied to</em> an 
- * extension point (via its action {@code makeStatement}), you cannot reuse
- * a single instance across multiple (possible concurrent) calls to {@code makeStatement},
+ * extension point (via its action {@code buildStatement}), you cannot reuse
+ * a single instance across multiple (possible concurrent) calls to {@code buildStatement},
  * as each call alters the internal state of the one extension point. 
  * Therefore, do not use extension points from containers like sequences 
- * or loops that can create action copies for use in forked or other 
+ * or loops that might reasonably expect to use actions in forked or other 
  * multi-threaded flows. To be safe, you should even avoid (re)using a 
  * single extension point multiple times within a single threaded activity.
  *
@@ -45,6 +45,7 @@ import  org.jwaresoftware.mwf4j.behaviors.Markable;
  * @version   @Module_VERSION@
  * @.safety   single (including ALL subclasses)
  * @.group    infra,impl
+ * @see       ActionSkeleton
  **/
 
 public abstract class ExtensionPoint extends StatementSkeleton implements Action, Markable
@@ -90,10 +91,12 @@ public abstract class ExtensionPoint extends StatementSkeleton implements Action
     public final ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ)
     {
         initNextStatement(next);
+        if (isCheckDeclarables()) {
+            doFreeze(environ);
+        }
         verifyReady();
         return this;
     }
-
 
     public final void configureStatement(ControlFlowStatement statement, Fixture environ)//DON'T USE!
     {

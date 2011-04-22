@@ -3,7 +3,9 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j;
+package org.jwaresoftware.mwf4j.behaviors;
+
+import org.jwaresoftware.mwf4j.Action;
 
 /**
  * Marker interface of an entity that relies on an action to implement

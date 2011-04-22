@@ -8,7 +8,6 @@ package org.jwaresoftware.mwf4j.assign;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.MDC;
-import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
@@ -21,7 +20,7 @@ import  org.jwaresoftware.mwf4j.What;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  **/
 
 public final class SavebackMDC<T> implements PutMethod<T>

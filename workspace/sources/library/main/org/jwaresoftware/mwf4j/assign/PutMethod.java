@@ -3,7 +3,7 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j;
+package org.jwaresoftware.mwf4j.assign;
 
 import  java.util.concurrent.Callable;
 
@@ -20,7 +20,7 @@ import  java.util.concurrent.Callable;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    impl,helper
+ * @.group    api,infra,helper
  **/
 
 public interface PutMethod<T>

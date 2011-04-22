@@ -9,11 +9,11 @@ import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
-import  org.jwaresoftware.mwf4j.ControlFlowStatementDependent;
 import  org.jwaresoftware.mwf4j.What;
+import org.jwaresoftware.mwf4j.behaviors.ControlFlowStatementDependent;
 
 /**
- * Starting implementation for statement-dependent implementations.  
+ * Starting implementation for statement-dependent components and utilities.  
  * Tracks the owner statement attribute.
  *
  * @since     JWare/MWf4J 1.0.0

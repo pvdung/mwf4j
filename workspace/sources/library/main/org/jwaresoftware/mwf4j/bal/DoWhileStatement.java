@@ -12,8 +12,8 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
-import  org.jwaresoftware.mwf4j.LongLivedCondition;
 import  org.jwaresoftware.mwf4j.What;
+import org.jwaresoftware.mwf4j.behaviors.LongLivedCondition;
 
 /**
  * Tweak to the standard {@linkplain WhileStatement while statement} that 

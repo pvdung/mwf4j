@@ -10,8 +10,12 @@ import  java.util.concurrent.Future;
 
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
 
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Declarable;
 
 /**
  * Adapter to convert a {@linkplain Future} to a {@linkplain Callable}.
@@ -24,7 +28,8 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    impl,helper
  **/
 
-public final class CalledFuture<T> implements Callable<T>
+public final class CalledFuture<T> extends CloneableSkeleton 
+    implements Callable<T>, Declarable
 {
     public CalledFuture(Future<? extends T> worker)
     {
@@ -42,7 +47,20 @@ public final class CalledFuture<T> implements Callable<T>
         return Strings.valueOf(myImpl);
     }
 
-    private final Future<? extends T> myImpl;
+    public void freeze(Fixture environ)
+    {
+        myImpl = Declarables.freeze(environ,myImpl);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Object clone()
+    {
+        CalledFuture copy = (CalledFuture)super.clone();
+        copy.myImpl = LocalSystem.newCopyOrSame(myImpl);
+        return copy;
+    }
+
+    private Future<? extends T> myImpl;
 }
 
 

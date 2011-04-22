@@ -5,6 +5,7 @@
 
 package org.jwaresoftware.mwf4j.builders;
 
+import  org.jwaresoftware.gestalt.Flags;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.reveal.Named;
 
@@ -15,7 +16,7 @@ import  org.jwaresoftware.gestalt.reveal.Named;
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,infra
+ * @.group    impl,extras,helper
  **/
 
 public class Flag implements Named
@@ -81,6 +82,27 @@ public class Flag implements Named
         return off(true);
     }
 
+    public String toString()
+    {
+        return myName + "=" + myValue;
+    }
+
+    public boolean equals(Object other) 
+    {
+        if (other==this) return true;
+        if (other==null) return false;
+        if (getClass().equals(other.getClass())) {
+            Flag otherflag = (Flag)other;
+            return Flags.equal(myValue,otherflag.myValue) && myName.equals(otherflag.myName);
+        }
+        return false;
+    }
+
+    public int hashCode()
+    {
+        int hc0 = myValue==null ? 17 : myValue.hashCode();
+        return myName.hashCode() + hc0;
+    }
 
     private final String  myName;
     private final Boolean myValue;

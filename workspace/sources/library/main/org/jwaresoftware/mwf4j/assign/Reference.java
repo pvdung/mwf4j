@@ -13,8 +13,10 @@ import  org.jwaresoftware.gestalt.helpers.Pair;
 import  org.jwaresoftware.gestalt.reveal.Identified;
 import  org.jwaresoftware.gestalt.reveal.Named;
 
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
+import  org.jwaresoftware.mwf4j.behaviors.Declarable;
 
 /**
  * Common struct definition of fields used to track a variable's name and 
@@ -26,11 +28,11 @@ import  org.jwaresoftware.mwf4j.behaviors.Resettable;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  **/
 
 public final class Reference extends Pair<String,StoreType> 
-    implements Named, Identified, Resettable, Cloneable, Comparable<Reference>
+    implements Named, Identified, Resettable, Cloneable, Comparable<Reference>, Declarable
 {
     public final static StoreType getDefaultDataType()
     {
@@ -207,6 +209,14 @@ public final class Reference extends Pair<String,StoreType>
     private void initThisFrom(Reference other)
     {
         ini(other.get1(),other.get2());
+    }
+
+    @Override
+    public void freeze(Fixture environ)
+    {
+        if (isDefined()) {
+            super.set1(environ.interpolate(super.get1()));
+        }
     }
 }
 

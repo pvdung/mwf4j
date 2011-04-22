@@ -19,6 +19,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.LocalSystemFixture;
 import  org.jwaresoftware.mwf4j.LocalSystemHarness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
@@ -46,6 +47,7 @@ public final class GivebackTest extends AssignHelperTestSkeleton
     protected Map<String,Object> iniForGetData()
     {
         Map<String,Object> shared= super.iniForGetData();
+        shared.put("label.LCL", "Hola mundo!");
         addComposite("err",shared);
         return shared;
     }
@@ -63,6 +65,20 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         i2.setCause(x);
         bean.addLast(i2);
         datamap.put(itemKey,bean);
+    }
+
+    private Fixture newFIXTURE()
+    {
+        return new LocalSystemFixture(SYSTEM);
+    }
+
+    private static final String LABEL = "${label.${dayofweek}}";
+    private void initForFreeze()
+    {
+        LocalSystem.setProperty(LABEL,"ERROR!");
+        LocalSystem.setProperty("dayofweek","FRI");
+        LocalSystem.setProperty("label.FRI","HelloWorld");
+        SYSTEM.getConfiguration().getOverrides().setProperty("DFLT_MSG","WackaWooWoo");
     }
 
 //  ---------------------------------------------------------------------------------------
@@ -334,6 +350,66 @@ public final class GivebackTest extends AssignHelperTestSkeleton
         } finally {
             LocalSystem.clrUnderlay();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testFreezeDeclaredLiteral_1_0_0()
+    {
+        initForFreeze();
+        GivebackValue<String> out = new GivebackValue<String>(LABEL);
+        assertEquals(out.call(),LABEL,"get("+LABEL+")-before-freeze");
+        GivebackValue<String> cpy = (GivebackValue<String>)out.clone();
+        out.freeze(newFIXTURE());
+        assertEquals(out.call(),"HelloWorld","get("+LABEL+")-after-freeze");
+        assertEquals(cpy.call(),LABEL,"get("+LABEL+")-after-freeze-for-copy");
+    }
+
+    private static final String DFLT_MSG = "${$p:DFLT_MSG?ERROR}";
+
+    @SuppressWarnings("unchecked")
+    public void testFreezeDeclaredVarKeys_1_0_0()
+    {
+        Map<String,Object> vars = iniForGetData();
+        initForFreeze();
+        SYSTEM.getConfiguration().getOverrides().setProperty("label.FRI","label.LCL");
+        GivebackVar<String> out = GivebackVar.fromGet(LABEL,DFLT_MSG,String.class,false);
+        assertEquals(out.call(),DFLT_MSG,"get()-before-freeze");
+        GivebackVar<String> cpy = (GivebackVar)out.clone();
+        out.freeze(newFIXTURE());
+        assertEquals(out.call(),"Hola mundo!","get()-after-freeze");
+        vars.remove("label.LCL");
+        assertEquals(out.call(),"WackaWooWoo","get()-after-freeze [default]");
+        assertEquals(cpy.call(),DFLT_MSG,"get()-before-freeze-for-copy");
+    }
+
+    public void testFreezePropertyNames_1_0_0()
+    {
+        iniForGetProperty();
+        initForFreeze();
+        GivebackProperty out = GivebackProperty.fromHarness("label.${dayofweek}",DFLT_MSG);
+        GivebackProperty cpy = (GivebackProperty)out.clone();
+        assertEquals(cpy.call(),DFLT_MSG,"get()-before-freeze");
+        out.freeze(MDC.currentHarness());
+        assertEquals(out.call(),"HelloWorld","get(label.FRI)-after-freeze");
+        LocalSystem.unsetProperty("label.FRI");
+        assertEquals(out.call(),"WackaWooWoo","get()-after-freeze [default]");
+        assertEquals(cpy.call(),DFLT_MSG,"get()-after-freeze-for-copy");
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testFreezeMapEntryKeys_1_0_0()
+    {
+        Map<String,Object> vars = iniForGetData();
+        initForFreeze();
+        SYSTEM.getConfiguration().getOverrides().setProperty("label.FRI","label.LCL");
+        GivebackMapEntry<String> out = new GivebackMapEntry<String>(vars,LABEL,DFLT_MSG,String.class,false);
+        GivebackMapEntry<String> cpy = (GivebackMapEntry<String>)out.clone();
+        assertEquals(out.call(),DFLT_MSG,"get()-before-freeze");
+        out.freeze(newFIXTURE());
+        assertEquals(out.call(),"Hola mundo!","get()-after-freeze");
+        vars.remove("label.LCL");
+        assertEquals(out.call(),"WackaWooWoo","get()-after-freeze [default]");
+        assertEquals(cpy.call(),DFLT_MSG,"get()-before-freeze-for-copy");
     }
 }
 

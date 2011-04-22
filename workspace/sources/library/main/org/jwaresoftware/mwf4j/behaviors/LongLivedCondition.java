@@ -3,7 +3,9 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j;
+package org.jwaresoftware.mwf4j.behaviors;
+
+import org.jwaresoftware.mwf4j.Condition;
 
 /**
  * Extension of a simple {@linkplain Condition condition} that

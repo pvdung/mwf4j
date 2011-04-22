@@ -8,11 +8,12 @@ package org.jwaresoftware.mwf4j.helpers;
 import  java.util.concurrent.TimeUnit;
 
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Harness;
-import  org.jwaresoftware.mwf4j.LongLivedCondition;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.LongLivedCondition;
 
 /**
  * Condition that checks current system time (millis) to see
@@ -25,7 +26,7 @@ import  org.jwaresoftware.mwf4j.What;
  * @.group    impl,helper
  **/
 
-public class TooLong implements LongLivedCondition
+public class TooLong extends CloneableSkeleton implements LongLivedCondition
 {
     public TooLong(long duration, TimeUnit uom)
     {

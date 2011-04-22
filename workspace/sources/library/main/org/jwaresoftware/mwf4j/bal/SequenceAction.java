@@ -99,6 +99,12 @@ public class SequenceAction extends BALProtectorAction implements Sequence
         return n==0 ? null : myActions.get(n-1);
     }
 
+    public final boolean canFlatten()
+    {
+        int n = size();
+        return (n==1) && Mode.SINGLE.equals(myUseMode);
+    }
+
     public final void setTryEach(boolean flag)
     {
         myTryEachFlag = flag;

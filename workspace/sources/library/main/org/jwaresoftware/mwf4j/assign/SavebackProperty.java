@@ -10,7 +10,6 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.MDC;
-import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackProperty.Source;
 
@@ -25,7 +24,7 @@ import  org.jwaresoftware.mwf4j.assign.GivebackProperty.Source;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  * @see       MDC#currentConfiguration()
  **/
 

@@ -3,10 +3,12 @@
 @JAVA_SOURCE_HEADER@
  **/
 
-package org.jwaresoftware.mwf4j;
+package org.jwaresoftware.mwf4j.behaviors;
+
+import org.jwaresoftware.mwf4j.ControlFlowStatement;
 
 /**
- * Marker interface of an entity that relies on a flow statement to implement
+ * Mixin interface of an entity that relies on a flow statement to implement
  * its responsibilities.
  *
  * @since     JWare/MWf4J 1.0.0

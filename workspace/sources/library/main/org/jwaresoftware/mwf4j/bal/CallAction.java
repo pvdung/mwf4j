@@ -134,7 +134,7 @@ public class CallAction<T> extends SavebackAction<T>
     {
         super.configureStatement(statement,environ);
         AssignmentStatement<T> assignment = (AssignmentStatement<T>)statement;
-        assignment.setGetter(myGetter);
+        assignment.setGetter(copyMember(myGetter));
         assignment.setGetterRequiredReturnType(myPayloadKind);
     }
 

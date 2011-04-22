@@ -6,9 +6,14 @@
 package org.jwaresoftware.mwf4j.assign;
 
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
 
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Declarable;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Giveback implementation that just returns the value of a 
@@ -20,10 +25,10 @@ import  org.jwaresoftware.mwf4j.What;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  **/
 
-public final class GivebackMDC<T> implements Giveback<T>
+public final class GivebackMDC<T> extends CloneableSkeleton implements Giveback<T>, Declarable
 {
     public GivebackMDC(String key, Class<T> ofType)
     {
@@ -49,8 +54,26 @@ public final class GivebackMDC<T> implements Giveback<T>
         }
     }
 
-    private final String myKey;
-    private final T myFallbackValue;
+    @Override
+    public void freeze(Fixture environ)
+    {
+        myFallbackValue = Declarables.freeze(environ,myFallbackValue);
+        myKey = Declarables.freeze(environ,myKey);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone()
+    {
+        GivebackMDC copy = (GivebackMDC)super.clone();
+        copy.myFallbackValue = LocalSystem.newCopyOrSame(myFallbackValue);
+        return copy;
+    }
+
+
+    private String myKey;
+    private T myFallbackValue;
     private final Class<? extends T> myOfType;
 }
 

@@ -25,7 +25,7 @@ public class MWf4J
 
     /**
      * ID list of MWf4J related services. Some of these services are provided
-     * by MWf4J (at different times), but the majority when defined are done so 
+     * by MWf4J (at different times), but the majority, when defined, are done so 
      * by the application as a way to customize the standard MWf4J behavior. For
      * instance, you can supply your own custom executor service for use by activity
      * chains; otherwise MWf4J uses the default JVM thread-pool executor service.
@@ -37,6 +37,7 @@ public class MWf4J
      * @version   @Module_VERSION@
      * @.safety   n/a
      * @.group    impl,infra
+     * @see       org.jwaresoftware.mwf4j.harness.SimpleHarness SimpleHarness
      **/
     public static final class ServiceIds
     {
@@ -59,7 +60,7 @@ public class MWf4J
 
     /**
      * Names of objects that MWf4J stores as MDC variables to pass back to
-     * the application. Often these variables used to present
+     * the application. Often these variables are used to present
      * information to application-supplied hooks (like error handlers).
      *
      * @since     JWare/MWf4J 1.0.0
@@ -94,7 +95,8 @@ public class MWf4J
      * Returns the fallback value of a MWf4J-based loop cursor. Typically
      * used by actions that can create cursors but don't require the 
      * application to define one explicitly. Almost always appended to the
-     * owning entity's id.
+     * owning entity's id to avoid unintended overwrites.
+     * @see MWf4J#getCursorKey(String) getCursorKey(String)
      **/
     public final static String getCursorKey()
     {
@@ -103,13 +105,13 @@ public class MWf4J
 
     /**
      * Generates a cursor key based on the incoming entity id and the 
-     * fallback cursory value for MWf4J.
-     * @param id entity identifier
+     * fallback cursor value for MWf4J.
+     * @param eid entity identifier
      * @return new cursor key (never null or empty)
      **/
-    public final static String getCursorKey(String id)
+    public final static String getCursorKey(String eid)
     {
-        return Strings.trimToEmpty(id)+getCursorKey();
+        return Strings.trimToEmpty(eid)+getCursorKey();
     }
 
 

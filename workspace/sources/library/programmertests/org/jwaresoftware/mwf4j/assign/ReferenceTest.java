@@ -10,7 +10,9 @@ import  java.util.List;
 import  java.util.Map;
 
 import  org.jwaresoftware.gestalt.system.LocalSystem;
+import  org.jwaresoftware.mwf4j.LocalSystemHarness;
 
+import  org.testng.annotations.AfterMethod;
 import  org.testng.annotations.Test;
 import  static org.testng.Assert.*;
 
@@ -27,6 +29,12 @@ import  static org.testng.Assert.*;
 @Test(groups= {"mwf4j","baseline","assignment"})
 public final class ReferenceTest
 {
+
+    @AfterMethod
+    protected void tearDown() throws Exception {
+        LocalSystem.unsetProperties();
+    }
+
     public void testVoidCtorIsUndefined() {
         Reference out = new Reference();
         assertTrue(out.isUndefined(),"isUndefined");
@@ -225,6 +233,22 @@ public final class ReferenceTest
         assertEquals(map.get(new Reference(aaaa.getId(),StoreType.PROPERTY)),"Mars","lookup by 'a'[PROPERTY]");
         assertTrue(map.containsKey(new Reference("e")),"'e'[DATAMAP] item still exists");
         assertNull(map.get(aaaa),"lookup by 'a'[DATAMAP]");
+    }
+
+    public void testWireable_1_0_0()
+    {
+        LocalSystemHarness environ = new LocalSystemHarness();
+        LocalSystem.setProperty("today","WEDNESDAY");
+        Reference r = new Reference("label.${today}");
+        r.freeze(environ);
+        assertEquals(r.getName(),"label.WEDNESDAY","name=label.${today}");
+        r.setName("NoLinks");
+        r.freeze(environ);
+        assertEquals(r.getName(),"NoLinks","name=NoLinks");
+        r = new Reference();
+        assertTrue(r.isUndefined());
+        r.freeze(environ);
+        assertTrue(r.isUndefined());
     }
 }
 

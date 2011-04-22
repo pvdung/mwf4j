@@ -13,9 +13,12 @@ import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.bootstrap.Fixture;
 import  org.jwaresoftware.gestalt.fixture.standard.FromPropertiesFixture;
+import  org.jwaresoftware.gestalt.fixture.standard.FunctionShortcutRegistry;
+import  org.jwaresoftware.gestalt.fixture.standard.LocalSystemFixtureProperties;
 import  org.jwaresoftware.gestalt.helpers.Handle;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 import  org.jwaresoftware.gestalt.system.NowFactory;
+import  org.jwaresoftware.mwf4j.assign.GivebackFunctionShortcut;
 
 import  static org.testng.Assert.*;
 import  org.jwaresoftware.testng.TestLabel;
@@ -47,7 +50,10 @@ public final class TestFixture
             LocalSystem.setProperty("mwf4j.logger.diagnostics",Diagnostics.GROUPING_CORE);
             LocalSystem.setProperty("mwf4j.name","MWf4J_TestBench");
         }
-        return new FromPropertiesFixture();
+        FunctionShortcutRegistry funcuts = new FunctionShortcutRegistry();
+        funcuts.initFuncutHandler("v", GivebackFunctionShortcut.class);
+        funcuts.initFuncutHandler("var", GivebackFunctionShortcut.class);
+        return new FromPropertiesFixture(new LocalSystemFixtureProperties(funcuts));
     }
 
 

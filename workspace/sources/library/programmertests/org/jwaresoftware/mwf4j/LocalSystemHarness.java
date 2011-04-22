@@ -17,6 +17,7 @@ import  org.jwaresoftware.mwf4j.starters.ActionToActivityAdapter;
  * @version   @Module_VERSION@
  * @.safety   multiple
  * @.group    impl,helper,test
+ * @see       LocalSystemFixture
  **/
 
 public final class LocalSystemHarness extends SimpleHarness

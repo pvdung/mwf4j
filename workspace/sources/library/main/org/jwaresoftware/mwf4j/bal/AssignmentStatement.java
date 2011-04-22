@@ -15,11 +15,12 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatementDefinition;
 import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.MDC;
-import  org.jwaresoftware.mwf4j.PutMethod;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.GivebackValue;
+import  org.jwaresoftware.mwf4j.assign.PutMethod;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
 import  org.jwaresoftware.mwf4j.helpers.ClosureException;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Starting point for application statements that actually do
@@ -188,6 +189,16 @@ public class AssignmentStatement<T> extends BALStatement implements Resettable
         super.reconfigure(environ,overrides);
     }
 
+    @Override
+    protected boolean doFreeze(Fixture environ)
+    {
+        boolean kontinue = super.doFreeze(environ);
+        if (kontinue) {
+            myToKey = Declarables.freeze(environ,myToKey);
+            Declarables.freezeAll(environ,myGetter,mySetter);
+        }
+        return kontinue;
+    }
 
     private String myToKey;
     private Object myGetter;//OPTIONAL but MUST override getPayload to ignore!
