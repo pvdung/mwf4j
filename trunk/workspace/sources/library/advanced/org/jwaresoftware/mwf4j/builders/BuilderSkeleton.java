@@ -8,20 +8,29 @@ package org.jwaresoftware.mwf4j.builders;
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
+import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.Entity;
+import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.assign.EvaluateVar;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.StoreType;
+import  org.jwaresoftware.mwf4j.helpers.And;
+import  org.jwaresoftware.mwf4j.helpers.False;
+import  org.jwaresoftware.mwf4j.helpers.Not;
+import  org.jwaresoftware.mwf4j.helpers.Or;
+import  org.jwaresoftware.mwf4j.helpers.True;
 
 /**
  * Starting implementation for the various builders for MWf4J. The main
  * focus is cutting down on the source that must be written to create an
- * output action or activity object.
+ * output action or activity object (typically for testing). Expects
+ * you to rely HEAVILY on the 'import static ....*' functionality.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    impl,infra
+ * @.group    impl,extras,helper
  **/
 
 public abstract class BuilderSkeleton implements Entity
@@ -30,9 +39,11 @@ public abstract class BuilderSkeleton implements Entity
     public static final StoreType PROPERTY= StoreType.PROPERTY;
     public static final StoreType ONTHREAD= StoreType.THREAD;
 
-    public static final Flag PROTECT   = new Flag("haltIfError",true);
-    public static final Flag TRYEACH   = new Flag("tryEach",true);
-    public static final Flag MULTIUSE  = new Flag("multiple",true);
+    public static final Flag PROTECTED = new Flag("haltIfError",true);
+    public static final Flag TRYEACH = new Flag("tryEach",true);
+    public static final Flag MULTIUSE = new Flag("multiple",true);
+    public static final Flag DECLARABLES  = new Flag("declarable",true);
+    public static final Flag NO_DECLARABLES  = new Flag("declarable",false);
 
     public final static class Property extends ID {
         Property(String name) {
@@ -46,6 +57,11 @@ public abstract class BuilderSkeleton implements Entity
         }
     }
 
+    public final static class MDCID extends ID {
+        MDCID(String name) {
+            super(name);
+        }
+    }
 
 
     public final static ID id(String value)
@@ -83,11 +99,69 @@ public abstract class BuilderSkeleton implements Entity
         return new Reference(name,type);
     }
 
+    public final static MDCID mdc(String name)
+    {
+        return new MDCID(name);
+    }
+
     public final static Reference get(String name)
     {
         return ref(name,StoreType.OBJECT);//For now...
     }
 
+
+
+    public final static Condition all(Condition...tests)
+    {
+        Validate.notNull(tests,What.CRITERIA);
+        return new And(tests);
+    }
+
+    public final static Condition any(Condition...tests)
+    {
+        Validate.notNull(tests,What.CRITERIA);
+        return new Or(tests);
+    }
+
+    public final static Condition not(Condition test)
+    {
+        Validate.notNull(test,What.CRITERIA);
+        return new Not(test);
+    }
+
+    public final static Condition notnull(String keyOrExpr)
+    {
+        Validate.notBlank(keyOrExpr,What.CRITERIA);
+        return new EvaluateVar(keyOrExpr,EvaluateVar.NotNull);
+    }
+
+    public final static Condition istrue()
+    {
+        return True.INSTANCE;
+    }
+
+    public final static Condition istrue(String keyOrExpr)
+    {
+        Validate.notBlank(keyOrExpr,What.CRITERIA);
+        return new EvaluateVar(keyOrExpr,EvaluateVar.IsTrue);
+    }
+
+    public final static Condition isfalse()
+    {
+        return False.INSTANCE;
+    }
+
+    public final static Condition isfalse(String keyOrExpr)
+    {
+        Validate.notBlank(keyOrExpr,What.CRITERIA);
+        return new EvaluateVar(keyOrExpr,EvaluateVar.IsFalse);
+    }
+
+    public final static Condition isnull(String keyOrExpr)
+    {
+        Validate.notBlank(keyOrExpr,What.CRITERIA);
+        return new EvaluateVar(keyOrExpr,EvaluateVar.IsNull);
+    }
 
 
 
@@ -107,7 +181,7 @@ public abstract class BuilderSkeleton implements Entity
 
     protected void setId(String id)
     {
-        myId= id;
+        myId= (id==null) ? Strings.EMPTY : id;
     }
 
     protected final void validateNotNull(ID id, String what)

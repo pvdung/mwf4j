@@ -12,9 +12,9 @@ import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.reveal.Named;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
-import  org.jwaresoftware.mwf4j.ControlFlowStatementDependent;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
+import org.jwaresoftware.mwf4j.behaviors.ControlFlowStatementDependent;
 import  org.jwaresoftware.mwf4j.behaviors.Executable;
 
 /**

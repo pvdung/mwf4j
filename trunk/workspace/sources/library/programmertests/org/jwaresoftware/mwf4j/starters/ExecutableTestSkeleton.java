@@ -17,13 +17,15 @@ import  org.testng.annotations.AfterMethod;
 import  org.testng.annotations.BeforeMethod;
 
 import  org.jwaresoftware.gestalt.Empties;
-import  org.jwaresoftware.gestalt.bootstrap.Fixture;
+import  org.jwaresoftware.gestalt.bootstrap.Fixture.Implementation;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Activity;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.LocalSystemFixture;
 import  org.jwaresoftware.mwf4j.LocalSystemHarness;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.MWf4J;
@@ -47,7 +49,7 @@ import  org.jwaresoftware.mwf4j.helpers.VariablesHashMap;
 
 public abstract class ExecutableTestSkeleton
 {
-    protected Fixture.Implementation SYSTEM;
+    protected Implementation SYSTEM;
 
     /** Useful does-nothing-but-inherited-behavior activity implementation. **/
     public static class PlainTask extends ActivitySkeleton {
@@ -65,7 +67,7 @@ public abstract class ExecutableTestSkeleton
 
     /** Slight variant of simple harness that records calls to error handler. **/
     public static class PlainHarness extends SimpleHarness {
-        public PlainHarness(Activity activity, Fixture.Implementation fixture) {
+        public PlainHarness(Activity activity, Implementation fixture) {
             super(activity,fixture);
             //Diagnostics.ForFlow.info("Created "+What.idFor(this)+"/activity="+activity.getId());
         }
@@ -192,6 +194,11 @@ public abstract class ExecutableTestSkeleton
     protected Harness newENVIRON()
     {
         return new LocalSystemHarness();
+    }
+
+    protected Fixture newFIXTURE()
+    {
+        return new LocalSystemFixture(SYSTEM);
     }
 
     protected static final List<String> runTASK(Harness h)

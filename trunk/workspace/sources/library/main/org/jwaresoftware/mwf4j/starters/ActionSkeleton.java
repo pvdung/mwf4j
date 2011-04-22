@@ -21,6 +21,16 @@ import  org.jwaresoftware.mwf4j.behaviors.Markable;
  * and {@linkplain Action#configureStatement configureStatement}. And,
  * optionally, subclasses can fillin {@linkplain #verifyReady} which is
  * called before the new statement's reconfigure method is triggered.
+ * <p/>
+ * <b>Usage note 1:</b> If a factory or builder wants to selectively activate
+ * the "declarables support" option for an action skeleton instance, it needs
+ * to turn on/off the flag <em>BEFORE</em> an other options are set. So for
+ * instance, call {@code setCheckDeclarables} after constructor is called. This 
+ * restriction reduces the amount of "copy" overhead that subclasses need to
+ * worry about; for example, if declarables are not part of your application,
+ * the action subclasses do not need to clone incoming parameter objects to
+ * ensure they're independent copies that can be frozen based on the harness
+ * setup at a later time.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -29,7 +39,7 @@ import  org.jwaresoftware.mwf4j.behaviors.Markable;
  * @.group    infra,impl
  **/
 
-public abstract class ActionSkeleton implements Action, Markable
+public abstract class ActionSkeleton extends DeclarableSupportSkeleton implements Action, Markable
 {
     protected ActionSkeleton()
     {
@@ -56,6 +66,7 @@ public abstract class ActionSkeleton implements Action, Markable
 
     public ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ)
     {
+        maybeConfigure(environ);
         verifyReady();
         ControlFlowStatement statement = createStatement(next,environ);
         Validate.resultNotNull(statement,What.STATEMENT);
@@ -67,13 +78,23 @@ public abstract class ActionSkeleton implements Action, Markable
     /**
      * Factory method to create the specific type of statement this action
      * describes. Any subclass that uses the standard buildStatement template
-     * method <em>must</em> override this method.
+     * method <em>must</em> override this method. The method is not abstract
+     * so that subclasses that do not use the standard buildStatement template
+     * are not forced to implement this method (to do what we do here).
      * @param next continuation (non-null)
-     * @return new statement (non-null)
+     * @param environ fixture from which you retrieve configuration if needed (non-null)
+     * @return new statement -- NEVER null!
+     * @throws UnsupportedOperationException always if called
      **/
     protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
         throw new UnsupportedOperationException("actionSkeleton.createStatement");
+    }
+
+
+    protected void maybeConfigure(Fixture environ)
+    {
+        //nothing by default; extend to extract settings from environ (which => single thread)
     }
 
 

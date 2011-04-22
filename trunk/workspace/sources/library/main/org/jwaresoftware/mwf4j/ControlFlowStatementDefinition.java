@@ -32,7 +32,7 @@ public interface ControlFlowStatementDefinition extends Identified
      * a statement will call this method to coordinate with the definition 
      * and apply those settings when it's most appropriate.
      * @param statement statement to configure (non-null)
-     * @param environ fixture from which definition can retrieve 
+     * @param environ fixture from which definition you retrieve 
      *           configuration if needed (non-null)
      * @throws java.lang.IllegalArgumentException if the definition does not
      *         recognize the incoming statement's type.

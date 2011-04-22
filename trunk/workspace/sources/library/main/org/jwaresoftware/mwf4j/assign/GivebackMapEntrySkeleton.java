@@ -11,8 +11,14 @@ import  org.apache.commons.jexl2.JexlEngine;
 import  org.apache.commons.jexl2.MapContext;
 
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
+
 import  org.jwaresoftware.mwf4j.Diagnostics;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Declarable;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Giveback implementation that returns the value of a map entry. The source 
@@ -28,11 +34,12 @@ import  org.jwaresoftware.mwf4j.What;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   multiple
- * @.group    impl,helper
+ * @.safety   special (multiple after frozen)
+ * @.group    impl,infra,helper
  **/
 
-public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
+public abstract class GivebackMapEntrySkeleton<T> extends CloneableSkeleton 
+    implements Giveback<T>, Declarable
 {
     /** Marker used to differentiate between plain map get and expression evaluation. **/
     public static enum Mode {
@@ -107,7 +114,7 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
 
 
     /** Returns the lookup key or path for the giveback item. 
-     *  Never returns <i>null</i> or blank. **/
+     *  Must never return <i>null</i> or blank. **/
     protected abstract String getSelector();
 
 
@@ -120,6 +127,21 @@ public abstract class GivebackMapEntrySkeleton<T> implements Giveback<T>
         }
     }
 
+    @Override
+    public void freeze(Fixture environ)
+    {
+        myFallbackValue = Declarables.freeze(environ,myFallbackValue);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone()
+    {
+        GivebackMapEntrySkeleton copy = (GivebackMapEntrySkeleton)super.clone();
+        copy.myFallbackValue = LocalSystem.newCopyOrSame(myFallbackValue);
+        return copy;
+    }
 
     private T myFallbackValue;
     private final Class<? extends T> myOfType;

@@ -7,7 +7,6 @@ package org.jwaresoftware.mwf4j.bal;
 
 import  org.jwaresoftware.mwf4j.Adjustment;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
-import  org.jwaresoftware.mwf4j.ControlFlowStatementException;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.starters.ExtensionPoint;
 
@@ -44,7 +43,7 @@ public final class EndAdjustment extends ExtensionPoint implements Adjustment
     protected ControlFlowStatement runInner(Harness harness)
     {
         if (myLoops++ > BAL.MAX_END_LOOPS)
-            throw new ControlFlowStatementException
+            throw new PossibleInfiniteLoopException
                 ("Potential infinite loop calling END adjustment '"+getWhatId()+"'");
         return this;
     }

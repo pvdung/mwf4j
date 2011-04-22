@@ -10,8 +10,10 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Statement that will run a user-supplied test and continue with one
@@ -74,6 +76,16 @@ public class BranchStatement extends BALStatement
         Validate.stateNotNull(myTest, What.CRITERIA);
         Validate.stateIsTrue(myThen!=null && myElse!=null, 
             "both true and false continuations have been defined");
+    }
+
+    @Override
+    protected boolean doFreeze(Fixture environ)
+    {
+        boolean kontinue = super.doFreeze(environ);
+        if (kontinue) {
+            Declarables.freeze(environ,myTest);
+        }
+        return kontinue;
     }
 
     private Condition myTest;

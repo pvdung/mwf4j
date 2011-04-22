@@ -6,10 +6,14 @@
 package org.jwaresoftware.mwf4j.assign;
 
 import  org.jwaresoftware.gestalt.Validate;
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
 import  org.jwaresoftware.gestalt.system.LocalSystem;
 
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Declarable;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Giveback that returns the value of a predefined harness or (local)
@@ -25,12 +29,12 @@ import  org.jwaresoftware.mwf4j.What;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   multiple
- * @.group    impl,helper
+ * @.safety   special (multiple after frozen)
+ * @.group    impl,infra,helper
  * @see       MDC#currentConfiguration()
  **/
 
-public final class GivebackProperty implements Giveback<String>
+public final class GivebackProperty extends CloneableSkeleton implements Giveback<String>, Declarable
 {
     /** Marker used to differentiate between harness and system based properties. **/
     public static enum Source {
@@ -85,8 +89,15 @@ public final class GivebackProperty implements Giveback<String>
         return value;
     }
 
-    private final String myProperty;
-    private final String myFallbackValue;
+    public void freeze(Fixture environ)
+    {
+        myProperty = Declarables.freeze(environ,myProperty);
+        myFallbackValue = Declarables.freeze(environ,myFallbackValue);
+    }
+
+
+    private String myProperty;
+    private String myFallbackValue;
     private final boolean myFromSystemFlag;
 }
 

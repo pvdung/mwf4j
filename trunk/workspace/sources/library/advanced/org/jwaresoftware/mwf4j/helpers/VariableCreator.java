@@ -7,7 +7,10 @@ package org.jwaresoftware.mwf4j.helpers;
 
 import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.gestalt.messages.catalog.OJGMessages;
+
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.behaviors.Declarable;
 import  org.jwaresoftware.mwf4j.starters.CalledClosureSkeleton;
 
 /**
@@ -25,7 +28,7 @@ import  org.jwaresoftware.mwf4j.starters.CalledClosureSkeleton;
  * @.group    impl,helper
  **/
 
-public class VariableCreator<T> extends CalledClosureSkeleton<T>
+public class VariableCreator<T> extends CalledClosureSkeleton<T> implements Declarable
 {
     public VariableCreator(String key, Class<T> ofType)
     {
@@ -63,7 +66,21 @@ public class VariableCreator<T> extends CalledClosureSkeleton<T>
         }
     }
 
-    private final String varKey;
+    public void freeze(Fixture environ)
+    {
+        varKey = Declarables.freeze(environ,varKey);
+    }
+
+    public Object clone()
+    {
+        try {
+            return super.clone();
+        } catch(CloneNotSupportedException clnX) {
+            throw new InternalError();
+        }
+    }
+
+    private String varKey;
     private final Class<T> varClass;
 }
 

@@ -5,7 +5,6 @@
 
 package org.jwaresoftware.mwf4j.assign;
 
-import  org.jwaresoftware.mwf4j.PutMethod;
 
 /**
  * Put method that does nothing on put. Basically lets you "void"
@@ -16,7 +15,7 @@ import  org.jwaresoftware.mwf4j.PutMethod;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  **/
 
 public final class SavebackDiscard<T> implements PutMethod<T>

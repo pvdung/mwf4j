@@ -11,14 +11,14 @@ package org.jwaresoftware.mwf4j;
  * Actions can be atomic (indivisible) or composite (sub-actions); synchronous
  * or asynchrous. Technically, actions are not "the thing that gets executed"
  * when an activity is run; instead, every action functions as a 
- * {@linkplain #makeStatement builder} of the runnable {@linkplain
+ * {@linkplain #buildStatement builder} of the runnable {@linkplain
  * ControlFlowStatement control statement(s)} that actually do the work 
- * when the action is "run" as part of an activity by a {@linkplain Harness
+ * when the action is run as part of an activity by a {@linkplain Harness
  * harness}. You use actions as a way to <em>define the piece of work  
  * and to create a harness-executable representation of that work</em>.
  * <p/>
  * A single action instance can be "re-run" within its lifetime if its
- * {@linkplain #makeStatement statement factory method} is triggered 
+ * {@linkplain #buildStatement statement factory method} is triggered 
  * multiple times. Whether you can reconfigure an action to a different
  * definition between calls to run is implementation defined. Therefore, 
  * to be safe, your actions should transfer <em>ALL</em> state that its
@@ -48,14 +48,14 @@ public interface Action extends Entity, ControlFlowStatementDefinition
      * Factory method to create a new control flow statement that implements
      * this action's current definition. This factory method must ensure 
      * that the returned statement is ready for execution immediately as in:
-     * {@code myAction.makeStatement(END).run(myHarness)}. On 
+     * {@code myAction.buildStatement(END).run(myHarness)}. On 
      * return, this action is free to change its definition (or have it
      * changed for it) <em>without impacting</em> the returned statement.
      * @param next flow statement that comes <em>after</em> action (non-null)
-     * @param environ fixture from which can retrieve configuration if needed (non-null)
+     * @param environ fixture from which you retrieve configuration if needed (non-null)
      * @return independent control flow statement that implements this 
      *         action's current definition.
-     * @see #configure
+     * @see #configureStatement
      **/
     ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture environ);
 
@@ -68,9 +68,9 @@ public interface Action extends Entity, ControlFlowStatementDefinition
      * a statement to "prepare for (re)execution". Because an action can 
      * contain the application-supplied settings for a statement's attributes,
      * this method lets the statement coordinate with the action to apply 
-     * those settings when best appropriate.
+     * those settings when it's most appropriate.
      * @param statement action-generated statement to configure (non-null)
-     * @param environ fixture from which can retrieve configuration if needed (non-null)
+     * @param environ fixture from which you retrieve configuration if needed (non-null)
      * @throws java.lang.IllegalArgumentException if the action does not
      *         recognize the incoming statement's type.
      **/

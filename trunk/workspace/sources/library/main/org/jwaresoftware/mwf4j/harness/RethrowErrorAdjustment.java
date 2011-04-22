@@ -9,7 +9,6 @@ import  org.jwaresoftware.mwf4j.Adjustment;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
-import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
 
 /**
  * Adjustment that signals an exception against a running harness. Useful to 
@@ -24,12 +23,16 @@ import  org.jwaresoftware.mwf4j.starters.ActionSkeleton;
  * @see       RethrowStatement
  **/
 
-public final class RethrowErrorAdjustment extends ActionSkeleton implements Adjustment
+public final class RethrowErrorAdjustment implements Adjustment
 {
     public RethrowErrorAdjustment(RuntimeException issue, Harness harness)
     {
-        super("rethrow");
         myRethrowStatement = new RethrowStatement(issue,harness);
+    }
+
+    public String getId()
+    {
+        return "rethrow";
     }
 
     public boolean isTerminal() 

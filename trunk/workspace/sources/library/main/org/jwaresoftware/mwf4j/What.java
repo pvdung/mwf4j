@@ -44,8 +44,9 @@ public class What extends org.jwaresoftware.gestalt.What
     public final static String OWNER        = "owner";
     public final static String ENABLED      = "enabled";
 
-    public final static String INNERBLOCK   = "inner-block";
-    public final static String OUTERBLOCK   = "outer-block";
+    public final static String INNERBLOCK   = "inner-builder";
+    public final static String OUTERBLOCK   = "outer-builder";
+    public final static String FINISHER     = "finisher";
 
     public static final String getNonBlankId(final Identified object)
     {

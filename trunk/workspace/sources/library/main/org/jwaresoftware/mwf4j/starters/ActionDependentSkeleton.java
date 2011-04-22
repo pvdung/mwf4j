@@ -8,8 +8,8 @@ package org.jwaresoftware.mwf4j.starters;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.Action;
-import  org.jwaresoftware.mwf4j.ActionDependent;
 import  org.jwaresoftware.mwf4j.What;
+import org.jwaresoftware.mwf4j.behaviors.ActionDependent;
 
 /**
  * Starting implementation for action-dependent implementations. Tracks the

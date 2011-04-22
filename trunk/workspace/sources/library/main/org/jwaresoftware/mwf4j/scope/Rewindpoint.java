@@ -10,8 +10,8 @@ import  org.jwaresoftware.gestalt.reveal.Describable;
 import  org.jwaresoftware.gestalt.reveal.Named;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
-import  org.jwaresoftware.mwf4j.ControlFlowStatementDependent;
 import  org.jwaresoftware.mwf4j.Entity;
+import org.jwaresoftware.mwf4j.behaviors.ControlFlowStatementDependent;
 
 /**
  * Lightweight reference for a {@linkplain RewindCursor rewind cursor}. Used to

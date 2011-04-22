@@ -17,6 +17,7 @@ import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Statement that keeps returning a copy of a prescribed body statement
@@ -169,6 +170,15 @@ public class WhileStatement extends BALStatement implements CallBounded, Unwinda
         return super.addToString(sb).append("|loopnum=").append(myLoopCount);
     }
 
+    @Override
+    protected boolean doFreeze(Fixture environ)
+    {
+        boolean kontinue = super.doFreeze(environ);
+        if (kontinue) {
+            Declarables.freezeAll(environ,myCursor,myTest,myBody);
+        }
+        return kontinue;
+    }
 
     private Condition myTest;
     private ControlFlowStatement myBody;

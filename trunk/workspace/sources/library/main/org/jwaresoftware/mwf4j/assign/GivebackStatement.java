@@ -15,7 +15,7 @@ import  org.jwaresoftware.mwf4j.What;
 
 /**
  * Giveback that returns a precanned statement as-is. Can double as an 
- * action adapter whose {@linkplain makeStatement} factory method also 
+ * action adapter whose {@linkplain buildStatement} factory method also 
  * returns the prebuilt statement as-is. Note that the <em>same
  * un-reset statement</em> instance is returned for every 'call' and 
  * every 'makeStatement'!
@@ -24,7 +24,7 @@ import  org.jwaresoftware.mwf4j.What;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  **/
 
 public final class GivebackStatement implements Giveback<ControlFlowStatement>, Action
@@ -41,7 +41,7 @@ public final class GivebackStatement implements Giveback<ControlFlowStatement>, 
         myId = Strings.trimToEmpty(id);
     }
 
-    public ControlFlowStatement buildStatement(ControlFlowStatement next, Fixture ignored)
+    public ControlFlowStatement buildStatement(ControlFlowStatement ignored1, Fixture ignored2)
     {
         return myStatement;
     }
@@ -53,7 +53,7 @@ public final class GivebackStatement implements Giveback<ControlFlowStatement>, 
 
     public ControlFlowStatement call()
     {
-        return buildStatement(ControlFlowStatement.nullINSTANCE,null);
+        return buildStatement(null,null);
     }
 
     public String getId()

@@ -34,10 +34,15 @@ public abstract class ClosureSkeleton
         super();
     }
 
+    protected void prepare(Harness runHarness)
+    {
+        this.harness = runHarness;
+        this.vars = runHarness.getVariables();
+    }
+
     protected void prepare()
     {
-        this.harness = MDC.currentHarness();
-        this.vars = harness.getVariables();
+        prepare(MDC.currentHarness());
     }
 
     protected void cleanup()

@@ -8,7 +8,7 @@ package org.jwaresoftware.mwf4j.scope;
 import  org.jwaresoftware.gestalt.Strings;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
-import  org.jwaresoftware.mwf4j.ControlFlowStatementDependent;
+import org.jwaresoftware.mwf4j.behaviors.ControlFlowStatementDependent;
 
 /**
  * Per-thread unique key for a scope-generating statement. Used to determine

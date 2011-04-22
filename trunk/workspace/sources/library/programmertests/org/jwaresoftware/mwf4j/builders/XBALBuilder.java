@@ -33,22 +33,21 @@ public final class XBALBuilder extends BALBuilder<XBALBuilder>
         return new XBALBuilder(id);
     }
 
+    public static final XBALBuilder action(Flag...flags)
+    {
+        return new XBALBuilder(null,flags);
+    }
+
     public static final XBALBuilder action(String id, Flag...flags)
     {
         return new XBALBuilder(id,flags);
     }
 
+ 
+
     public XBALBuilder touch(String id)
     {
         return run(new TouchAction(id));
-    }
-
-    public XBALBuilder block(String id)
-    {
-        validateNotBuildingBlock();
-        XBALBuilder block = enterBlock(newChildBuilder(BAL().newSequence(id)));
-        block.setId(id);
-        return block;
     }
 
     public XBALBuilder error(String id)
@@ -61,30 +60,32 @@ public final class XBALBuilder extends BALBuilder<XBALBuilder>
         return run(new EpicFail());
     }
 
-    XBALBuilder(BALFactory newHelper, Sequence newBody) //for block(...)
+
+
+    XBALBuilder(BALFactory newHelper,Sequence newBody,Finishers finisherStack,Finisher newFinisher)
     {
-        super(newHelper,newBody);
+        super(newHelper,newBody,finisherStack,newFinisher);
     }
 
-    XBALBuilder(String id) //for action()
+    XBALBuilder(String id) //for action(id)
     {
         super(id);
     }
 
-    XBALBuilder() //for action(id)
+    XBALBuilder() //for action()
     {
         super();
     }
 
-    XBALBuilder(String id, Flag...flags)
+    XBALBuilder(String id, Flag...flags) //for action(flags)|action(id,flags)
     {
         super(id,flags);
         
     }
 
-    protected XBALBuilder newChildBuilder(BALFactory newHelper, Sequence newBody)
+    protected XBALBuilder newChildBuilder(BALFactory childHelper, Sequence childBody, Finisher childFinisher)
     {
-        return new XBALBuilder(newHelper,newBody);
+        return new XBALBuilder(childHelper,childBody,getFinishers(),childFinisher);
     }
 }
 

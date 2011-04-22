@@ -51,6 +51,7 @@ public class IfElseAction extends IfAction
     {
         Validate.isA(statement,BranchStatement.class,What.STATEMENT);
         BranchStatement decision = (BranchStatement)statement;
+        decision.setCheckDeclarables(isCheckDeclarables());
         Action kontinue = new GivebackStatement(decision.next());
         if (myThenBranch!=null) {
             decision.setTrue(myThenBranch);

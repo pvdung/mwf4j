@@ -13,6 +13,7 @@ import  org.jwaresoftware.gestalt.system.LocalSystem;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Harness;
+import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.TestFixture;
 import  org.jwaresoftware.mwf4j.Variables;
 import  org.jwaresoftware.mwf4j.starters.ExecutableTestSkeleton;
@@ -33,6 +34,10 @@ import  static org.jwaresoftware.mwf4j.builders.XBALBuilder.*;
 @Test(groups= {"mwf4j","builders","advanced"})
 public final class XBALBuilderTest extends ExecutableTestSkeleton
 {
+// ---------------------------------------------------------------------------------------------------------
+// ---------------------------------------- [ Misc Setup Methods ] -----------------------------------------
+// ---------------------------------------------------------------------------------------------------------
+
     @BeforeMethod
     protected void setUp() throws Exception {
         super.setUp();
@@ -48,6 +53,20 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
     {
         return h.getConfiguration().getString(name);
     }
+
+    private void setString(Harness h, String name, String value)
+    {
+        h.getConfiguration().getOverrides().setString(name, value);
+    }
+
+    private void setProperty(String name, String value)
+    {
+        LocalSystem.setProperty(name,value);
+    }
+
+// ---------------------------------------------------------------------------------------------------------
+// ------------------------------------------- [ The Test Cases ] ------------------------------------------
+// ---------------------------------------------------------------------------------------------------------
 
     @Test(groups={"builders-baseline"})
     public void testAnonymousEmptyBuilder_1_0_0()
@@ -87,7 +106,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         Action out = action()
                       .set("a","Hello")
                       .set("t",true)
-                      .set("f", false)
+                      .set("f",false)
                       .set("i",10)
                       .set("L",101L)
                       .set("pi",Math.PI)
@@ -95,9 +114,9 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                       .set(var("id"),me)
                       .set(variable("ID"),me)
                       .build();
-        
+
         runTASK(out);
-        
+
         assertSame(vars.get("I"),this,"var(I)");
         assertEquals(vars.get("a",String.class),"Hello","var(a)");
         assertSame(vars.get("t",Boolean.class),Boolean.TRUE,"var(t)");
@@ -127,12 +146,38 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         assertSame(vars.get("oid.copy2"),oid,"oid.copy2 (ref)");
     }
 
+    @Test(dependsOnMethods={"testSimpleVarAssign_1_0_0"})
+    public void testDeclaredVarAssign_1_0_0()
+    {
+        Variables vars = iniDATAMAP();
+        Action out = action("test",DECLARABLES)
+                       .set("rev","${java.version}")
+                       .set("buildnum","0011")
+                       .set("rev-dist","${$system:java.version}")
+                       .set("rev.label","V_${$var:rev?ERROR}.build${$v:buildnum}")
+                       .build();
+
+        Harness h = newHARNESS(out);
+        setString(h,"java.version","123.456");
+
+        runTASK(h);
+
+        Object rev = vars.get("rev");
+        LocalSystem.show("rev=",rev);
+        assertEquals(rev,"123.456","rev");
+        assertEquals(vars.get("rev.label"),"V_123.456.build0011","rev.label");
+        assertEquals(vars.get("rev-dist"),System.getProperty("java.version"),"rev-dist");
+    }
+
+    @Test(groups={"builders-baseline"})
     public void testSimplePropertyAssign_1_0_0()
     {
+        assertNull(LocalSystem.getProperty("DEBUG"));
         Action out = action()
                       .set(property("DEBUG"),true)
                       .set(property("name"),"Harry")
                       .set(env("maxwait"),13)
+                      .set(mdc("SESSIONID"),1010L)
                       .build();
 
         Harness h = newHARNESS(out);
@@ -141,6 +186,59 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         assertEquals(getString(h,"DEBUG"),"true","p(DEBUG)");
         assertEquals(getString(h,"name"),"Harry","p(name)");
         assertEquals(getString(h,"maxwait"),"13","p(maxwait)");
+        assertEquals(MDC.get("SESSIONID",Long.class),Long.valueOf(1010L),"SESSIONID");
+        assertNull(LocalSystem.getProperty("DEBUG"),"LocalSystem('DEBUG')");
+    }
+
+    @Test(dependsOnMethods={"testSimplePropertyAssign_1_0_0"})
+    public void testDeclaredPropertyAssign_1_0_0()
+    {
+        Variables vars = iniDATAMAP();
+        Action out = action("test",DECLARABLES)
+                        .set("rev","${java.version}")
+                        .set("wait0","${WAIT}")
+                        .set("debug","${debug.flag}")
+                        .set("waits","${$p:timeout.ms?0s}")
+                        .build();
+        Harness harness = newHARNESS(out);
+        setProperty("DEBUG","ERROR");
+        setProperty("TIMEOUT","4s");
+        setProperty("WAIT","${TIMEOUT}");
+        setProperty("debug.flag","ERROR");
+        setString(harness,"DEBUG","on");
+        setString(harness,"debug.flag","${DEBUG}");
+        setString(harness,"timeout.ms","${TIMEOUT}");
+        runTASK(harness);
+        Object rev = vars.get("rev");
+        LocalSystem.show("rev=",rev);
+        assertEquals(rev,System.getProperty("java.version"),"rev");
+        assertEquals(vars.get("wait0"),"4s","wait0");
+        assertEquals(vars.get("debug"),"on","debug");
+        assertEquals(vars.get("waits"),"4s","waits");
+    }
+
+    public void testTurnOnOffDeclarableSupportAsYouGo_1_0_0()
+    {
+        final String Xpected = LocalSystem.getProperty("java.version");
+        assertNotNull(Xpected);
+        Variables vars = iniDATAMAP();
+        Action out = action()
+                        .set("rev0","${java.version}")
+                        .block(DECLARABLES)
+                          .set("rev1","${java.version}")
+                          .end()
+                        .block(NO_DECLARABLES)
+                          .set("rev2","${java.version}")
+                          .end()
+                        .block(DECLARABLES)
+                          .set("rev3","${java.version}")
+                          .end()
+                        .build();
+        runTASK(out);
+        assertEquals(vars.get("rev0"),"${java.version}","rev0{unresolved}");
+        assertEquals(vars.get("rev1"),Xpected,"rev1{resolved}");
+        assertEquals(vars.get("rev2"),"${java.version}","rev2{unresolved}");
+        assertEquals(vars.get("rev3"),Xpected,"rev3{resolved}");
     }
 
     /**
@@ -159,6 +257,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
      *    f
      * </pre>
      */
+    @Test(groups={"builders-baseline"},dependsOnMethods={"testSimpleVarAssign_1_0_0"})
     public void testSimpleNestedBlocksA_1_0_0()
     {
         Variables vars = iniDATAMAP();
@@ -205,6 +304,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
      *   ]
      * </pre>
      */
+    @Test(groups={"builders-baseline"},dependsOnMethods={"testSimpleVarAssign_1_0_0"})
     public void testSimpleNestedBlocksB_1_0_0()
     {
         Action out = action("BLevel")
@@ -262,9 +362,10 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
      *   ]
      * </pre>
      */
+    @Test(dependsOnMethods={"testSimpleNestedBlocksA_1_0_0"})
     public void testSimpleNestedBlocksC_1_0_0()
     {
-        Action out = action("3Level")
+        Action out = action("CLevel")
                        .block("i")
                          .touch("i.1")
                          .touch("i.2")
@@ -301,7 +402,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
 
     public void testPrototypeFlag_1_0_0()
     {
-        Action out = action("xyz",MULTIUSE).touch("hi").build();
+        Action out = action(MULTIUSE).touch("hi").build();
 
         runTASK(out);
         assertEquals(getStatementCount(),1,"touch count @1");
@@ -314,7 +415,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
 
     public void testTryEach_1_0_0()
     {
-        Action out = action("a",TRYEACH,PROTECT)
+        Action out = action(TRYEACH,PROTECTED)
                       .error("argh")
                       .touch("after-argh@1")
                       .build();
@@ -324,7 +425,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
 
         iniStatementCount();
         out = action("b")
-                .block(PROTECT,TRYEACH)
+                .block(PROTECTED,TRYEACH)
                   .error("argh")
                   .touch("after-argh@2")
                   .end()
@@ -336,6 +437,129 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         assertTrue(wasPerformed("cleanup"),"cleanup called");
     }
 
+    public void testSimpleFlatIff_1_0_0()
+    {
+        Action out = action()
+                         .iff(any(istrue("foo"),notnull("foo")))
+                            .error("ARGH!")
+                            .endif()
+                         .set("foo")
+                         .set("LEN",1000)
+                         .iff(all(notnull("LEN"),istrue("foo"),istrue("LEN==1000")))
+                             .touch("OKEY!")
+                             .endif()
+                         .build();
+        runTASK(out);
+        assertEquals(getStatementCount(),1,"touch count");
+        assertTrue(wasPerformed("OKEY!"),"istrue worked");
+    }
+
+    @Test(dependsOnMethods={"testSimpleFlatIff_1_0_0"})
+    public void testSimpleNestedIff_1_0_0()
+    {
+        Action out = action()
+                        .iff(isnull("time"))
+                            .set("time",LocalSystem.currentTimeNanos())
+                            .touch("a")
+                            .iff(notnull("time"))
+                                .touch("b")
+                                .nil("time")
+                                .iff(not(not(isnull("time"))))
+                                  .touch("c")
+                                .endif()
+                            .endif()
+                        .end()//NB:make sure end() same as endif()
+                        .build();
+        runTASK(out);
+        assertEquals(getStatementCount(),3,"touch count");
+        assertTrue(werePerformedInOrder("a|b|c"),"performed a|b|c");
+    }
+
+    public void testSimpleFlatIfElse_1_0_0()
+    {
+        Variables vars = iniDATAMAP();
+        Action out = action()
+                        .set("flag")
+                        .ife(istrue("flag"))
+                            .set("iah",10)
+                            .touch("OKEY!")
+                            .otherwise()
+                              .error("BLEECH")
+                              .endif()
+                        .build();
+        runTASK(out);
+        assertTrue(wasPerformed("OKEY!"),"if block run");
+        assertEquals(vars.get("iah",Number.class),Integer.valueOf(10),"iah");
+    }
+
+    @Test(dependsOnMethods={"testSimpleFlatIfElse_1_0_0"})
+    public void testSimpleNestedIfElse_1_0_0()
+    {
+        Variables vars = iniDATAMAP();
+        Action out = action("main")
+                        .set("started")
+                        .set("n",0)
+                        .ife(isfalse("started"))
+                            .never()
+                        .otherwise()
+                            .set("n",get("n+1"))
+                            .block("x")
+                                .ife(istrue("n==1"))
+                                    .set("pi",3.14)
+                                    .touch("OKEY!")
+                                    .otherwise()
+                                        .never()
+                                    .endif()
+                                .touch("OKEY!")
+                                .end("x")
+                            .touch("OKEY!")
+                            .end()//NB:make sure end() same as endif()
+                        .build();
+        runTASK(out);
+        assertTrue(wasPerformed("OKEY!",3),"touched('OKEY!')");
+        assertNotNull(vars.get("pi",Double.class),"pi");
+    }
+
+    @Test(expectedExceptions={IllegalStateException.class})
+    public void testFailIfEndWithoutInner_1_0_0()
+    {
+        action()
+            .set("about-to-barf")
+            .end(); //Nothing to end...
+        fail("Should not get past unmatched 'end()'");
+    }
+
+    @Test(expectedExceptions={IllegalStateException.class})
+    public void testFailIfEndNotTopmostInner_1_0_0()
+    {
+        try {
+            action()
+                .block("a")
+                  .set("about-to-barf")
+                  .end("b"); //Wrong block named to end!
+            fail("Should not get past mismatched 'end()'");
+        } catch(IllegalStateException Xpected) {
+            String error = Xpected.getMessage();
+            LocalSystem.showerror("Barfage => ", Xpected);
+            assertTrue(error.indexOf("'innerblock.id is b' should be true")>0,"Xpected error");
+            throw Xpected;
+        }
+    }
+
+    @Test(expectedExceptions={IllegalStateException.class})
+    public void testFailBuildUnendedIff_1_0_0()
+    {
+        try {
+            action("x")
+                .iff(istrue())
+                    .never()
+                .build();//Should not work due to dangling inner-block
+            fail("Should not be able to build malformed builder");
+        } catch(IllegalStateException Xpected) {
+            LocalSystem.showerror("Barfage => ", Xpected);
+            throw Xpected;
+        }
+    }
 }
 
 

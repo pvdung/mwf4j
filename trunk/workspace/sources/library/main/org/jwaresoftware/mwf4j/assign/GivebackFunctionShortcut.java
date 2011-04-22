@@ -20,7 +20,7 @@ import  org.jwaresoftware.gestalt.system.GetPropertyMethod;
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    impl,extras,helper
  **/
 
 public final class GivebackFunctionShortcut extends FunctionShortcuts.PropertyFetcher

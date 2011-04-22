@@ -59,7 +59,7 @@ public class IfAction extends ActionSkeleton
     protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)
     {
         BranchStatement statement= new BranchStatement(next);
-        statement.setTest(myTest);
+        statement.setTest(copyMember(myTest));//NB: done here on purpose!
         return statement;
     }
 
@@ -67,6 +67,7 @@ public class IfAction extends ActionSkeleton
     {
         Validate.isTrue(statement instanceof BranchStatement,"statement kindof branch");
         BranchStatement decision = (BranchStatement)statement;
+        decision.setCheckDeclarables(isCheckDeclarables());
         Action kontinue = new GivebackStatement(decision.next());
         decision.setFalse(kontinue);
         if (myThenBranch!=null) {

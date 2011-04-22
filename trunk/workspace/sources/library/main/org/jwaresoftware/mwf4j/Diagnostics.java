@@ -32,6 +32,9 @@ public class Diagnostics extends org.jwaresoftware.gestalt.Diagnostics
     public static final String GROUPING_BAL = GROUPING_FLOW+".BAL";
     public static final XLogger ForBAL = XLoggerFactory.getXLogger(GROUPING_BAL);
 
+    public static final String GROUPING_BUILDERS = GROUPING_CORE+".Builders";
+    public static final XLogger ForBuilders = XLoggerFactory.getXLogger(GROUPING_BUILDERS);
+
     protected Diagnostics() {}
 }
 

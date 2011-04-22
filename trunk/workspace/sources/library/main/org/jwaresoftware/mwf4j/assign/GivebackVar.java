@@ -10,8 +10,10 @@ import  java.util.Map;
 import  org.jwaresoftware.gestalt.Empties;
 import  org.jwaresoftware.gestalt.Validate;
 
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.MDC;
 import  org.jwaresoftware.mwf4j.What;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Giveback that returns the value of a predefined harness variable. Can support
@@ -27,12 +29,12 @@ import  org.jwaresoftware.mwf4j.What;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   multiple
- * @.group    impl,helper
+ * @.safety   special (multiple after frozen)
+ * @.group    impl,infra,helper
  * @see       MDC#currentVariablesOrNull()
  **/
 
-public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
+public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T> 
 {
 //  ---------------------------------------------------------------------------------------
 //  Easy factory methods named for intended lookup (easier than big ctor):
@@ -126,8 +128,13 @@ public final class GivebackVar<T> extends GivebackMapEntrySkeleton<T>
         return mdc;
     }
 
+    public void freeze(Fixture environ)
+    {
+        super.freeze(environ);
+        myKeyOrExpr = Declarables.freeze(environ,myKeyOrExpr);
+    }
 
-    private final String myKeyOrExpr;
+    private String myKeyOrExpr;
 }
 
 

@@ -5,6 +5,8 @@
 
 package org.jwaresoftware.mwf4j.helpers;
 
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
+
 import  org.jwaresoftware.mwf4j.Condition;
 import  org.jwaresoftware.mwf4j.Harness;
 
@@ -18,7 +20,7 @@ import  org.jwaresoftware.mwf4j.Harness;
  * @.group    impl,helper
  **/
 
-public final class False implements Condition
+public final class False extends CloneableSkeleton implements Condition
 {
     public final static Condition INSTANCE= new False();
 

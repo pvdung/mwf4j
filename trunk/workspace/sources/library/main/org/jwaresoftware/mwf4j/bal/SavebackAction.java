@@ -10,7 +10,7 @@ import  org.jwaresoftware.gestalt.Validate;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Feedback;
 import  org.jwaresoftware.mwf4j.Fixture;
-import  org.jwaresoftware.mwf4j.PutMethod;
+import org.jwaresoftware.mwf4j.assign.PutMethod;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.assign.SavebackVar;
 import  org.jwaresoftware.mwf4j.assign.SavebackDiscard;
@@ -83,6 +83,7 @@ public abstract class SavebackAction<T> extends ActionSkeleton
     {
         Validate.isTrue(statement instanceof AssignmentStatement<?>,"statement kindof assign");
         AssignmentStatement<T> assignment = (AssignmentStatement<T>)statement;
+        assignment.setCheckDeclarables(isCheckDeclarables());
         assignment.setPutter(newPutMethod(myToKey));
         if (myToKey.isDefined()) {
             assignment.setToKey(myToKey.getName());

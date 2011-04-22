@@ -9,6 +9,7 @@ import  java.util.concurrent.BlockingQueue;
 
 import  org.jwaresoftware.gestalt.Validate;
 
+import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.helpers.WaitDef;
 
@@ -76,6 +77,10 @@ public class GivebackNext<T> implements Giveback<T>
         return payload;
     }
 
+    public T call(Harness ignored) throws Exception
+    {
+        return call();
+    }
 
     protected T getEOFPayload()
     {

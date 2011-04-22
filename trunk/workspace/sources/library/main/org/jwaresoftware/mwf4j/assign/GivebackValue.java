@@ -5,6 +5,13 @@
 
 package org.jwaresoftware.mwf4j.assign;
 
+import  org.jwaresoftware.gestalt.reveal.CloneableSkeleton;
+import  org.jwaresoftware.gestalt.system.LocalSystem;
+
+import  org.jwaresoftware.mwf4j.Fixture;
+import  org.jwaresoftware.mwf4j.behaviors.Declarable;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
+
 /**
  * Giveback implementation that just returns a payload that was 
  * assigned at construction. Useful for giving back a hard-coded
@@ -13,11 +20,11 @@ package org.jwaresoftware.mwf4j.assign;
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
- * @.safety   multiple
- * @.group    impl,helper
+ * @.safety   special (multiple after frozen)
+ * @.group    impl,infra,helper
  **/
 
-public final class GivebackValue<T> implements Giveback<T>
+public final class GivebackValue<T> extends CloneableSkeleton implements Giveback<T>, Declarable
 {
     public GivebackValue()
     {
@@ -34,7 +41,21 @@ public final class GivebackValue<T> implements Giveback<T>
         return myPayload;
     }
 
-    private final T myPayload;
+    public void freeze(Fixture environ)
+    {
+        myPayload = Declarables.freeze(environ,myPayload);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone()
+    {
+        GivebackValue copy = (GivebackValue)super.clone();
+        copy.myPayload = LocalSystem.newCopyOrSame(myPayload);
+        return copy;
+    }
+
+    private T myPayload;
 }
 
 
