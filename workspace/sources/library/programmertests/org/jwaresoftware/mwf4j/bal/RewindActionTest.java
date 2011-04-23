@@ -14,7 +14,7 @@ import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.scope.ByNameRewindpointMatcher;
-import  org.jwaresoftware.mwf4j.scope.NumberRewindCursor;
+import  org.jwaresoftware.mwf4j.scope.CursorNames;
 
 /**
  * Test suite for {@linkplain RewindAction} and associated components.
@@ -44,7 +44,7 @@ public final class RewindActionTest extends ActionTestSkeleton
         //Kinda convoluted-- but we want to make sure we can determine the cursor's name
         RewindAction rewind = newOUT("rewind."+seqid+"@"+index);
         rewind.setRewindpointMatcher(new ByNameRewindpointMatcher("rwm."+seqid+"."+index, 
-                                     NumberRewindCursor.nameFrom(seqid,index)));
+                                     CursorNames.nameFrom(seqid,index)));
         rewind.setMaxIterations(retries);
         rewind.setHaltIfMax(false);
         rewind.setCallCounter(rewind.getId()+".callnum");

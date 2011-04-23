@@ -14,13 +14,19 @@ import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.bal.*;
+import  org.jwaresoftware.mwf4j.scope.ByNameRewindpointMatcher;
 
 /**
  * Builder for BAL specific actions. Subclasses are expected to provide the
  * final public "action" or "activity" static factory method. See BAL programmer
  * test suites for examples. Note that once a builder's {@linkplain #build}
- * method is called it is no longer active (for now: one output per builder 
+ * method is called it is no longer usable (for now: one output per builder 
  * instance in its lifetime).
+ * <p/>
+ * <b>Implementation note:</b> due to the comprehensive "touches all of BAL"
+ * nature of this class, in addition to making building BAL-based flows 
+ * simpler for real applications, it's designed to make comprehensive unit
+ * and integration testing of MWf4J itself possible.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -56,7 +62,7 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
 
     public final BB empty()
     {
-        return run(BAL().newEmpty());
+        return add(BAL().newEmpty());
     }
 
 //  ---------------------------------------------------------------------------------------
@@ -205,6 +211,14 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
         return bb;
     }
 
+    public BB block(String id, String cursorformat)
+    {
+        Validate.notBlank(cursorformat,"cursorformat");
+        BB bb = block(id);
+        SequenceAction.class.cast(bb.myDefinition).setCursorFormat(cursorformat);
+        return bb;
+    }
+
     public BB block(Flag...flags)
     {
         validateNotBuildingInner();
@@ -262,6 +276,29 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
         IfElseAction branch = getFinishers().getUnderConstruction(IfElseAction.class);
         Validate.stateNotNull(branch,"inner-ifelse");
         return autoblock(new BALFinishers.ForIfOtherwise(branch));
+    }
+
+//  ---------------------------------------------------------------------------------------
+//  Fluent API for RewindAction: rewind("getOrder",2,2), rewind("getOrder@10")
+//  ---------------------------------------------------------------------------------------
+
+    public final BB rewind(String mark, int limit, Boolean haltIfMax)
+    {
+        Validate.notBlank(mark,What.CURSOR_NAME);
+        RewindAction rewind = BAL().newRewind();
+        rewind.setRewindpointMatcher(new ByNameRewindpointMatcher(mark));
+        if (limit>0 && limit!=Integer.MAX_VALUE) {
+            rewind.setMaxIterations(limit);
+            rewind.setCallCounter(mark+".__callnum");
+        }
+        if (haltIfMax!=null)
+            rewind.setHaltIfMax(haltIfMax);
+        return add(rewind);
+    }
+    
+    public final BB rewind(String mark)
+    {
+        return rewind(mark,-1,null);
     }
 
 //  ---------------------------------------------------------------------------------------

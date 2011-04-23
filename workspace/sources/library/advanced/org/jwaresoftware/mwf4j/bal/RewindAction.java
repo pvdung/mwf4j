@@ -108,12 +108,13 @@ public class RewindAction extends ActionSkeleton implements CallBounded
     {
         Validate.isA(statement,RewindStatement.class,What.STATEMENT);
         RewindStatement rewind = (RewindStatement)statement;
-        rewind.setRewindpointGetter(myGetRewindpoint);
+        rewind.setRewindpointGetter(copyMember(myGetRewindpoint));
+        rewind.setCheckDeclarables(isCheckDeclarables());
         if (myLimit!=null) {
             rewind.setMaxIterations(myLimit);
             rewind.setHaltIfMax(myHaltIfMaxFlag);
             rewind.setUseHaltContinuation(myHaltContinuationFlag);
-            rewind.setCallCounter(myCallCounter);
+            rewind.setCallCounter(copyMember(myCallCounter));
         }
     }
 

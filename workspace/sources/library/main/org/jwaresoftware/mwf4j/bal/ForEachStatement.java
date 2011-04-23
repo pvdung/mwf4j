@@ -23,6 +23,7 @@ import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
 import  org.jwaresoftware.mwf4j.helpers.ClosureException;
+import  org.jwaresoftware.mwf4j.scope.CursorNames;
 import  org.jwaresoftware.mwf4j.scope.NumberRewindCursor;
 import  org.jwaresoftware.mwf4j.scope.RewindCursor;
 import  org.jwaresoftware.mwf4j.scope.Rewindable;
@@ -38,18 +39,26 @@ import  org.jwaresoftware.mwf4j.scope.Rewindable;
  * the default because only simply stateless actions can work 
  * repeatedly without a reset of some kind.
  * <p/>
- * Implementation caveat: The collection holding the dataset needs to 
+ * <b>Usage note #1:</b> the collection holding the dataset needs to 
  * exist as long as <em>the entire foreach statement</em> does. This 
  * means the collection may need to be long-lived if each iteration 
- * takes a while to complete. The collection also need to be immutable
+ * takes a while to complete. The collection also needs to be immutable
  * for the duration of the foreach statement; otherwise, the source
- * iterator can signal an unexpected concurrent modification error. 
+ * iterator can signal an unexpected concurrent modification error.
+ * <p/>
+ * <b>Usage note #2:</b> the statement supports a rudimentary integer-based
+ * rewind capability. The "count" starts at zero and is incremented by one
+ * for each item returned by the collection. If a rewind is triggered, this
+ * statement will <em>re-request a new application-supplied
+ * collection and skip ahead to the rewind index</em>. Note that for the
+ * skip ahead the statement will neither update the cursor nor call the
+ * callback action.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    infra,impl
+ * @.group    impl,infra
  **/
 
 public class ForEachStatement extends BALStatement implements Unwindable, Resettable, Rewindable
@@ -194,10 +203,10 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
     private NumberRewindCursor newRewindpoint(int index)
     {
         String aid = getWhatId();//NB: make it something determinate for testability!
-        return new NumberRewindCursor(this,index,NumberRewindCursor.nameFrom(aid,index));
+        return new NumberRewindCursor(this,index,CursorNames.nameFrom(aid,index));
     }
 
-    
+
     private Callable<Collection<?>> myGetter= GivebackEMPTY_LIST;
     private Iterator<?> myWorker;
     private ControlFlowStatement myBody;

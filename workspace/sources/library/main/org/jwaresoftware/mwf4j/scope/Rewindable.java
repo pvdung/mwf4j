@@ -16,7 +16,7 @@ import  org.jwaresoftware.mwf4j.Harness;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
- * @.group    impl,infra
+ * @.group    api,infra
  **/
 
 public interface Rewindable

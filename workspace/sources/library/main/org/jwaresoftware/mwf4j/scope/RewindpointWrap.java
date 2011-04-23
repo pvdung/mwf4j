@@ -11,7 +11,9 @@ import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.What;
 
 /**
- * Readonly view that enforces access to ONLY the Rewindpoint API.
+ * Readonly view that enforces access to ONLY the Rewindpoint API. Note that
+ * this wrap will passthrough <em>ALL</em> method calls to its underlying
+ * implementation-- including the type-identifying {@linkplain #ofType()}.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -49,6 +51,9 @@ public final class RewindpointWrap implements Rewindpoint
     }
     public int hashCode() {
         return myImpl.hashCode();
+    }
+    public Class<?> ofType() {
+        return myImpl.ofType();
     }
 
     private final Rewindpoint myImpl;

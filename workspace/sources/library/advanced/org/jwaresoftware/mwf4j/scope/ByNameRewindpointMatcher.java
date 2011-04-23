@@ -19,14 +19,15 @@ import  org.jwaresoftware.mwf4j.What;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    impl,test,helper
+ * @.group    impl,extras,helper
  **/
 
 public final class ByNameRewindpointMatcher extends RewindpointSkeleton
 {
-    public ByNameRewindpointMatcher(String id)
+    public ByNameRewindpointMatcher(String markName)
     {
-        super(id);
+        super();
+        setMark(markName);
     }
 
     public ByNameRewindpointMatcher(String id, String markName)

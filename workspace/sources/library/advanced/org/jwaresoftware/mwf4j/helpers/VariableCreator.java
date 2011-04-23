@@ -28,7 +28,7 @@ import  org.jwaresoftware.mwf4j.starters.CalledClosureSkeleton;
  * @.group    impl,helper
  **/
 
-public class VariableCreator<T> extends CalledClosureSkeleton<T> implements Declarable
+public class VariableCreator<T> extends CalledClosureSkeleton<T> implements Declarable, Cloneable
 {
     public VariableCreator(String key, Class<T> ofType)
     {

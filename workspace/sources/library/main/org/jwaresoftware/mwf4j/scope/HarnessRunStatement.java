@@ -24,7 +24,7 @@ import  org.jwaresoftware.mwf4j.Harness;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   multiple
- * @.group    impl,helper
+ * @.group    impl,infra,helper
  **/
 
 final class HarnessRunStatement implements ControlFlowStatement
