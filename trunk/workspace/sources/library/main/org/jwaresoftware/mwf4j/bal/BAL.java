@@ -36,6 +36,7 @@ public final class BAL
         StoreType getCursorStoreType();
         boolean getMakeStatementPerLoopFlag();
         boolean getUseHaltContinuationsFlag();
+        String getNumberCursorNameTemplate();
     }
 
     public final static StoreType getDataStoreType()

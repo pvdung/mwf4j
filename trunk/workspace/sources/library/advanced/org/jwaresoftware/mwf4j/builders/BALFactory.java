@@ -35,6 +35,7 @@ public interface BALFactory extends DeclarableEnabled
     <T> AssignAction<T> newSet(String toKey, StoreType toStoreType, T dataValue);
     IfAction newIf();
     IfElseAction newIfElse();
+    RewindAction newRewind();
 
     public final static BALFactory Standard = new BALBALFactory(true);
 }

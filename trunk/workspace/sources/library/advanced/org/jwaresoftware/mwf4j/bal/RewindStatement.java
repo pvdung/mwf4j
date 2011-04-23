@@ -11,11 +11,13 @@ import  java.util.concurrent.atomic.AtomicInteger;
 import  org.jwaresoftware.gestalt.Validate;
 
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.CallBounded;
 import  org.jwaresoftware.mwf4j.behaviors.Rewinder;
 import  org.jwaresoftware.mwf4j.helpers.ClosureException;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 import  org.jwaresoftware.mwf4j.scope.RewindAdjustment;
 import  org.jwaresoftware.mwf4j.scope.Rewindpoint;
 
@@ -43,12 +45,6 @@ public class RewindStatement extends BALStatement implements CallBounded, Rewind
     {
         super(next);
         myMaxCallsSupport = new LimitSupport(this);
-    }
-
-    public RewindStatement(int retryCount, ControlFlowStatement next)
-    {
-        this(next);
-        myMaxCallsSupport.setMaxIterations(retryCount);
     }
 
     public void setRewindpointGetter(Callable<Rewindpoint> getter)
@@ -117,12 +113,26 @@ public class RewindStatement extends BALStatement implements CallBounded, Rewind
     private Rewindpoint getRewindpoint()
     {
         try {
-            return myGetRewindpoint.call();
+            Rewindpoint mark = myGetRewindpoint.call();
+            Validate.responseNotNull(mark,What.CURSOR);
+            return mark;
+        } catch(RuntimeException rtX) {
+            throw rtX;
         } catch(Exception callX) {
             String message= "Unable to retrieve rewind point";
             breadcrumbs().signaling(message);
             throw new ClosureException(message,callX);
         }
+    }
+
+    @Override
+    protected boolean doFreeze(Fixture environ)
+    {
+        boolean kontinue = super.doFreeze(environ);
+        if (kontinue) {
+            Declarables.freezeAll(environ,myGetRewindpoint,myCallCounter);
+        }
+        return kontinue;
     }
 
     private int getAndIncrementCallCount()

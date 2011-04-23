@@ -19,6 +19,7 @@ import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.Unwindable;
 import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
+import  org.jwaresoftware.mwf4j.scope.CursorNames;
 import  org.jwaresoftware.mwf4j.scope.NumberRewindCursor;
 import  org.jwaresoftware.mwf4j.scope.RewindCursor;
 import  org.jwaresoftware.mwf4j.scope.Rewindable;
@@ -44,7 +45,7 @@ import  org.jwaresoftware.mwf4j.scope.Rewindable;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   single
- * @.group    infra,impl
+ * @.group    impl,infra
  * @see       SequenceAction
  **/
 
@@ -65,6 +66,11 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
         Validate.notNull(actions,What.ACTIONS);
         myMembers = actions;
         myMemberFeed = new StatementIterator(actions);
+    }
+
+    public void setCursorFormat(String template)
+    {
+        myCursorFormat = template;
     }
 
     protected ControlFlowStatement runInner(Harness harness)
@@ -140,7 +146,7 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
     protected NumberRewindCursor newRewindpoint(int index)
     {
         String aid = getWhatId();//NB: make it something determinate for testability!
-        return new NumberRewindCursor(this,myCount,NumberRewindCursor.nameFrom(aid,index));
+        return new NumberRewindCursor(this,myCount,CursorNames.nameFrom(myCursorFormat,aid,index));
     }
 
 
@@ -148,6 +154,7 @@ public class SequenceStatement extends BALStatement implements Unwindable, Reset
     private List<Action> myMembers = NO_MEMBERS;
     private Iterator<Action> myMemberFeed = NO_FEED;
     ReentrantSupport myUnwindSupport;//NB:visible to BAL subclasses ONLY!
+    private String myCursorFormat;//OPTIONAL
 }
 
 

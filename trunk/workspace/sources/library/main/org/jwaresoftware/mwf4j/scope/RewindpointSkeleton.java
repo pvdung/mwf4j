@@ -72,6 +72,11 @@ abstract class RewindpointSkeleton extends StatementDependentSkeleton implements
         myName = id;
     }
 
+    protected RewindpointSkeleton()
+    {
+        this((String)null);
+    }
+
     public final String getId()
     {
         return myId;
@@ -113,6 +118,11 @@ abstract class RewindpointSkeleton extends StatementDependentSkeleton implements
     public int hashCode()
     {
         return getId().hashCode();
+    }
+
+    public Class<?> ofType()
+    {
+        return getClass();
     }
 
     protected final long getCreationNanoTime()

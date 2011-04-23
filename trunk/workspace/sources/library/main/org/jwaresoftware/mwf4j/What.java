@@ -37,6 +37,7 @@ public class What extends org.jwaresoftware.gestalt.What
     public final static String CALLBACK     = "callback";
     public final static String BODY         = "body";
     public final static String CURSOR       = "cursor";
+    public final static String CURSOR_NAME  = "cursor-name";
     public final static String CURSOR_UNDEF = "cursor-undefined";
     public final static String CONFIG       = "configuration";
     public final static String BARRIER      = "barrier";

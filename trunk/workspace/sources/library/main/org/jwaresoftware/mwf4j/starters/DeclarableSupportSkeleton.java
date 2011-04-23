@@ -49,11 +49,16 @@ public abstract class DeclarableSupportSkeleton implements DeclarableEnabled
         myFreezeFlag = null;
     }
 
+    @SuppressWarnings("unchecked")
     protected final <T> T copyMember(T incoming)
     {
         T returned = incoming;
         if (isCheckDeclarables()) {
-            returned = LocalSystem.newCopyOrSame(incoming);
+            if (incoming!=null && incoming.getClass().isArray()) {
+                returned = (T)LocalSystem.newCopyOrSameArray((Object[])incoming);
+            } else {
+                returned = LocalSystem.newCopyOrSame(incoming);
+            }
         }
         return returned;
     }

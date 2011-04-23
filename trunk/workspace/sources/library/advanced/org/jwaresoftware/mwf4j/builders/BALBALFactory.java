@@ -95,6 +95,10 @@ public class BALBALFactory implements BALFactory
         return finish(new AssignAction<T>(toKey, toStoreType, dataValue));
     }
 
+    public RewindAction newRewind() {
+        return finish(new RewindAction());
+    }
+
     private final boolean myLockFlag;
     private AtomicReference<Boolean> myDeclarablesFlag= new AtomicReference<Boolean>();
 }

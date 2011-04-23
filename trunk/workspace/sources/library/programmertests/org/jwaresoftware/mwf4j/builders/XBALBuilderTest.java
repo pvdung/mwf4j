@@ -520,6 +520,24 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         assertNotNull(vars.get("pi",Double.class),"pi");
     }
 
+    @Test(dependsOnMethods={"testSimpleFlatIff_1_0_0"})
+    public void testDeclarablesInIffCondition_1_0_0()
+    {
+        Action out = action(DECLARABLES)
+                        .set("flag","${FLAG}")
+                        .set("varname","flag")
+                        .ife(istrue("${$var:varname}"))
+                            .touch("BINGO")
+                            .otherwise()
+                                .error("NO_BINGO")
+                        .end()
+                     .build();
+        Harness h = newHARNESS(out);
+        setString(h,"FLAG","on");
+        runTASK(h);
+        assertTrue(wasPerformed("BINGO"),"touched('BINGO')");
+    }
+
     @Test(expectedExceptions={IllegalStateException.class})
     public void testFailIfEndWithoutInner_1_0_0()
     {
@@ -559,6 +577,27 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
             LocalSystem.showerror("Barfage => ", Xpected);
             throw Xpected;
         }
+    }
+
+    public void testRewindToNthItemInBlock_1_0_0()
+    {
+        Variables vars = iniDATAMAP();
+        Action out = action()
+                        .block("b")
+                            .set("n",0)
+                            .iff(notnull("once"))
+                                .never()
+                                .endif()
+                            .set("once",true)
+                            .set("n",get("n+1"))
+                            .rewind("b@03",1,false)
+                            .touch("OKEY!")
+                            .end("b")
+                     .build();
+        runTASK(out);
+        assertEquals(vars.get("n",Integer.class),Integer.valueOf(2),"n");
+        assertEquals(vars.get("once",Boolean.class),Boolean.TRUE,"once");
+        assertTrue(wasPerformed("OKEY!",1),"touched('OKEY!')");
     }
 }
 

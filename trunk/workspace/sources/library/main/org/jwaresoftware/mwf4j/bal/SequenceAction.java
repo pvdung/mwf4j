@@ -73,6 +73,12 @@ public class SequenceAction extends BALProtectorAction implements Sequence
         myUseMode = mode;
     }
 
+    public void setCursorFormat(String template)
+    {
+        Validate.notBlank(template,"cursorformat");
+        myCursorFormat = template;
+    }
+
     public Sequence add(Action action)
     {
         Validate.notNull(action,What.ACTION);
@@ -113,7 +119,11 @@ public class SequenceAction extends BALProtectorAction implements Sequence
     public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isTrue(statement instanceof SequenceStatement,"statement kindof sequence");
-        ((SequenceStatement)statement).setMembers(getMembers());
+        SequenceStatement sequence = (SequenceStatement)statement;
+        sequence.setMembers(getMembers());
+        if (myCursorFormat!=null) {
+            sequence.setCursorFormat(myCursorFormat);
+        }
         if (statement instanceof Protector) {
             myProtectSupport.copyTo((Protector)statement);
         }
@@ -149,6 +159,7 @@ public class SequenceAction extends BALProtectorAction implements Sequence
     private List<Action> myActions = NONE;
     private Mode myUseMode = Mode.SINGLE;
     private boolean myTryEachFlag = false;
+    private String myCursorFormat=null;//OPTIONAL
 }
 
 

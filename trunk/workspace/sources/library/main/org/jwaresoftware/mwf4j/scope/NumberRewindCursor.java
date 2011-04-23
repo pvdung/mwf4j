@@ -16,6 +16,9 @@ import  org.jwaresoftware.mwf4j.What;
  * Rewind cursor that you can use to track loop indices, timestamps, and other
  * simple number-based cursors. Only the NUMBER is tracked by this cursor;
  * we expect all other context is maintained by the owning control statement.
+ * <p/>
+ * <b>Usage note #1:</b> the builtin naming method assumes a number cursor
+ * is tracking integer-based indices of less than 100.
  *
  * @since     JWare/MWf4J 1.0.0
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
@@ -26,26 +29,6 @@ import  org.jwaresoftware.mwf4j.What;
 
 public final class NumberRewindCursor extends RewindpointSkeleton implements RewindCursor
 {
-    public final static String nameFrom(ControlFlowStatement owner, int index)
-    {
-        String basename=null;
-        if (owner!=null) {//eg 'Sequence@12','TryEachSequence@04'
-            basename = What.typeCN(owner,"Statement");
-        }
-        return nameFrom(basename,index);
-    }
-
-    public final static String nameFrom(String basename, int index)
-    {
-        String name;
-        if (basename!=null) {//eg 'handleOrder@12', 'Sequence@08'
-            name = String.format("%1$s@%2$02d",basename,index);
-        } else {
-            name = "@"+index;
-        }
-        return name;
-    }
-
     public NumberRewindCursor(ControlFlowStatement owner, Number number, String name)
     {
         super(owner,name);
@@ -55,7 +38,7 @@ public final class NumberRewindCursor extends RewindpointSkeleton implements Rew
 
     public NumberRewindCursor(ControlFlowStatement owner, Number number)
     {
-        this(owner,number,null);
+        this(owner,number,CursorNames.nameFromOrNull(owner,number));
     }
 
     public Rewindpoint getReadonlyView()

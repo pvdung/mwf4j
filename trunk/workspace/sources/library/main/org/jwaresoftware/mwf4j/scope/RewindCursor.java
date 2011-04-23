@@ -6,6 +6,7 @@
 package org.jwaresoftware.mwf4j.scope;
 
 import  org.jwaresoftware.gestalt.Strings;
+
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
 import  org.jwaresoftware.mwf4j.Harness;
 
@@ -22,7 +23,7 @@ import  org.jwaresoftware.mwf4j.Harness;
  * @author    ssmc, &copy;2010-2011 <a href="@Module_WEBSITE@">SSMC</a>
  * @version   @Module_VERSION@
  * @.safety   n/a
- * @.group    api,infra
+ * @.group    api,infra,helper
  * @see       Scopes#rewindFrom(Rewindpoint, Harness) Scopes.rewindFrom()
  **/
 
@@ -61,6 +62,9 @@ public interface RewindCursor extends Rewindpoint, Comparable<RewindCursor>
             if (other==null)
                 throw new NullPointerException();
             return other==this ? 0 : -1;
+        }
+        public Class<?> ofType() {
+            return getClass();
         }
     };
 }
