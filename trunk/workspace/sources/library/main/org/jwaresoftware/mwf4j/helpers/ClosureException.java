@@ -32,6 +32,11 @@ public class ClosureException extends MWf4JException implements Throwables.Check
     {
         super(message,cause);
     }
+
+    public ClosureException(String message)
+    {
+        super(message);
+    }
 }
 
 

@@ -23,6 +23,7 @@ import  org.jwaresoftware.mwf4j.What;
 import  org.jwaresoftware.mwf4j.assign.Reference;
 import  org.jwaresoftware.mwf4j.behaviors.Resettable;
 import  org.jwaresoftware.mwf4j.helpers.ClosureException;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 import  org.jwaresoftware.mwf4j.scope.CursorNames;
 import  org.jwaresoftware.mwf4j.scope.NumberRewindCursor;
 import  org.jwaresoftware.mwf4j.scope.RewindCursor;
@@ -75,7 +76,7 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
         myUnwindSupport = new ReentrantSupport(this,true,this);
     }
 
-    public void setGetter(Callable<Collection<?>> getter)
+    public void setGetter(Callable<? extends Collection<?>> getter)
     {
         Validate.notNull(getter,What.CALLBACK);
         myGetter = getter;
@@ -189,10 +190,15 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
     {
         try {
             MDC.pshHarness(this,harness);
+            if (myGetter instanceof Resettable) {
+                ((Resettable)myGetter).reset();
+            }
             myWorker = myGetter.call().iterator();
-            int stopindex=index;
-            while((stopindex-->0) && myWorker.hasNext()) { myWorker.next(); } //SKIP-AHEAD
-            myIndex=index;
+            int stopindex = index;
+            while ((stopindex-->0) && myWorker.hasNext()) {//SKIP-AHEAD
+                myWorker.next();
+            }
+            myIndex = index;
         } catch(Exception getX) {
             throw new ClosureException("Unable to rewind foreach data iterator",getX);
         } finally {
@@ -206,8 +212,16 @@ public class ForEachStatement extends BALStatement implements Unwindable, Resett
         return new NumberRewindCursor(this,index,CursorNames.nameFrom(aid,index));
     }
 
+    protected boolean doFreeze(Fixture environ)
+    {
+        final boolean kontinue = super.doFreeze(environ);
+        if (kontinue) {
+            Declarables.freezeAll(environ,myGetter,myCursor);
+        }
+        return kontinue;
+    }
 
-    private Callable<Collection<?>> myGetter= GivebackEMPTY_LIST;
+    private Callable<? extends Collection<?>> myGetter= GivebackEMPTY_LIST;
     private Iterator<?> myWorker;
     private ControlFlowStatement myBody;
     private Action myBodyFactory;

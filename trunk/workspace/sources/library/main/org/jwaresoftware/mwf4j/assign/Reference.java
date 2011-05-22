@@ -218,6 +218,14 @@ public final class Reference extends Pair<String,StoreType>
             super.set1(environ.interpolate(super.get1()));
         }
     }
+
+    @Override
+    public String toString()
+    {
+        if (isUndefined())
+            return Strings.EMPTY;
+        return ""+getName()+"("+getStoreType().name()+")";
+    }
 }
 
 

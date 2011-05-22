@@ -5,6 +5,8 @@
 
 package org.jwaresoftware.mwf4j.assign;
 
+import  org.jwaresoftware.gestalt.Throwables;
+
 import  org.jwaresoftware.mwf4j.MWf4JException;
 
 /**
@@ -18,12 +20,12 @@ import  org.jwaresoftware.mwf4j.MWf4JException;
  * @.group    infra,impl,helper
  **/
 
-public final class GivebackException extends MWf4JException
+public final class GivebackException extends MWf4JException implements Throwables.CheckedWrapper
 {
-    /** Unable to eval giveback '&lt;selector&gt;'. */
+    /** Unable to evaluate giveback '&lt;selector&gt;'. */
     GivebackException(String selector,Throwable cause)
     {
-        super("Unable to eval giveback '"+selector+"'",cause);
+        super("Unable to evaluate giveback '"+selector+"'",cause);
     }
 
     GivebackException(Throwable cause)

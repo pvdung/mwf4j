@@ -5,6 +5,8 @@
 
 package org.jwaresoftware.mwf4j.assign;
 
+import  org.jwaresoftware.gestalt.Throwables;
+
 import  org.jwaresoftware.mwf4j.MWf4JException;
 
 /**
@@ -18,7 +20,7 @@ import  org.jwaresoftware.mwf4j.MWf4JException;
  * @.group    infra,impl,helper
  **/
 
-public final class SavebackException extends MWf4JException
+public final class SavebackException extends MWf4JException implements Throwables.CheckedWrapper
 {
     /** Unable to eval saveback '&lt;selector&gt;'. */
     SavebackException(String selector,Throwable cause)

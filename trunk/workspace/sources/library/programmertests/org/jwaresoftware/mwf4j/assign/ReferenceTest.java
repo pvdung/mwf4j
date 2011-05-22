@@ -39,12 +39,14 @@ public final class ReferenceTest
         Reference out = new Reference();
         assertTrue(out.isUndefined(),"isUndefined");
         assertNotNull(out.getStoreType(), "storeType");
+        assertEquals(out.toString().length(),0,"toString.length");
         Reference cpy = new Reference(out);
         assertTrue(out.isUndefined(),"cpy.isUndefined");
         assertSame(out.getStoreType(), cpy.getStoreType(),"cpy.storeType");
         out = new Reference(StoreType.NONE);
         assertTrue(out.isUndefined(),"isUndefined");
         assertSame(out.getStoreType(),StoreType.NONE);
+        assertEquals(out.toString().length(),0,"toString.length");
     }
 
     public void testDefaultStoreTypeIsDatamap()
@@ -64,6 +66,7 @@ public final class ReferenceTest
         assertFalse(out.isUndefined(),"isUndefined");
         assertEquals(out.getId(),"b","id");
         assertEquals(out.getId(),"b","name");
+        assertEquals(out.toString(),"b(DATAMAP)","toString");
         out.setName("fu");
         assertEquals(out.getId(),"fu","id");
         assertEquals(out.getId(),"fu","name");
@@ -74,6 +77,7 @@ public final class ReferenceTest
         Reference out = new Reference("c",StoreType.PROPERTY);
         assertSame(out.getStoreType(),StoreType.PROPERTY,"storeType");
         assertEquals(out.getId(), "c","id");
+        assertEquals(out.toString(),"c(PROPERTY)","toString");
         Reference cpy = new Reference(out);
         assertSame(cpy.getStoreType(),StoreType.PROPERTY,"cpy.storeType");
         assertEquals(cpy.getId(), "c","cpy.id");

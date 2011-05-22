@@ -174,10 +174,12 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
     {
         assertNull(LocalSystem.getProperty("DEBUG"));
         Action out = action()
+                      .set(property(".working"),true)
                       .set(property("DEBUG"),true)
                       .set(property("name"),"Harry")
                       .set(env("maxwait"),13)
                       .set(mdc("SESSIONID"),1010L)
+                      .nil(property(".working"))
                       .build();
 
         Harness h = newHARNESS(out);
@@ -188,6 +190,8 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         assertEquals(getString(h,"maxwait"),"13","p(maxwait)");
         assertEquals(MDC.get("SESSIONID",Long.class),Long.valueOf(1010L),"SESSIONID");
         assertNull(LocalSystem.getProperty("DEBUG"),"LocalSystem('DEBUG')");
+        assertNull(getString(h,".working"),".working{on exit}");
+        assertNull(LocalSystem.getProperty(".working"),"LocalSystem('.working')");
     }
 
     @Test(dependsOnMethods={"testSimplePropertyAssign_1_0_0"})
@@ -579,7 +583,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         }
     }
 
-    public void testRewindToNthItemInBlock_1_0_0()
+    public void testRewindToNthItemInBlockA_1_0_0()
     {
         Variables vars = iniDATAMAP();
         Action out = action()
@@ -590,7 +594,7 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
                                 .endif()
                             .set("once",true)
                             .set("n",get("n+1"))
-                            .rewind("b@03",1,false)
+                            .rewind("b@03",1,NO_HALTIFMAX)
                             .touch("OKEY!")
                             .end("b")
                      .build();
@@ -599,6 +603,55 @@ public final class XBALBuilderTest extends ExecutableTestSkeleton
         assertEquals(vars.get("once",Boolean.class),Boolean.TRUE,"once");
         assertTrue(wasPerformed("OKEY!",1),"touched('OKEY!')");
     }
+
+    public void testRewindToNthItemInBlockB_1_0_0()
+    {
+        Variables vars = iniDATAMAP();
+        Action out = action(DECLARABLES)
+                        .set("i",0)
+                        .block("b")
+                            .set("i",var("i++"))
+                            .set("n",0)
+                            .iff(isnull("once"))
+                                .set("once",true)
+                                .rewind("b@00",1,HALTIFMAX)
+                                .endif()
+                            .iff(notnull("once"))
+                                .touch("HIT")
+                                .endif()
+                            .set("n",get("n+1"))
+                            .rewind("b@03",1,NO_HALTIFMAX)
+                            .touch("OKEY!")
+                            .end("b")
+                     .build();
+        runTASK(out);
+        assertEquals(vars.get("n",Integer.class),Integer.valueOf(2),"n");
+        assertEquals(vars.get("once",Boolean.class),Boolean.TRUE,"once");
+        assertTrue(wasPerformed("OKEY!",1),"touched('OKEY!')");
+    }
+
+    public void testForEachInIntegerRange_1_0_0()
+    {
+        Action out = action("loopy")
+                        .foreach("i",in(0,5))
+                            .echocursor("i")
+                            .end()
+                        .build();
+        runTASK(out);
+        assertTrue(werePerformedInOrder("0|1|2|3|4"),"loops");
+    }
+
+    public void testForEachInDelimitedString_1_0_0()
+    {
+        Action out = action("loopy")
+                        .foreach("str",in("x|y|z"))
+                            .echocursor("str")
+                            .end()
+                        .build();
+        runTASK(out);
+        assertTrue(werePerformedInOrder("x|y|z"),"loops");
+    }
+
 }
 
 
