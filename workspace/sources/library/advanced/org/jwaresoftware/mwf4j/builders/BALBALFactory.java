@@ -99,6 +99,10 @@ public class BALBALFactory implements BALFactory
         return finish(new RewindAction());
     }
 
+    public ForEachAction newForEach() {
+        return finish(new ForEachAction());
+    }
+
     private final boolean myLockFlag;
     private AtomicReference<Boolean> myDeclarablesFlag= new AtomicReference<Boolean>();
 }

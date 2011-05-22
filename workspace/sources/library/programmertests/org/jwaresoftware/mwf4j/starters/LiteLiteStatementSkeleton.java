@@ -9,8 +9,10 @@ import  org.jwaresoftware.gestalt.Strings;
 
 import  org.jwaresoftware.mwf4j.Action;
 import  org.jwaresoftware.mwf4j.ControlFlowStatement;
+import  org.jwaresoftware.mwf4j.Fixture;
 import  org.jwaresoftware.mwf4j.Harness;
 import  org.jwaresoftware.mwf4j.TestFixture;
+import  org.jwaresoftware.mwf4j.helpers.Declarables;
 
 /**
  * Starting point for very lightweight statements linked to lightweight test
@@ -103,6 +105,15 @@ public abstract class LiteLiteStatementSkeleton extends StatementSkeleton
     public Action getOwner()
     {
         return myOwner;
+    }
+
+    protected boolean doFreeze(Fixture environ)
+    {
+        boolean kontinue = super.doFreeze(environ);
+        if (kontinue) {
+            myId = Declarables.freeze(environ,myId);
+        }
+        return kontinue;
     }
 
     private Action myOwner;

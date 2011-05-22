@@ -39,6 +39,9 @@ public final class TouchAction extends ActionSkeleton
     public void configureStatement(ControlFlowStatement statement, Fixture environ)
     {
         Validate.isA(statement,TestStatement.class,What.STATEMENT);
+        if (isCheckDeclarables()) {
+            ((TestStatement)statement).setCheckDeclarables(true);
+        }
     }
 
     protected ControlFlowStatement createStatement(ControlFlowStatement next, Fixture environ)

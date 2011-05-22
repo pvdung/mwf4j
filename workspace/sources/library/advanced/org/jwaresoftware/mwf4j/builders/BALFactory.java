@@ -36,6 +36,7 @@ public interface BALFactory extends DeclarableEnabled
     IfAction newIf();
     IfElseAction newIfElse();
     RewindAction newRewind();
+    ForEachAction newForEach();
 
     public final static BALFactory Standard = new BALBALFactory(true);
 }

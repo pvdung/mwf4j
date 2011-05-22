@@ -5,6 +5,9 @@
 
 package org.jwaresoftware.mwf4j.builders;
 
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
@@ -118,6 +121,12 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
     {
         Validate.notNull(variable,What.VARIABLE_NAME);
         return add(BAL().newSet(variable,VARIABLE,null));
+    }
+
+    public BB nil(Property property)
+    {
+        Validate.notNull(property,What.PROPERTY_NAME);
+        return add(BAL().newSet(property.value(),PROPERTY,null));
     }
 
 //  ---------------------------------------------------------------------------------------
@@ -279,10 +288,10 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
     }
 
 //  ---------------------------------------------------------------------------------------
-//  Fluent API for RewindAction: rewind("getOrder",2,2), rewind("getOrder@10")
+//  Fluent API for RewindAction: rewind("getOrder@10"), rewind("getOrder@1",2,HALTIFMAX)
 //  ---------------------------------------------------------------------------------------
 
-    public final BB rewind(String mark, int limit, Boolean haltIfMax)
+    public final BB rewind(String mark, int limit, Flag flag)
     {
         Validate.notBlank(mark,What.CURSOR_NAME);
         RewindAction rewind = BAL().newRewind();
@@ -291,15 +300,41 @@ public abstract class BALBuilder<BB extends BALBuilder<BB>> extends BuilderSkele
             rewind.setMaxIterations(limit);
             rewind.setCallCounter(mark+".__callnum");
         }
-        if (haltIfMax!=null)
-            rewind.setHaltIfMax(haltIfMax);
+        if (flag==HALTIFMAX || flag==NO_HALTIFMAX) {
+            rewind.setHaltIfMax(flag.value());
+        }
         return add(rewind);
     }
-    
+
     public final BB rewind(String mark)
     {
         return rewind(mark,-1,null);
     }
+
+//  ---------------------------------------------------------------------------------------
+//  Fluent API for ForEachAction: foreach("i",in(0,10)), foreach("file",fileset("/tmp/*.in"))
+//  ---------------------------------------------------------------------------------------
+
+    public final BB foreach(String cursor, Collection<?> dataset)
+    {
+        Validate.notBlank(cursor,What.CURSOR_NAME);
+        Validate.notNull(dataset,What.DATA);
+        ForEachAction foreach = BAL().newForEach();
+        foreach.setCursorKey(cursor);
+        foreach.setDataset(dataset);
+        return autoblock(new BALFinishers.ForEach(foreach));
+    }
+
+    public final BB foreach(String cursor, Callable<? extends Collection<?>> incoll)
+    {
+        Validate.notBlank(cursor,What.CURSOR_NAME);
+        Validate.notNull(incoll,What.DATA);
+        ForEachAction foreach = BAL().newForEach();
+        foreach.setCursorKey(cursor);
+        foreach.setDataset(incoll);//cast to shutup IDE
+        return autoblock(new BALFinishers.ForEach(foreach));
+    }
+
 
 //  ---------------------------------------------------------------------------------------
 //  Constructor methods: available only via concrete subclass's APIs

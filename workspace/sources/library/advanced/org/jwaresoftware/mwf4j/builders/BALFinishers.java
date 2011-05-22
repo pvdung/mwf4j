@@ -37,6 +37,9 @@ public final class BALFinishers
     {
         protected Skeleton() {
         }
+        public String toString() {
+            return getId()+"@"+System.identityHashCode(this);
+        }
     }
 
     public static final class ForRoot implements Finisher, RootFinisher
@@ -104,6 +107,24 @@ public final class BALFinishers
         }
         public <T> T getUnderConstruction(Class<T> ofType) {
             return ofType.cast(myBranch);
+        }
+    }
+
+    public static final class ForEach extends Skeleton
+    {
+        private final ForEachAction myLoopr;
+        public ForEach(ForEachAction step) {
+            myLoopr = step;
+        }
+        public String getId() {
+            return "foreach";
+        }
+        public BALBuilder<?> finish(BALBuilder<?> outer, Sequence collected) {
+            myLoopr.setBody(unwrap(collected));
+            return outer.add(myLoopr);
+        }
+        public <T> T getUnderConstruction(Class<T> ofType) {
+            return ofType.cast(myLoopr);
         }
     }
 }

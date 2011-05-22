@@ -68,7 +68,7 @@ public class ForEachAction extends ActionSkeleton
         myBody = body;
     }
 
-    public void setDataset(Callable<Collection<?>> getter)
+    public void setDataset(Callable<? extends Collection<?>> getter)
     {
         Validate.notNull(getter,What.GET_METHOD);
         myGetter = getter;
@@ -94,6 +94,7 @@ public class ForEachAction extends ActionSkeleton
     {
         Validate.isA(statement,ForEachStatement.class,What.STATEMENT);
         ForEachStatement foreach = (ForEachStatement)statement;
+        foreach.setCheckDeclarables(isCheckDeclarables());
         foreach.setCursor(myCursor);
         foreach.setGetter(myGetter);
         if (myBody!=null) {
@@ -110,7 +111,7 @@ public class ForEachAction extends ActionSkeleton
     private Reference myCursor= new Reference();
     private Action myBody;
     private boolean myCopyFlag= BAL.getNewStatementPerLoopFlag();
-    private Callable<Collection<?>> myGetter= ForEachStatement.GivebackEMPTY_LIST;
+    private Callable<? extends Collection<?>> myGetter= ForEachStatement.GivebackEMPTY_LIST;
 
 }
 

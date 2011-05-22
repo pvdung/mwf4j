@@ -5,6 +5,9 @@
 
 package org.jwaresoftware.mwf4j.builders;
  
+import  java.util.Collection;
+import  java.util.concurrent.Callable;
+
 import  org.jwaresoftware.gestalt.Strings;
 import  org.jwaresoftware.gestalt.Validate;
 
@@ -19,6 +22,8 @@ import  org.jwaresoftware.mwf4j.helpers.False;
 import  org.jwaresoftware.mwf4j.helpers.Not;
 import  org.jwaresoftware.mwf4j.helpers.Or;
 import  org.jwaresoftware.mwf4j.helpers.True;
+import  org.jwaresoftware.mwf4j.loop.DelimitedStringToCollectionCallback;
+import  org.jwaresoftware.mwf4j.loop.IntRangeToCollectionCallback;
 
 /**
  * Starting implementation for the various builders for MWf4J. The main
@@ -44,6 +49,8 @@ public abstract class BuilderSkeleton implements Entity
     public static final Flag MULTIUSE = new Flag("multiple",true);
     public static final Flag DECLARABLES  = new Flag("declarable",true);
     public static final Flag NO_DECLARABLES  = new Flag("declarable",false);
+    public static final Flag HALTIFMAX = new Flag("haltIfMax",true);
+    public static final Flag NO_HALTIFMAX = new Flag("haltIfMax",false);
 
     public final static class Property extends ID {
         Property(String name) {
@@ -161,6 +168,28 @@ public abstract class BuilderSkeleton implements Entity
     {
         Validate.notBlank(keyOrExpr,What.CRITERIA);
         return new EvaluateVar(keyOrExpr,EvaluateVar.IsNull);
+    }
+
+
+
+    public final static Callable<Collection<String>> in(String delimitedList)
+    {
+        return new DelimitedStringToCollectionCallback(delimitedList);
+    }
+
+    public final static Callable<Collection<String>> in(String delimitedList, String delims)
+    {
+        return new DelimitedStringToCollectionCallback(delimitedList, delims);
+    }
+
+    public final static Callable<Collection<Integer>> in(int start, int end, int delta)
+    {
+        return new IntRangeToCollectionCallback(start,end,delta);
+    }
+
+    public final static Callable<Collection<Integer>> in(int start, int end)
+    {
+        return new IntRangeToCollectionCallback(start,end,1);
     }
 
 

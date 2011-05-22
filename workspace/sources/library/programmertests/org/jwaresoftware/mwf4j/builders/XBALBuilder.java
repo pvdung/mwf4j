@@ -7,6 +7,7 @@ package org.jwaresoftware.mwf4j.builders;
 
 import  org.jwaresoftware.mwf4j.Sequence;
 import  org.jwaresoftware.mwf4j.bal.ThrowAction;
+import  org.jwaresoftware.mwf4j.starters.EchoAction;
 import  org.jwaresoftware.mwf4j.starters.EpicFail;
 import  org.jwaresoftware.mwf4j.starters.TouchAction;
 
@@ -47,7 +48,10 @@ public final class XBALBuilder extends BALBuilder<XBALBuilder>
 
     public XBALBuilder touch(String id)
     {
-        return run(new TouchAction(id));
+        TouchAction touch = new TouchAction(id);
+        if (BAL().isCheckDeclarables())
+            touch.setCheckDeclarables(true);
+        return run(touch);
     }
 
     public XBALBuilder error(String id)
@@ -60,6 +64,13 @@ public final class XBALBuilder extends BALBuilder<XBALBuilder>
         return run(new EpicFail());
     }
 
+    public XBALBuilder echocursor(String key)
+    {
+        EchoAction echo = new EchoAction("echo",key);
+        if (BAL().isCheckDeclarables())
+            echo.setCheckDeclarables(true);
+        return add(echo);
+    }
 
 
     XBALBuilder(BALFactory newHelper,Sequence newBody,Finishers finisherStack,Finisher newFinisher)
