@@ -1,0 +1,1 @@
+Java7 based implementation of micro workflow architecture as described by D.A. Manolescu's work. While core concepts are pulled from the latest documentation (see PhD thesis and follow-up ACM papers), mwf4j focuses on creation of a MWf framework we can use for distributed application build, deploy, test, and bootstrap processes.
